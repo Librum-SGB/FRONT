@@ -1,0 +1,13 @@
+<div class="card p-2" [ngClass]="bg">
+  <div class="row">
+    <div class="col-8">
+      <div class="d-flex flex-column">
+        <p><b>{{titulo}}</b></p>
+        <h3>{{valor}}</h3>
+      </div>
+    </div>
+    <div class="col-4 d-flex justify-content-end align-items-center pe-3">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
