@@ -1,11 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CardInformativo } from './componentes/card-informativo/card-informativo';
-import { ItemListaTarefa } from './componentes/item-lista-tarefa/item-lista-tarefa';
+import { Dashboard } from './pages/dashboard/dashboard';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CardInformativo, ItemListaTarefa],
+  imports: [Dashboard, RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
