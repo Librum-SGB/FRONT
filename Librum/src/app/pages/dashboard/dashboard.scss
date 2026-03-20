@@ -1,0 +1,12 @@
+.dashboard {
+  width: 48%;
+  padding-block: 0.5rem;
+  padding-inline: 1rem;
+}
+
+/* Tablet e desktop */
+@media (max-width: 768px) {
+  .dashboard {
+    width: 100%;
+  }
+}

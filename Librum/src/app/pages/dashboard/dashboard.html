@@ -1,0 +1,107 @@
+<main>
+  <section class="row mt-3 gap-2 gap-sm-0 ">
+    <div class="col-sm-6 col-md-3">
+      <app-card-informativo titulo="teste" valor="1203">
+        <i class="bi bi-people-fill fs-1"></i>
+      </app-card-informativo>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <app-card-informativo titulo="teste22" valor="1203" classe="bg-primary">
+        <i class="bi bi-book fs-1"></i>
+      </app-card-informativo>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <app-card-informativo titulo="teste" valor="1203" classe="bg-primary-subtle">
+        <i class="bi bi-arrow-clockwise fs-1"></i>
+      </app-card-informativo>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <app-card-informativo titulo="teste" valor="1203" classe="bg-warning">
+        <i class="bi bi-exclamation-circle fs-1"></i>
+      </app-card-informativo>
+    </div>
+  </section>
+  <section class="row mt-3 justify-content-evenly">
+    <div class="col-sm-12 col-md-6 dashboard bg-body rounded-3">
+      <div class="row">
+        <div class="col-sm-12">
+          <h4>Lista Tarefa</h4>
+          <p>Rotina diária da Biblioteca</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-10 ">
+          <input type="text" class="form-control" id="novaTarefa" placeholder="Nova Tarefa">
+        </div>
+        <div class="col-2">
+          <button class="btn btn-primary w-100"><i class="bi bi-plus "></i></button>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <ul class="list-unstyled flex gap-5">
+          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
+          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
+          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
+          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
+          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 bg-body rounded-3 dashboard">
+      <div class="row">
+        <div class="col-12">
+          <h4>
+            Status de Empréstimo
+          </h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 col-md-4">
+          <app-card-status titulo="em andamento" conteudo="2" />
+        </div>
+        <div class="col-12 col-md-4">
+          <app-card-status titulo="a vencer" conteudo="2" classe="bg-warning-subtle" />
+        </div>
+        <div class="col-12 col-md-4">
+          <app-card-status titulo="vencidos" conteudo="2" classe="bg-danger-subtle" />
+        </div>
+      </div>
+      <div class="row">
+        <table class="table mt-3">
+          <thead>
+            <tr>
+              <th scope="col">Aluno</th>
+              <th scope="col">Livro</th>
+              <th scope="col">Devolução</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Ttw</th>
+              <td>juanito</td>
+              <td>há 2 dias</td>
+              <td>
+                <!-- TODO : COLOCAR UMA MODEL PARA FICAR DINAMICO -->
+                <p class="badge" [ngClass]="{
+                  'bg-success': 'emAndamento' == 'emAndamento',
+                  'bg-warning': 'pendente' === 'pendente',
+                  'bg-danger': 'vencido' === 'vencido',
+                }">Em andamento</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  <section class="row bg-body rounded-3 mt-3 py-3 px-2">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-12">
+          <h5>Ações Rápidas</h5>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
