@@ -1,5 +1,5 @@
 <main>
-  <section class="row mt-3 gap-2 gap-sm-0 ">
+  <section class="row mt-3 row-gap-2 ">
     <div class="col-sm-6 col-md-3">
       <app-card-informativo titulo="teste" valor="1203">
         <i class="bi bi-people-fill fs-1"></i>
@@ -31,19 +31,18 @@
       </div>
       <div class="row">
         <div class="col-10 ">
-          <input type="text" class="form-control" id="novaTarefa" placeholder="Nova Tarefa">
+          <input type="text" class="form-control" id="novaTarefa" [(ngModel)]="novaTarefa" placeholder="Nova Tarefa">
         </div>
         <div class="col-2">
-          <button class="btn btn-primary w-100"><i class="bi bi-plus "></i></button>
+          <button class="btn btn-primary w-100" (click)="adicionarTarefa()"><i class="bi bi-plus "></i></button>
         </div>
       </div>
       <div class="row mt-3">
         <ul class="list-unstyled flex gap-5">
-          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
-          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
-          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
-          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
-          <li><app-item-lista-tarefa></app-item-lista-tarefa></li>
+          @for(t of tarefas;track $index){
+          <li><app-item-lista-tarefa [descricao]="t.descricao" [concluida]="t.concluida"
+              (mudarEstado)="atualizarTarefa($index, $event)" (deletar)="deletarTarefa($index)" /></li>
+          }
         </ul>
       </div>
     </div>
@@ -82,7 +81,6 @@
               <td>juanito</td>
               <td>há 2 dias</td>
               <td>
-                <!-- TODO : COLOCAR UMA MODEL PARA FICAR DINAMICO -->
                 <p class="badge" [ngClass]="{
                   'bg-success': 'emAndamento' == 'emAndamento',
                   'bg-warning': 'pendente' === 'pendente',
@@ -101,6 +99,28 @@
         <div class="col-12">
           <h5>Ações Rápidas</h5>
         </div>
+      </div>
+      <!-- TODO : COLOCAR CORES NOS BOTOES -->
+      <div class="row row-gap-2 justify-content-center">
+        <div class="col-6 col-sm-6 col-md-2">
+          <app-botao-acao-rapida titulo="Cadastrar Aluno"><i class="bi bi-person-add"></i></app-botao-acao-rapida>
+        </div>
+        <div class="col-6 col-sm-6 col-md-2">
+          <app-botao-acao-rapida titulo="Cadastrar Livro"><i class="bi bi-journal-plus"></i></app-botao-acao-rapida>
+        </div>
+        <div class="col-6 col-sm-6 col-md-2">
+          <app-botao-acao-rapida titulo="Novo Empréstimo"><i class="bi bi-calendar-check"></i></app-botao-acao-rapida>
+        </div>
+        <div class="col-6 col-sm-6 col-md-2">
+          <app-botao-acao-rapida titulo="Devolução"><i class="bi bi-arrow-counterclockwise"></i></app-botao-acao-rapida>
+        </div>
+        <div class="col-6 col-sm-6 col-md-2">
+          <app-botao-acao-rapida titulo="Consultar"><i class="bi bi-search"></i></app-botao-acao-rapida>
+        </div>
+        <div class="col-6 col-sm-6 col-md-2">
+          <app-botao-acao-rapida titulo="Relatórios"><i class="bi bi-file-earmark-text"></i></app-botao-acao-rapida>
+        </div>
+
       </div>
     </div>
   </section>

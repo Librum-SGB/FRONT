@@ -1,14 +1,17 @@
-<div class="card border rounded shadow-sm mt-1">
-  <!--TODO : USAR OPACITY PARA TAREFAS CONCLUÍDAS E RISCAR A TAREFA-->
+<div class="card border rounded shadow-sm mt-1" [ngClass]="{
+    'opacity-25': concluida,
+    'text-decoration-line-through': concluida
+  }">
   <div class="row g-0 align-items-center px-2 py-2">
     <div class="col-2 col-md-1 d-flex align-items-center justify-content-start">
-      <input type="checkbox" class="form-check-input fs-4 bg-dark">
+      <input type="checkbox" class="form-check-input fs-4 bg-dark" [checked]="concluida"
+        (change)="onCheckEvent($event)">
     </div>
     <div class="col-8 col-md-10 d-flex align-items-center justify-content-start">
-      <p class="mb-0 overflow-hidden">valor testeasdasdadasdadsadasdasddddddddd</p>
+      <p class="mb-0 overflow-hidden">{{descricao}}</p>
     </div>
     <div class="col-2 col-md-1 d-flex align-items-center justify-content-end">
-      <button class="btn text-danger py-0">
+      <button class="btn text-danger py-0" (click)="onDelete()">
         <i class="bi bi-trash-fill"></i>
       </button>
     </div>
