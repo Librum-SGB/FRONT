@@ -1,1 +1,75 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  /* Cores principais */
+  --cor-azul-escuro: #2f4f9e;
+  --cor-azul-claro: #5b8fd9;
+
+  --cor-verde: #28c76f;
+  --cor-laranja: #ff7a1a;
+  --cor-roxo: #8e5cf6;
+  --cor-cinza-escuro: #5a6270;
+
+  /* Status */
+  --cor-verde-claro: #b7e4c7;
+  --cor-amarelo-claro: #fcefb4;
+  --cor-vermelho-claro: #f8c4c4;
+}
+
+.bg-verde-claro {
+  background-color: var(--cor-verde-claro);
+}
+
+.bg-amarelo-claro {
+  background-color: var(--cor-amarelo-claro);
+}
+
+.bg-vermelho-claro {
+  background-color: var(--cor-vermelho-claro);
+}
+
+.bg-azul-escuro {
+  background-color: var(--cor-azul-escuro);
+}
+
+.bg-azul-claro {
+  background-color: var(--cor-azul-claro);
+}
+
+.bg-verde {
+  background-color: var(--cor-verde);
+}
+
+.bg-laranja {
+  background-color: var(--cor-laranja);
+}
+
+.bg-roxo {
+  background-color: var(--cor-roxo);
+}
+
+.bg-cinza {
+  background-color: var(--cor-cinza-escuro);
+}
+
+.bg-azul-escuro:hover {
+  background-color: #263f7d;
+}
+
+.bg-azul-claro:hover {
+  background-color: #4a7bc2;
+}
+
+.bg-verde:hover {
+  background-color: #22a85c;
+}
+
+.bg-laranja:hover {
+  background-color: #e66a14;
+}
+
+.bg-roxo:hover {
+  background-color: #7446d8;
+}
+
+.bg-cinza:hover {
+  background-color: #4a515d;
+}
