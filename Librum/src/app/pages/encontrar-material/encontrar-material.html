@@ -1,0 +1,32 @@
+<div class="container-fluid bg-dark text-light p-4">
+
+  <h5 class="text mb-4">
+    Seção A - Programação e Desenvolvimento
+  </h5>
+
+  <div *ngFor="let estante of estantes" class="mb-4">
+
+    <small class="text-secondary ms-2">{{ estante.nome }}</small>
+
+    <div class="estante-box p-4 rounded">
+
+      <div *ngFor="let prateleira of estante.prateleiras" class="prateleira-container mb-4 overflow-x-auto">
+
+        <div class="livros d-flex gap-2">
+          <div *ngFor="let exemplar of prateleira.listaLivro; let i = index"
+            class="livro d-flex align-items-center justify-content-center text-white" [ngClass]="[
+              i % 2 === 0 ? 'bg-primary' : 'bg-success'
+            ]">
+            Livro {{ exemplar.id }}
+          </div>
+        </div>
+
+        <!-- LINHA -->
+        <div class="linha bg-brown rounded-1 w-100"></div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

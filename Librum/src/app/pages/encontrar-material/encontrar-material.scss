@@ -1,0 +1,24 @@
+/* altura e formato do livro */
+.livro {
+  width: 35px;
+  height: 90px;
+  font-size: 10px;
+
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* sobrepor livro na prateleira */
+.livros-container {
+  margin-bottom: -30px;
+}
+
+/* cor da madeira (Bootstrap não tem marrom padrão) */
+.bg-brown {
+  background-color: #6b2e05;
+}
+
+/* linha da prateleira */
+.linha {
+  height: 12px;
+}
