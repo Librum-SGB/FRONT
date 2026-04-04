@@ -4,4 +4,5 @@ export interface Estante {
   id: number;
   nome: string;
   prateleiras: Prateleira[];
+  secao: string;
 }
