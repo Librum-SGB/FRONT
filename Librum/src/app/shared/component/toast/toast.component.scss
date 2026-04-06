@@ -1,0 +1,13 @@
+.toast-container .toast {
+  margin-bottom: 0.5rem;
+  min-width: 300px;
+}
+
+.toast-container .toast .toast-header {
+  border-bottom: none;
+}
+
+.toast-container .toast .toast-body {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
