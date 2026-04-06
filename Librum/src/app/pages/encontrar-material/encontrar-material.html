@@ -1,0 +1,44 @@
+<!--
+  TODO : COLOCAR AS CORES DOS EXEMPLARES NA CAPA, FAZER O LIVRO ESPANDIR
+ -->
+<div class="row row-gap-3">
+  <div class="col-12 col-md-10">
+    <input type="text" [(ngModel)]="busca" (input)="onBuscar()" class="form-control" placeholder="Buscar livro...">
+  </div>
+  <div class="col-12 col-md-2">
+    <button class="btn btn-success w-100">Nova estante</button>
+  </div>
+</div>
+
+<div class="container-fluid bg-dark text-light p-4 mt-3">
+
+  <div *ngFor="let estante of estantesFiltradas" class="mb-4">
+
+    <h5 class="text mb-4">
+      {{estante.secao}}
+    </h5>
+
+    <small class="text-secondary ms-2">{{ estante.nome }}</small>
+
+    <div class="estante-box p-4 rounded">
+
+      <div *ngFor="let prateleira of estante.prateleiras" class="prateleira-container mb-4 overflow-x-auto">
+
+        <div class="livros d-flex gap-2">
+          <div *ngFor="let exemplar of prateleira.listaLivro; let i = index"
+            class="livro d-flex align-items-center justify-content-center text-white" [ngClass]="[
+              i % 2 === 0 ? 'bg-primary' : 'bg-success'
+            ]">
+            {{ exemplar.titulo }}
+          </div>
+        </div>
+
+        <!-- LINHA -->
+        <div class="linha bg-brown rounded-1 w-100"></div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
