@@ -11,8 +11,8 @@
 </div>
 
 <div class="container-fluid bg-dark text-light p-4 mt-3">
-
-  <div *ngFor="let estante of estantesFiltradas" class="mb-4">
+  @for (estante of estantesFiltradas ; track $index) {
+  <div class="mb-4">
 
     <h5 class="text mb-4">
       {{estante.secao}}
@@ -21,24 +21,26 @@
     <small class="text-secondary ms-2">{{ estante.nome }}</small>
 
     <div class="estante-box p-4 rounded">
+      @for (prateleira of estante.prateleiras; track $index){
 
-      <div *ngFor="let prateleira of estante.prateleiras" class="prateleira-container mb-4 overflow-x-auto">
+      <div class="prateleira-container mb-4 overflow-x-auto">
 
         <div class="livros d-flex gap-2">
-          <div *ngFor="let exemplar of prateleira.listaLivro; let i = index"
-            class="livro d-flex align-items-center justify-content-center text-white" [ngClass]="[
-              i % 2 === 0 ? 'bg-primary' : 'bg-success'
-            ]">
+          @for (exemplar of prateleira.listaLivro; track $index) {
+          <div class="livro d-flex align-items-center justify-content-center text-white bg-primary">
             {{ exemplar.titulo }}
           </div>
+          }
         </div>
 
         <!-- LINHA -->
         <div class="linha bg-brown rounded-1 w-100"></div>
 
       </div>
+      }
+
 
     </div>
   </div>
-
+  }
 </div>
