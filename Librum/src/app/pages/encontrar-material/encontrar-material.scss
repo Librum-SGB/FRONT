@@ -3,9 +3,21 @@
   width: 35px;
   height: 90px;
   font-size: 10px;
-
+  background-size: 100% 100%; 
+  background-position: center;
+  background-repeat: no-repeat;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
+  
+  /* Livros ímpares (1, 3, 5...) recebem a imagem azul */
+  &:nth-child(odd) {
+    background-image: url("../../../assets/images/livroAzul.png");
+  }
+
+  /* Livros pares (2, 4, 6...) recebem a imagem vermelha */
+  &:nth-child(even) {
+    background-image: url("../../../assets/images/livroVermelho.png");
+  }
 }
 
 /* sobrepor livro na prateleira */
@@ -15,7 +27,7 @@
 
 /* cor da madeira (Bootstrap não tem marrom padrão) */
 .bg-brown {
-  background-color: #6b2e05;
+  background-color: #925126;
 }
 
 /* linha da prateleira */
