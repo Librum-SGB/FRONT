@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-toast',
@@ -8,30 +9,56 @@ import { CommonModule } from '@angular/common';
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.scss']
 })
-export class ToastComponent {
-  toasts: { id: number; type: string; message: string; title?: string }[] = [];
+export class ToastComponent implements OnInit {
+  toasts: { id: number; type: string; message: string; title?: string; show: boolean }[] = [];
   private toastId = 0;
+
+  constructor(private toastService: ToastService) {}
+
+  ngOnInit() {
+    this.toastService.setToastComponent(this);
+  }
 
   showToast(type: 'success' | 'error' | 'info' | 'warning', message: string, title?: string, duration: number = 5000) {
     const id = ++this.toastId;
-    this.toasts.push({ id, type, message, title });
+    this.toasts.push({ id, type, message, title, show: true });
 
     setTimeout(() => {
-      this.removeToast(id);
+      this.hideToast(id);
     }, duration);
+  }
+
+  hideToast(id: number) {
+    const toast = this.toasts.find(t => t.id === id);
+    if (toast) {
+      toast.show = false;
+      setTimeout(() => {
+        this.removeToast(id);
+      }, 300);
+    }
   }
 
   removeToast(id: number) {
     this.toasts = this.toasts.filter(toast => toast.id !== id);
   }
 
+  getToastIcon(type: string): string {
+    switch (type) {
+      case 'success': return 'bi-check-circle-fill';
+      case 'error': return 'bi-x-circle-fill';
+      case 'warning': return 'bi-exclamation-triangle-fill';
+      case 'info': return 'bi-info-circle-fill';
+      default: return 'bi-bell-fill';
+    }
+  }
+
   getToastClass(type: string): string {
     switch (type) {
-      case 'success': return 'bg-success text-white';
-      case 'error': return 'bg-danger text-white';
-      case 'warning': return 'bg-warning text-dark';
-      case 'info': return 'bg-info text-white';
-      default: return 'bg-secondary text-white';
+      case 'success': return 'bg-success';
+      case 'error': return 'bg-danger';
+      case 'warning': return 'bg-warning';
+      case 'info': return 'bg-info';
+      default: return 'bg-secondary';
     }
   }
 }

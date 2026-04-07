@@ -27,53 +27,53 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">ID</label>
-        <input type="text" class="form-control" placeholder="L-00001">
+        <input type="text" class="form-control" placeholder="L-00001" [(ngModel)]="id">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Título *</label>
-        <input type="text" class="form-control" required>
+        <input type="text" class="form-control" [(ngModel)]="titulo" required>
       </div>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Subtítulo</label>
-      <input type="text" class="form-control">
+      <input type="text" class="form-control" [(ngModel)]="subtitulo">
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Autor *</label>
-        <input type="text" class="form-control" required>
+        <input type="text" class="form-control" [(ngModel)]="autor" required>
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Editora *</label>
-        <input type="text" class="form-control" required>
+        <input type="text" class="form-control" [(ngModel)]="editora" required>
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label">Ano de Publicação *</label>
-        <input type="text" class="form-control" required>
+        <input type="text" class="form-control" [(ngModel)]="anoPublicacao" required>
       </div>
 
       <div class="col-md-4 mb-3">
         <label class="form-label">ISBN *</label>
-        <input type="text" class="form-control" required>
+        <input type="text" class="form-control" [(ngModel)]="isbn" required>
       </div>
 
       <div class="col-md-4 mb-3">
         <label class="form-label">Edição</label>
-        <input type="text" class="form-control">
+        <input type="text" class="form-control" [(ngModel)]="edicao">
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Gênero</label>
-        <select class="form-select">
+        <select class="form-select" [(ngModel)]="genero">
           <option selected disabled>Selecione...</option>
           <option>Romance</option>
           <option>Ficção Científica</option>
@@ -87,25 +87,25 @@
       </div>
 
       <div class="col-md-6 mb-3">
-        <label class="form-label">Quantidade de Exemplares</label>
-        <input type="number" class="form-control">
+        <label class="form-label">Qtd de Exemplares</label>
+        <input type="number" class="form-control" [(ngModel)]="quantidadeExemplares">
       </div>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Sinopse</label>
-      <textarea class="form-control" rows="3"></textarea>
+      <textarea class="form-control" rows="3" [(ngModel)]="sinopse"></textarea>
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Localização na Estante</label>
-        <input type="text" class="form-control" placeholder="Ex: A1-02">
+        <input type="text" class="form-control" placeholder="Ex: A1-02" [(ngModel)]="localizacao">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Unidade</label>
-        <select class="form-select">
+        <select class="form-select" [(ngModel)]="unidade">
           <option selected disabled>Selecione...</option>
           <option>Biblioteca Central</option>
           <option>Unidade Norte</option>
@@ -118,14 +118,14 @@
 
     <div class="mb-4">
       <label class="form-label">Data de Aquisição</label>
-      <input type="text" class="form-control" placeholder="dd/mm/aaaa">
+      <input type="text" class="form-control" placeholder="dd/mm/aaaa" [(ngModel)]="dataAquisicao">
     </div>
 
     <hr>
 
     <div class="d-flex gap-2">
-      <button class="btn btn-primary">Salvar</button>
-      <button class="btn btn-secondary">Cancelar</button>
+      <button class="btn btn-primary" (click)="salvar()">Salvar</button>
+      <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
     </div>
 
 </div>
