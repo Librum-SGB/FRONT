@@ -1,4 +1,7 @@
-<app-navbar></app-navbar>
-<main class="container bg-body-secondary py-3">
+<app-navbar *ngIf="!isLoginPage()"></app-navbar>
+
+<main [ngClass]="{ 'container bg-body-secondary': isLoginPage(),
+    'container bg-body-secondary py-3': !isLoginPage()
+}">
   <router-outlet></router-outlet>
 </main>

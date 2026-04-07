@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tela-login',
@@ -15,15 +16,18 @@ export class TelaLoginComponent {
   senha: string = '';
   mostrarSenha: boolean = false;
 
+  constructor(private router: Router) {}
+
   toggleSenha() {
     this.mostrarSenha = !this.mostrarSenha;
   }
 
   entrar() {
-    if (this.email && this.senha) {
-      alert(`Bem-vindo ${this.email}`);
+    if (this.email === 'teste@teste.com' && this.senha === '123456') {
+      alert('Login bem-sucedido!');
+      this.router.navigate(['/dashboard']);
     } else {
-      alert('Preencha email e senha');
+      alert('Email ou senha incorretos!');
     }
   }
 }
