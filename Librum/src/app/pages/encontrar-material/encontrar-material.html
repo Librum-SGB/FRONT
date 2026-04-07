@@ -27,10 +27,10 @@
 
         <div class="livros d-flex gap-2">
           @for (exemplar of prateleira.listaLivro; track $index) {
-          <div class="livro d-flex align-items-center justify-content-center text-white bg-primary">
-            {{ exemplar.titulo }}
+          <div class="livro d-flex align-items-center justify-content-center text-white">
+          {{ exemplar.titulo }}
           </div>
-          }
+        }
         </div>
 
         <!-- LINHA -->
