@@ -30,4 +30,8 @@ export class TelaLoginComponent {
       alert('Email ou senha incorretos!');
     }
   }
+
+  esqueciSenha() {
+    this.router.navigate(['/esqueci-senha']);
+  }
 }

@@ -1,0 +1,30 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+
+  <div class="card p-4 shadow">
+    
+    <h5 class="text-center mb-4 text-secondary">
+      Recuperar Senha
+    </h5>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary">Email</label>
+      <input 
+        type="email" 
+        class="form-control" 
+        placeholder="Digite seu email"
+        [(ngModel)]="email">
+    </div>
+
+    <button class="btn w-100 mb-2" (click)="enviar()">
+      Enviar recuperação
+    </button>
+
+    <div class="text-center">
+      <a (click)="voltarLogin()" class="small text-primary">
+        Voltar para login
+      </a>
+    </div>
+
+  </div>
+
+</div>

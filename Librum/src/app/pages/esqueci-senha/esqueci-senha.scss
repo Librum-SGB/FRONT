@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  height: 100vh;
+  background: #031453; /* mesmo azul do login */
+}
+
+.card {
+  width: 360px;
+  border-radius: 16px;
+  background: #f1f1f1;
+}
+
+button {
+  background: #14276d;
+  color: white;
+  border-radius: 8px;
+  border: none;
+}
+
+button:hover {
+  background: #0f1f57;
+}
+
+.form-control {
+  border-radius: 8px;
+}
+
+a {
+  color: #3b82f6;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
+}

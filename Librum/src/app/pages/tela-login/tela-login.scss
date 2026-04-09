@@ -1,12 +1,74 @@
-.bg-primary {
-  background: #14276d !important;
+.login-container {
+  height: 100vh;
+  background: #031453;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
+/* TOPO */
+.login-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 25px;
+}
+
+/* CARD */
 .card {
+  width: 360px;
+  border-radius: 16px;
   background: #f1f1f1;
 }
 
-button {
+/* BOTÃO LOGIN */
+.btn-login {
+  background: #1f2f6b;
+  color: white;
   border-radius: 8px;
-  background-color: #14276d;
+}
+
+/* BOTÃO OLHO */
+.btn-eye {
+  background: #1f2f6b;
+  color: white;
+  border-radius: 0 8px 8px 0;
+}
+
+/* ÍCONE */
+.icon-box {
+  width: 90px;
+  height: 90px;
+  background: #e6e6e6;
+  border-radius: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 10px;
+}
+
+.icon-box i {
+  font-size: 45px;
+  color: #14276d;
+}
+
+/* LINK */
+a {
+  color: #3b82f6;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* FOOTER */
+.footer {
+  position: absolute;
+  bottom: 10px;
+  color: #ddd;
+  font-size: 12px;
 }
