@@ -1,149 +1,182 @@
-<div class="container-fluid mt-4">
+<div class="card p-4 shadow-sm">
+  <div class="row g-4">
 
-    <!-- LISTA DE MATERIAIS -->
-    <div class="row g-4">
+    <h6 class="mb-3">Editar / Excluir Material</h6>
 
-        <div class="col-md-3" *ngFor="let material of materiais">
-            <div class="card text-white text-center p-3 shadow"
-                style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 12px;">
+    <div class="d-flex mb-4 gap-2">
 
-                <small>{{ material.codigo }}</small>
-                <h6 class="mt-2">{{ material.titulo }}</h6>
+      <select class="form-select w-auto" [(ngModel)]="tipoFiltro">
+        <option value="todos">Todos</option>
+        <option value="codigo">ID</option>
+        <option value="titulo">Título</option>
+        <option value="autor">Autor</option>
+        <option value="genero">Gênero</option>
+      </select>
 
-                <button class="btn btn-light btn-sm mt-3" data-bs-toggle="modal" data-bs-target="#modalMaterial"
-                    (click)="selecionarMaterial(material)">
-                    Mais informações
-                </button>
-
-            </div>
-        </div>
+      <input type="text" class="form-control" placeholder="Buscar material..." [(ngModel)]="textoBusca" />
 
     </div>
 
-</div>
+    <div class="col-md-3" *ngFor="let material of materiaisFiltrados()">
+      <div class="card h-100 border-0 shadow-sm rounded-4 bg-body-tertiary">
 
+        <div class="card-body text-start">
 
-<div class="modal fade" id="modalMaterial" tabindex="-1">
+          <small class="text-muted">{{ material.codigo }}</small>
+
+          <h6 class="mt-1 fw-semibold">
+            {{ material.titulo }}
+          </h6>
+
+          <div class="d-flex justify-content-start gap-1 mt-2">
+            <span class="badge rounded-pill bg-primary-subtle text-primary small">
+              {{ material.tipo }}
+            </span>
+
+            <span class="badge rounded-pill small" [ngClass]="{
+            'bg-success-subtle text-success': material.disponibilidade === 'Disponível',
+            'bg-danger-subtle text-danger': material.disponibilidade === 'Indisponível'
+          }">
+              {{ material.disponibilidade }}
+            </span>
+          </div>
+
+          <button class="btn btn-outline-primary btn-sm mt-3 w-100 rounded-3" data-bs-toggle="modal"
+            data-bs-target="#modalMaterial" (click)="selecionarMaterial(material)">
+            Mais informações
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modalMaterial" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+      <div class="modal-content">
 
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Detalhes do Material</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Detalhes do Material</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
 
-            <div class="modal-body">
-                <p><strong>Código:</strong> {{ materialSelecionado?.codigo }}</p>
-                <p><strong>Título:</strong> {{ materialSelecionado?.titulo }}</p>
-                <p><strong>Autor:</strong> {{ materialSelecionado?.autor }}</p>
-                <p><strong>Gênero:</strong> {{ materialSelecionado?.genero }}</p>
-                <p><strong>Unidade:</strong> {{ materialSelecionado?.unidade }}</p>
-            </div>
+        <div class="modal-body">
+          <p><strong>Código:</strong> {{ materialSelecionado?.codigo }}</p>
+          <p><strong>Título:</strong> {{ materialSelecionado?.titulo }}</p>
+          <p><strong>Tipo:</strong> {{ materialSelecionado?.tipo }}</p>
+          <p><strong>Autor:</strong> {{ materialSelecionado?.autor }}</p>
+          <p><strong>Editora:</strong> {{ materialSelecionado?.editora }}</p>
+          <p><strong>Ano de Publicação:</strong> {{ materialSelecionado?.anoPublicacao }}</p>
+          <p><strong>Gênero:</strong> {{ materialSelecionado?.genero }}</p>
+          <p><strong>Localização:</strong> {{ materialSelecionado?.localizacao }}</p>
+          <p><strong>Exemplares:</strong> {{ materialSelecionado?.exemplares }}</p>
+          <p><strong>Unidade:</strong> {{ materialSelecionado?.unidade }}</p>
+          <p><strong>Disponibilidade:</strong> {{ materialSelecionado?.disponibilidade }}</p>
+        </div>
 
-            <div class="modal-footer">
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar"
-                    (click)="abrirEdicao(materialSelecionado)">
-                    <i class="bi bi-pencil"></i>Editar
-                </button>
+        <div class="modal-footer">
+          <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar"
+            (click)="abrirEdicao(materialSelecionado)">
+            <i class="bi bi-pencil"></i>Editar
+          </button>
 
-                <button class="btn btn-danger" (click)="excluirMaterial(materialSelecionado)">
-                    <i class="bi bi-trash"></i> Excluir
-                </button>
+          <button class="btn btn-danger" (click)="excluirMaterial(materialSelecionado)">
+            <i class="bi bi-trash"></i> Excluir
+          </button>
 
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
-                    Fechar
-                </button>
-
-            </div>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">
+            Fechar
+          </button>
 
         </div>
+
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="modal fade" id="modalEditar" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
+  <div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
 
-      <!-- HEADER -->
-      <div class="modal-header bg-warning">
-        <h5 class="modal-title">Editar Material</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title">Editar Material</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>ID</label>
+              <input class="form-control" [(ngModel)]="materialEditando.codigo" disabled>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label>Título</label>
+              <input class="form-control" [(ngModel)]="materialEditando.titulo">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label>Subtítulo</label>
+            <input class="form-control" [(ngModel)]="materialEditando.subtitulo">
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>Autor</label>
+              <input class="form-control" [(ngModel)]="materialEditando.autor">
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label>Editora</label>
+              <input class="form-control" [(ngModel)]="materialEditando.editora">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label>Ano</label>
+              <input class="form-control" [(ngModel)]="materialEditando.ano">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label>ISBN</label>
+              <input class="form-control" [(ngModel)]="materialEditando.isbn">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label>Edição</label>
+              <input class="form-control" [(ngModel)]="materialEditando.edicao">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>Gênero</label>
+              <select class="form-select" [(ngModel)]="materialEditando.genero">
+                <option>Romance</option>
+                <option>Ficção Científica</option>
+                <option>Fantasia</option>
+                <option>Terror</option>
+              </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label>Quantidade</label>
+              <input type="number" class="form-control" [(ngModel)]="materialEditando.qtd">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-success" (click)="salvarEdicao()">Salvar</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+
       </div>
-
-      <!-- BODY -->
-      <div class="modal-body">
-
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label>ID</label>
-            <input class="form-control" [(ngModel)]="materialEditando.codigo" disabled>
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Título</label>
-            <input class="form-control" [(ngModel)]="materialEditando.titulo">
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label>Subtítulo</label>
-          <input class="form-control" [(ngModel)]="materialEditando.subtitulo">
-        </div>
-
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label>Autor</label>
-            <input class="form-control" [(ngModel)]="materialEditando.autor">
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Editora</label>
-            <input class="form-control" [(ngModel)]="materialEditando.editora">
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <label>Ano</label>
-            <input class="form-control" [(ngModel)]="materialEditando.ano">
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label>ISBN</label>
-            <input class="form-control" [(ngModel)]="materialEditando.isbn">
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label>Edição</label>
-            <input class="form-control" [(ngModel)]="materialEditando.edicao">
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label>Gênero</label>
-            <select class="form-select" [(ngModel)]="materialEditando.genero">
-              <option>Romance</option>
-              <option>Ficção Científica</option>
-              <option>Fantasia</option>
-              <option>Terror</option>
-            </select>
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label>Quantidade</label>
-            <input type="number" class="form-control" [(ngModel)]="materialEditando.qtd">
-          </div>
-        </div>
-
-      </div>
-
-      <!-- FOOTER -->
-      <div class="modal-footer">
-        <button class="btn btn-success" (click)="salvarEdicao()">Salvar</button>
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
-
     </div>
   </div>
 </div>
