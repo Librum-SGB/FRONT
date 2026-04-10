@@ -3,9 +3,26 @@
   width: 35px;
   height: 90px;
   font-size: 10px;
-
+  background-size: 100% 100%; 
+  background-position: center;
+  background-repeat: no-repeat;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
+  
+  /* 1º, 4º, 7º, 10º livro... (Pula de 3 em 3 começando do 1) */
+  &:nth-child(3n + 1) {
+    background-image: url("../../../assets/images/livroAzul.png");
+  }
+
+  /* 2º, 5º, 8º, 11º livro... (Pula de 3 em 3 começando do 2) */
+  &:nth-child(3n + 2) {
+    background-image: url("../../../assets/images/livroVermelho.png");
+  }
+
+  /* 3º, 6º, 9º, 12º livro... (Múltiplos de 3) */
+  &:nth-child(3n) {
+    background-image: url("../../../assets/images/livroVerde.png");
+  }
 }
 
 /* sobrepor livro na prateleira */
@@ -15,7 +32,7 @@
 
 /* cor da madeira (Bootstrap não tem marrom padrão) */
 .bg-brown {
-  background-color: #6b2e05;
+  background-color: #925126;
 }
 
 /* linha da prateleira */
