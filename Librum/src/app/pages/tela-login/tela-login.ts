@@ -17,7 +17,7 @@ export class TelaLoginComponent {
   senha: string = '';
   mostrarSenha: boolean = false;
 
-  constructor(private router: Router, private toastService: ToastService) {}
+  constructor(private router: Router, private toastService: ToastService) { }
 
   toggleSenha() {
     this.mostrarSenha = !this.mostrarSenha;
@@ -26,10 +26,10 @@ export class TelaLoginComponent {
   entrar() {
     // Validação conforme solicitado (sem alert, usando seu ToastService)
     if (this.email === 'teste@teste.com' && this.senha === '123456') {
-      this.toastService.showSuccess('Login bem-sucedido!', 'Sucesso');
+      this.toastService.showSuccess('Login bem-sucedido!');
       this.router.navigate(['/dashboard']);
     } else {
-      this.toastService.showError('Email ou senha incorretos!', 'Erro');
+      this.toastService.showError('Email ou senha incorretos!');
     }
   }
 

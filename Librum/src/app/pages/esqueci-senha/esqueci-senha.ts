@@ -7,19 +7,19 @@ import { ToastService } from '../../shared/services/toast.service';
 @Component({
   selector: 'app-esqueci-senha',
   standalone: true,
-  imports: [CommonModule, FormsModule], 
+  imports: [CommonModule, FormsModule],
   templateUrl: './esqueci-senha.html',
   styleUrls: ['./esqueci-senha.scss']
 })
 export class EsqueciSenhaComponent {
 
-  email: string = ''; 
+  email: string = '';
 
-  constructor(private router: Router, private toastService: ToastService) {}
+  constructor(private router: Router, private toastService: ToastService) { }
 
   enviar() {
-    
-    this.toastService.showInfo(`Email de recuperação enviado para: ${this.email}`, 'Recuperação');
+
+    this.toastService.showInfo(`Email de recuperação enviado para: ${this.email}`);
   }
 
   voltarLogin() {
