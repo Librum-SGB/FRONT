@@ -24,8 +24,11 @@ export class App {
     });
   }
 
-  
   isAuthRoute(): boolean {
-    return this.currentRoute === '/' || this.currentRoute === '/esqueci-senha' || this.currentRoute === '';
+  
+    return this.currentRoute === '/' || 
+           this.currentRoute === '/esqueci-senha' || 
+           this.currentRoute === '/cadastro-bibliotecaria' || 
+           this.currentRoute === '';
   }
 }

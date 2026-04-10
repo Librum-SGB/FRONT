@@ -1,0 +1,46 @@
+<div class="login-container">
+  <div class="login-header">
+    <div class="icon-box">
+      <i class="bi bi-person-plus"></i>
+    </div>
+    <h2>Librum</h2>
+    <p>Cadastro de Bibliotecária</p>
+  </div>
+
+  <div class="card p-4 shadow">
+    <h5 class="text-center mb-4 text-secondary">Novo Cadastro Bibliotecária</h5>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary">Nome Completo</label>
+      <input type="text" class="form-control" placeholder="Nome completo" [(ngModel)]="nome">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary">Email</label>
+      <input type="email" class="form-control" placeholder="seu@email.com" [(ngModel)]="email">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary">Matrícula Bibliotecária</label>
+      <input type="text" class="form-control" placeholder="Ex: 2026-001" [(ngModel)]="matricula">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary">Senha</label>
+      <input type="password" class="form-control" [(ngModel)]="senha">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary">Confirmar Senha</label>
+      <input type="password" class="form-control" [(ngModel)]="confirmarSenha">
+    </div>
+
+    <button class="btn btn-login w-100" (click)="cadastrar()">
+      Finalizar Cadastro
+    </button>
+
+    <div class="text-center mt-3 text-secondary">
+      <a (click)="voltar()">Voltar para o Login</a>
+    </div>
+  </div>
+</div>
