@@ -24,7 +24,7 @@ export class TelaLoginComponent {
   }
 
   entrar() {
-    // Validação conforme solicitado (sem alert, usando seu ToastService)
+   
     if (this.email === 'teste@teste.com' && this.senha === '123456') {
       this.toastService.showSuccess('Login bem-sucedido!');
       this.router.navigate(['/dashboard']);
@@ -36,4 +36,8 @@ export class TelaLoginComponent {
   esqueciSenha() {
     this.router.navigate(['/esqueci-senha']);
   }
+  irParaCadastro() {
+  this.router.navigate(['/cadastro-bibliotecaria']);
+}
+
 }
