@@ -19,24 +19,15 @@ export class ToastComponent implements OnInit {
     this.toastService.setToastComponent(this);
   }
 
-  showToast(type: 'success' | 'error' | 'info' | 'warning', message: string, title?: string, duration: number = 5000) {
-    const id = ++this.toastId;
-    this.toasts.push({ id, type, message, title, show: true });
+  showToast(type: 'success' | 'error' | 'info' | 'warning', message: string) {
+  const id = ++this.toastId;
 
-    setTimeout(() => {
-      this.hideToast(id);
-    }, duration);
-  }
+  this.toasts.push({ id, type, message, show: true });
 
-  hideToast(id: number) {
-    const toast = this.toasts.find(t => t.id === id);
-    if (toast) {
-      toast.show = false;
-      setTimeout(() => {
-        this.removeToast(id);
-      }, 300);
-    }
-  }
+  setTimeout(() => {
+    this.removeToast(id);
+  }, 3000);
+}
 
   removeToast(id: number) {
     this.toasts = this.toasts.filter(toast => toast.id !== id);

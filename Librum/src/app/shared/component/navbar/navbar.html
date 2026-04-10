@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" routerLink="#">Dashboard</a>
+          <a class="nav-link" routerLink="/dashboard">Dashboard</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/cadastrarMaterial">Cadastrar</a>
@@ -85,20 +85,19 @@
 
         <ul class="dropdown-menu dropdown-menu-end p-2">
 
-          <!-- GERENCIAMENTO -->
           <li class="px-3 pt-2 pb-1 text-muted small">
             GERENCIAMENTO DE ACERVO
           </li>
 
           <li>
-            <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+            <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/cadastrarMaterial">
               <i class="bi bi-plus-circle text-success"></i>
               Cadastrar
             </a>
           </li>
 
           <li>
-            <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+            <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/editarExcluirMaterial">
               <i class="bi bi-pencil-square text-warning"></i>
               Editar / Excluir
             </a>
@@ -146,7 +145,6 @@
           </li>
 
 
-          <!-- EMPRÉSTIMOS -->
           <li class="px-3 pt-3 pb-1 text-muted small">
             EMPRÉSTIMOS
           </li>
