@@ -1,0 +1,26 @@
+<div class="login-container">
+  <div class="login-header">
+    <div class="icon-box">
+      <i class="bi bi-book"></i>
+    </div>
+    <h2>Librum</h2>
+    <p>Sistema de Gerenciamento de Bibliotecas</p>
+  </div>
+
+  <div class="card p-4 shadow">
+    <h5 class="text-center mb-4 text-secondary">Recuperar Senha</h5>
+    <div class="mb-3">
+      <label class="form-label text-secondary">Email</label>
+      <input type="email" class="form-control" placeholder="seu@email.com" [(ngModel)]="email">
+    </div>
+    <button class="btn btn-login w-100" (click)="enviar()">
+      Enviar recuperação
+    </button>
+    <div class="text-center mt-3 text-secondary">
+      <a (click)="voltarLogin()">Voltar para o Login</a>
+    </div>
+  </div>
+  <div class="footer">
+    © 2026 LIBRUM - Todos os direitos reservados
+  </div>
+</div>

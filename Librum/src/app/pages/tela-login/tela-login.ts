@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-tela-login',
@@ -15,15 +17,23 @@ export class TelaLoginComponent {
   senha: string = '';
   mostrarSenha: boolean = false;
 
+  constructor(private router: Router, private toastService: ToastService) {}
+
   toggleSenha() {
     this.mostrarSenha = !this.mostrarSenha;
   }
 
   entrar() {
-    if (this.email && this.senha) {
-      alert(`Bem-vindo ${this.email}`);
+    // Validação conforme solicitado (sem alert, usando seu ToastService)
+    if (this.email === 'teste@teste.com' && this.senha === '123456') {
+      this.toastService.showSuccess('Login bem-sucedido!', 'Sucesso');
+      this.router.navigate(['/dashboard']);
     } else {
-      alert('Preencha email e senha');
+      this.toastService.showError('Email ou senha incorretos!', 'Erro');
     }
+  }
+
+  esqueciSenha() {
+    this.router.navigate(['/esqueci-senha']);
   }
 }
