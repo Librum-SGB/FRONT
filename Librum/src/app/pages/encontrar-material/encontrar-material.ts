@@ -11,10 +11,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './encontrar-material.scss',
 })
 export class EncontrarMaterial {
-  // 🔍 busca
   busca: string = '';
 
-  // 📦 lista original
   estantes: Estante[] = [
     {
       id: 1,

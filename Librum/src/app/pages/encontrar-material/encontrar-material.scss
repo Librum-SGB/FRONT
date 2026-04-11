@@ -1,27 +1,30 @@
 /* altura e formato do livro */
 .livro {
-  width: 35px;
+  min-width: 35px !important;
   height: 90px;
   font-size: 10px;
-  background-size: 100% 100%; 
-  background-position: center;
-  background-repeat: no-repeat;
+  object-fit: cover;
   writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  
+
   /* 1º, 4º, 7º, 10º livro... (Pula de 3 em 3 começando do 1) */
   &:nth-child(3n + 1) {
-    background-image: url("../../../assets/images/livroAzul.png");
+    background-image: url('../../../assets/images/livroAzul.png');
   }
 
   /* 2º, 5º, 8º, 11º livro... (Pula de 3 em 3 começando do 2) */
   &:nth-child(3n + 2) {
-    background-image: url("../../../assets/images/livroVermelho.png");
+    background-image: url('../../../assets/images/livroVermelho.png');
   }
 
   /* 3º, 6º, 9º, 12º livro... (Múltiplos de 3) */
   &:nth-child(3n) {
-    background-image: url("../../../assets/images/livroVerde.png");
+    background-image: url('../../../assets/images/livroVerde.png');
+  }
+
+  &:hover {
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+    transform: scale(1.3);
   }
 }
 

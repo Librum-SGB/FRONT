@@ -1,5 +1,5 @@
 <!--
-  TODO : COLOCAR AS CORES DOS EXEMPLARES NA CAPA, FAZER O LIVRO ESPANDIR
+  TODO :  FAZER O LIVRO ESPANDIR, EXIBIR MODAL COM INFORMAÇÕES E CAPA DO LIVRO
  -->
 <div class="row row-gap-3">
   <div class="col-12 col-md-10">
@@ -10,8 +10,8 @@
   </div>
 </div>
 
+@for (estante of estantesFiltradas ; track $index) {
 <div class="container-fluid bg-dark text-light p-4 mt-3">
-  @for (estante of estantesFiltradas ; track $index) {
   <div class="mb-4">
 
     <h5 class="text mb-4">
@@ -27,10 +27,10 @@
 
         <div class="livros d-flex gap-2">
           @for (exemplar of prateleira.listaLivro; track $index) {
-          <div class="livro d-flex align-items-center justify-content-center text-white">
-          {{ exemplar.titulo }}
-          </div>
-        }
+          <button class=" livro border-0 justify-content-center text-white ">
+            {{ exemplar.titulo }}
+          </button>
+          }
         </div>
 
         <!-- LINHA -->
@@ -42,5 +42,5 @@
 
     </div>
   </div>
-  }
 </div>
+}
