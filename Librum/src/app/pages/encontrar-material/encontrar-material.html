@@ -27,7 +27,7 @@
 
         <div class="livros d-flex gap-2">
           @for (exemplar of prateleira.listaLivro; track $index) {
-          <button class=" livro border-0 justify-content-center text-white ">
+          <button (click)="abrirModal(exemplar)" class=" livro border-0 justify-content-center text-white ">
             {{ exemplar.titulo }}
           </button>
           }
@@ -44,3 +44,4 @@
   </div>
 </div>
 }
+<app-modal-livro [(isOpen)]="modalAberta" [livro]="livroEscolhido" />
