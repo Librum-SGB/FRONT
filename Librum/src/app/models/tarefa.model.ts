@@ -1,6 +1,6 @@
 import { prioridade } from '../enum/prioridade.enum';
 
-export interface ListaTarefa {
+export interface Tarefa {
   id?: number;
 
   gestorId: number;
