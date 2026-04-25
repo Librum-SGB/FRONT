@@ -7,6 +7,7 @@ import { EditarExcluirMaterial } from './pages/editar-excluir-material/editar-ex
 import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 import { CadastroBibliotecariaComponent } from './pages/cadastro-bibliotecaria/cadastro-bibliotecaria';
 import { HistorioEmprestimo } from './pages/historio-emprestimo/historio-emprestimo';
+import { Relatorio } from './pages/relatorio/relatorio';
 
 export const routes: Routes = [
   { path: '', component: TelaLoginComponent },
@@ -17,4 +18,5 @@ export const routes: Routes = [
   { path: 'editarExcluirMaterial', component: EditarExcluirMaterial },
   { path: 'cadastro-bibliotecaria', component: CadastroBibliotecariaComponent },
   { path: 'historicoEmprestimo', component: HistorioEmprestimo },
+  { path: 'relatorio', component: Relatorio },
 ];
