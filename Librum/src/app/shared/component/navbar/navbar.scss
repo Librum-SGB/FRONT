@@ -5,7 +5,13 @@
   overflow-y: auto;
 }
 
-.active {
+/* ativo padrão */
+.nav-link.active {
   border-bottom: 1px blue solid;
   font-weight: 500;
+}
+
+/* hover normal */
+.nav-link:hover {
+  font-weight: bolder;
 }
