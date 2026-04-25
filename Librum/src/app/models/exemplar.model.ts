@@ -1,6 +1,20 @@
 export interface Exemplar {
-  id: number;
-  titulo: string;
-  autor: string;
-  prateleiraId: number;
+  id?: number;
+
+  livroId: number;
+  filialId: number;
+  estanteId: number;
+
+  prateleira?: string;
+  posicao?: string;
+
+  codigoBarras: string;
+
+  status?: string;
+
+  dataAquisicao?: Date;
+  observacoes?: string;
+
+  dataCriacao?: Date;
+  dataUltimaAtualizacao?: Date;
 }

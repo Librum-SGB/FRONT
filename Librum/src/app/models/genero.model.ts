@@ -1,8 +1,8 @@
-export interface Estante {
+export interface Genero {
   id?: number;
 
-  localizacao: string;
-  capacidade?: number;
+  nome: string;
+  descricao?: string;
 
   dataCriacao?: Date;
   dataUltimaAtualizacao?: Date;

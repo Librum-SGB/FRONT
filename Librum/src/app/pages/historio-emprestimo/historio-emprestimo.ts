@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CardStatus } from '../../shared/component/card/card-status/card-status';
 import { CommonModule } from '@angular/common';
-import { StatusEmprestimo } from '../../enum/status-emprestimo.enum';
+import { StatusEmprestimo } from '../../enum/status.enum';
 
 @Component({
   selector: 'app-historio-emprestimo',
