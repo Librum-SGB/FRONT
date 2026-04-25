@@ -5,11 +5,11 @@
 
     <div class="p-4 rounded-3 bg-verde text-white mb-4" style="position: relative; min-height: 150px;">
 
-      <h6 class="mb-1">{{ livro?.titulo }}</h6>
-      <small>{{ livro?.autor }}</small>
+      <h6 class="mb-1">{{ exemplar?.livro?.titulo}}</h6>
+      <small>{{ exemplar?.livro?.autores }}</small>
 
       <span class="position-absolute bottom-0 start-0 m-3 small">
-        {{ livro?.id }}
+        {{ exemplar?.livro?.id }}
       </span>
 
     </div>
@@ -18,23 +18,23 @@
 
       <div class="d-flex justify-content-between border-bottom py-2">
         <span class="text-muted">ID:</span>
-        <strong>{{ livro?.id }}</strong>
+        <strong>{{ exemplar?.livro?.id }}</strong>
       </div>
 
       <div class="d-flex justify-content-between border-bottom py-2">
         <span class="text-muted">Título:</span>
-        <strong>{{ livro?.titulo }}</strong>
+        <strong>{{ exemplar?.livro?.titulo }}</strong>
       </div>
 
       <div class="d-flex justify-content-between border-bottom py-2">
         <span class="text-muted">Autor:</span>
-        <strong>{{ livro?.autor }}</strong>
+        <strong>{{ exemplar?.livro?.autores }}</strong>
       </div>
 
       <div class="d-flex justify-content-between py-2 align-items-center">
         <span class="text-muted">Localização:</span>
         <span class="badge bg-warning text-dark">
-          {{ livro?.prateleiraId }}
+          {{exemplar?.posicao }}
         </span>
       </div>
 

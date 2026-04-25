@@ -9,26 +9,24 @@
     <button class="btn btn-success w-100">Nova estante</button>
   </div>
 </div>
-
+@if(estantesFiltradas.length > 0){
 @for (estante of estantesFiltradas ; track $index) {
 <div class="container-fluid bg-dark text-light p-4 mt-3">
   <div class="mb-4">
 
     <h5 class="text mb-4">
-      {{estante.secao}}
+      {{estante.localizacao}}
     </h5>
-
-    <small class="text-secondary ms-2">{{ estante.nome }}</small>
 
     <div class="estante-box p-4 rounded">
       @for (prateleira of estante.prateleiras; track $index){
 
       <div class="prateleira-container mb-4 overflow-x-auto">
-
+        <p>{{prateleira.nome}}</p>
         <div class="livros d-flex gap-2">
-          @for (exemplar of prateleira.listaLivro; track $index) {
+          @for (exemplar of prateleira.exemplares; track $index) {
           <button (click)="abrirModal(exemplar)" class=" livro border-0 justify-content-center text-white ">
-            {{ exemplar.titulo }}
+            {{ exemplar.livro.titulo }}
           </button>
           }
         </div>
@@ -44,4 +42,8 @@
   </div>
 </div>
 }
-<app-modal-livro [(isOpen)]="modalAberta" [livro]="livroEscolhido" />
+}@else {
+<h1 class="text-center mt-3 ">SEM PRATELEIRAS SALVAS <i class="bi bi-exclamation-circle"></i>
+</h1>
+}
+<app-modal-livro [(isOpen)]="modalAberta" [exemplar]="livroEscolhido" />
