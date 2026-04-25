@@ -64,6 +64,17 @@
           </li>
 
           <li>
+            <button class="dropdown-item" (click)="toggleTema()">
+
+              @if (tema.getCurrentTheme() == 'dark') {
+              <i class="bi bi-moon-fill"></i>
+              } @else {
+              <i class="bi bi-brightness-high-fill"></i>
+              }
+            </button>
+          </li>
+
+          <li>
             <hr class="dropdown-divider">
           </li>
 

@@ -1,4 +1,4 @@
-<main class="container border border-1 py-3  rounded-2">
+<main class="container border border-1 py-3  bg-body rounded-2">
   <div class="row">
     <div class="col-12">
       <h3>Histórico de Empréstimo</h3>
@@ -19,16 +19,17 @@
     <div class="col-sm-12 col-md-4">
       <app-card-status titulo="Em andamento"
         [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ANDAMENTO).length.toString()"
-        classe="bg-primary-subtle" />
+        classe="bg-primary-subtle text-primary" />
     </div>
     <div class="col-sm-12 col-md-4">
       <app-card-status titulo="Desenvolvidos"
-        [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.DEVOLVIDO).length.toString()" />
+        [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.DEVOLVIDO).length.toString()"
+        classe="bg-success-subtle text-success" />
     </div>
     <div class="col-sm-12 col-md-4">
       <app-card-status titulo="Atrasados"
         [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ATRASADO).length.toString()"
-        classe="bg-danger-subtle" />
+        classe="bg-danger-subtle text-danger" />
     </div>
   </div>
   <div class="row px-3">

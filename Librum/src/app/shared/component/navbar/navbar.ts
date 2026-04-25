@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-navbar',
@@ -7,4 +8,10 @@ import { RouterLink } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
-export class Navbar {}
+export class Navbar {
+  constructor(public tema: ThemeService) {}
+
+  toggleTema() {
+    this.tema.toggleTheme();
+  }
+}
