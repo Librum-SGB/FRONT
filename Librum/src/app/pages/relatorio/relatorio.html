@@ -6,4 +6,24 @@
       <p class="text-muted">Unidade São Paulo - Centro</p>
     </div>
   </div>
+  <section class="container">
+
+    <div class="row">
+      <p class="fw-bold">Gerar Novo Raelatório</p>
+      <p class="text-muted">Tipos de Dados</p>
+    </div>
+    <div class="row row-gap-2 ">
+      @for (tipo of tiposRelatorio; track $index) {
+      <div class="col-sm-11 col-md-6 col-lg-3 ">
+        <div class="ps-3 border rounded-2 py-2">
+          <input class="form-check-input" type="checkbox" [value]="tipo.id" [id]="tipo.id"
+            (click)="onCheckboxChange($event,tipo.id)">
+          <label class="form-check-label ms-2" [for]="tipo.id">
+            {{ tipo.nome }}
+          </label>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
 </main>
