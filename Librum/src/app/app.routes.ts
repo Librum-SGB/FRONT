@@ -6,6 +6,7 @@ import { TelaLoginComponent } from './pages/tela-login/tela-login';
 import { EditarExcluirMaterial } from './pages/editar-excluir-material/editar-excluir-material';
 import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 import { CadastroBibliotecariaComponent } from './pages/cadastro-bibliotecaria/cadastro-bibliotecaria';
+import { CadastrarUsuario } from './pages/cadastrar-usuario/cadastrar-usuario';
 import { HistorioEmprestimo } from './pages/historio-emprestimo/historio-emprestimo';
 
 export const routes: Routes = [
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'cadastrarMaterial', component: CadastrarMaterial },
   { path: 'editarExcluirMaterial', component: EditarExcluirMaterial },
   { path: 'cadastro-bibliotecaria', component: CadastroBibliotecariaComponent },
+  { path: 'cadastrar-usuario', component: CadastrarUsuario },
   { path: 'historicoEmprestimo', component: HistorioEmprestimo },
 ];
