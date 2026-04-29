@@ -74,15 +74,31 @@
       </div>
     </div>
 
+    <!-- SENHA COM VALIDAÇÃO -->
     <div class="row mb-3">
       <div class="col-md-6">
         <label>Senha *</label>
-        <input type="password" class="form-control" [(ngModel)]="usuario.senha" required>
+        <input 
+          type="password" 
+          class="form-control" 
+          [(ngModel)]="usuario.senha" 
+          required>
       </div>
 
       <div class="col-md-6">
         <label>Confirmar Senha *</label>
-        <input type="password" class="form-control" [(ngModel)]="confirmarSenha" required>
+        <input 
+          type="password" 
+          class="form-control" 
+          [(ngModel)]="confirmarSenha" 
+          required>
+
+        <!-- mensagem de erro -->
+        <small 
+          class="text-danger"
+          *ngIf="confirmarSenha && usuario.senha !== confirmarSenha">
+          As senhas não coincidem
+        </small>
       </div>
     </div>
 
@@ -98,7 +114,13 @@
 
     <div class="d-flex justify-content-end gap-2">
       <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
-      <button class="btn btn-primary" (click)="salvar()">Salvar</button>
+
+      <button 
+        class="btn btn-primary" 
+        (click)="salvar()"
+        [disabled]="usuario.senha !== confirmarSenha">
+        Salvar
+      </button>
     </div>
 
   </div>

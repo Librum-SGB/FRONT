@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-cadastrar-usuario',
@@ -12,6 +14,11 @@ export class CadastrarUsuario implements OnInit {
   usuario: any = {};
   confirmarSenha: string = '';
 
+  constructor(
+    private router: Router,
+    private toastService: ToastService
+  ) { }
+
   ngOnInit() {
     this.gerarId();
     this.setDataAtual();
@@ -19,7 +26,6 @@ export class CadastrarUsuario implements OnInit {
   }
 
   gerarId() {
-    // Simulação (normalmente vem do backend)
     this.usuario.id = 'USR-' + Math.floor(1000 + Math.random() * 9000);
   }
 
@@ -34,17 +40,25 @@ export class CadastrarUsuario implements OnInit {
   }
 
   salvar() {
-    if (this.usuario.senha !== this.confirmarSenha) {
-      alert('As senhas não coincidem!');
+
+    if (!this.usuario.senha || !this.confirmarSenha) {
+          this.toastService.showToast('info', 'As senhas são diferentes.');
       return;
     }
 
-    console.log('Usuário salvo:', this.usuario);
-    alert('Usuário cadastrado com sucesso!');
+    if (this.usuario.senha !== this.confirmarSenha) {
+      this.toastService.showToast('error', 'As senhas não coincidem!');
+      return;
+    }
+
+    this.toastService.showToast('success', 'Usuário cadastrado com sucesso!');
+    this.router.navigate(['/dashboard']);
+
   }
 
   cancelar() {
-    console.log('Cancelado');
+    this.toastService.showToast('info', 'Cadastro de usuário cancelado.');
+    this.router.navigate(['/dashboard']);
   }
 
 }
