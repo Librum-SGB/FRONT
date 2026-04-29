@@ -1,0 +1,59 @@
+<main class="container border border-1 py-3  bg-body rounded-2">
+  <div class="row">
+    <div class="col-12">
+      <h3>Histórico de Empréstimo</h3>
+      <p class="text-muted">Unidade São Paulo - Centro</p>
+    </div>
+  </div>
+  <div class="row px-3 mt-3">
+    <div class="col-sm-12 col-md-6">
+      <label for="dataInicial" class="form-label">Data Inicial</label>
+      <input type="date" id="dataInicial" class="form-control" [(ngModel)]="dataInicial" (change)="filtarLista()">
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <label for="dataFinal" class="form-label">Data Final</label>
+      <input type="date" id="dataFinal" class="form-control" [(ngModel)]="dataFinal" (change)="filtarLista()">
+    </div>
+  </div>
+  <div class="row row-gap-3 mt-3">
+    <div class="col-sm-12 col-md-4">
+      <app-card-status titulo="Em andamento"
+        [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ANDAMENTO).length.toString()"
+        classe="bg-primary-subtle text-primary" />
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <app-card-status titulo="Desenvolvidos"
+        [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.DEVOLVIDO).length.toString()"
+        classe="bg-success-subtle text-success" />
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <app-card-status titulo="Atrasados"
+        [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ATRASADO).length.toString()"
+        classe="bg-danger-subtle text-danger" />
+    </div>
+  </div>
+  <div class="row px-3">
+    <table class="table table-responsive mt-3">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Usuário</th>
+          <th>Livro</th>
+          <th>Situação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of listaFiltrada">
+          <td>{{ item.data }}</td>
+          <td>{{ item.usuario }}</td>
+          <td>{{ item.livro }}</td>
+          <td>
+            <span class="badge" [ngClass]="getBadge(item.status)">
+              {{ item.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
