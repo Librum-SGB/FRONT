@@ -8,22 +8,22 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/cadastrarMaterial">Cadastrar</a>
+          <a class="nav-link" routerLink="/cadastrarMaterial" routerLinkActive="active">Cadastrar</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="#">Empréstimos</a>
+          <a class="nav-link" routerLink="#" routerLinkActive="active">Empréstimos</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="#">Relatórios</a>
+          <a class="nav-link" routerLink="#" routerLinkActive="active">Relatórios</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/estanteVirtual">Estante Virtual</a>
+          <a class="nav-link" routerLink="/estanteVirtual" routerLinkActive="active">Estante Virtual</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="#">Configurações</a>
+          <a class="nav-link" routerLink="#" routerLinkActive="active">Configurações</a>
         </li>
       </ul>
       <select class="form-select w-25" aria-label="Default select example">
@@ -61,6 +61,17 @@
             <a class="dropdown-item" href="#">
               Suporte
             </a>
+          </li>
+
+          <li>
+            <button class="dropdown-item" (click)="toggleTema()">
+
+              @if (tema.getCurrentTheme() == 'dark') {
+              <i class="bi bi-moon-fill"></i>
+              } @else {
+              <i class="bi bi-brightness-high-fill"></i>
+              }
+            </button>
           </li>
 
           <li>
@@ -117,7 +128,7 @@
           </li>
 
           <li>
-            <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+            <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/cadastrar-usuario">
               <i class="bi bi-person-plus text-success"></i>
               Cadastrar Usuário
             </a>
@@ -131,7 +142,7 @@
           </li>
 
           <li>
-            <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+            <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/historicoEmprestimo">
               <i class="bi bi-clock-history text-primary"></i>
               Histórico de Empréstimos
             </a>

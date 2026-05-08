@@ -1,68 +1,44 @@
-import { Component } from '@angular/core';
-import { Estante } from '../../models/estante.model';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalLivro } from './modal-livro/modal-livro';
-import { Exemplar } from '../../models/exemplar.model';
+import { EstanteVirtualDto, ExemplarVirtualDto } from '../../dto/estantevirtual.dto';
+import { EstanteService } from '../../shared/services/estante-virtual.service';
 
 @Component({
   selector: 'app-encontrar-material',
-  standalone: true,
   imports: [CommonModule, FormsModule, ModalLivro],
   templateUrl: './encontrar-material.html',
   styleUrl: './encontrar-material.scss',
 })
-export class EncontrarMaterial {
+export class EncontrarMaterial implements OnInit {
   busca: string = '';
-  livroEscolhido?: Exemplar;
+  livroEscolhido?: ExemplarVirtualDto;
   modalAberta = false;
+  constructor(private estanteService: EstanteService) {}
 
-  abrirModal(exemplar: Exemplar) {
-    this.livroEscolhido = exemplar;
+  ngOnInit(): void {
+    this.carregarEstantes();
+  }
+  abrirModal(livro: ExemplarVirtualDto) {
+    this.livroEscolhido = livro;
     this.modalAberta = true;
   }
 
-  estantes: Estante[] = [
-    {
-      id: 1,
-      nome: 'Estante A1',
-      secao: 'Programação e Desenvolvimento',
-      prateleiras: [
-        {
-          id: 1,
-          listaLivro: Array.from({ length: 20 }, (_, i) => ({
-            id: i + 1,
-            titulo: `Angular ${i + 1}`,
-            autor: ['João', 'Maria', 'Carlos'][i % 3],
-            prateleiraId: 1,
-          })),
-        },
-        {
-          id: 2,
-          listaLivro: Array.from({ length: 40 }, (_, i) => ({
-            id: i + 21,
-            titulo: `Java ${i + 21}`,
-            autor: ['James', 'Oracle', 'Dev Java'][i % 3],
-            prateleiraId: 2,
-          })),
-        },
-        {
-          id: 3,
-          listaLivro: Array.from({ length: 5 }, (_, i) => ({
-            id: i + 61,
-            titulo: `Spring ${i + 61}`,
-            autor: ['Pivotal', 'VMware'][i % 2],
-            prateleiraId: 3,
-          })),
-        },
-      ],
-    },
-  ];
+  estantes: EstanteVirtualDto[] = [];
 
-  estantesFiltradas: Estante[] = [];
+  estantesFiltradas: EstanteVirtualDto[] = [];
 
-  ngOnInit() {
-    this.estantesFiltradas = this.estantes;
+  carregarEstantes() {
+    this.estanteService.getEstantes().subscribe({
+      next: (res) => {
+        this.estantes = res;
+        this.estantesFiltradas = res;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar estantes', err);
+      },
+    });
   }
 
   onBuscar() {
@@ -73,22 +49,26 @@ export class EncontrarMaterial {
 
     const termo = this.busca.toLowerCase();
 
-    this.estantesFiltradas = this.estantes.map((estante) => {
-      const prateleirasFiltradas = estante.prateleiras.map((prateleira) => {
-        const livrosFiltrados = prateleira.listaLivro.filter((livro) =>
-          livro.titulo.toLowerCase().includes(termo),
-        );
+    this.estantesFiltradas = this.estantes
+      .map((estante) => {
+        const prateleirasFiltradas = estante.prateleiras
+          .map((prateleira) => {
+            const exemplaresFiltrados = prateleira.exemplares.filter((exemplar) =>
+              exemplar.livro.titulo.toLowerCase().includes(termo),
+            );
+
+            return {
+              ...prateleira,
+              exemplares: exemplaresFiltrados,
+            };
+          })
+          .filter((p) => p.exemplares.length > 0); // remove prateleiras vazias
 
         return {
-          ...prateleira,
-          listaLivro: livrosFiltrados,
+          ...estante,
+          prateleiras: prateleirasFiltradas,
         };
-      });
-
-      return {
-        ...estante,
-        prateleiras: prateleirasFiltradas,
-      };
-    });
+      })
+      .filter((e) => e.prateleiras.length > 0); // remove estantes vazias
   }
 }

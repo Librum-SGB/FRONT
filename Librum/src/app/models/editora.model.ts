@@ -1,8 +1,8 @@
-export interface Estante {
+export interface Editora {
   id?: number;
 
-  localizacao: string;
-  capacidade?: number;
+  nome: string;
+  nacionalidade?: string;
 
   dataCriacao?: Date;
   dataUltimaAtualizacao?: Date;
