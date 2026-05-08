@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
-import { LinkPersonalizado } from "../link-personalizado/link-personalizado";
-import { RouterLink } from "@angular/router";
+import { LinkPersonalizado } from '../link-personalizado/link-personalizado';
 
 
 @Component({
   selector: 'app-footer',
-  imports: [LinkPersonalizado, RouterLink],
+  imports: [LinkPersonalizado],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })
-export class Footer {}
+export class Footer {
+  
+
+}
