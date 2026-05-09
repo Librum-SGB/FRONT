@@ -4,5 +4,5 @@
 <main [class.container]="!isAuthRoute()" [class.bg-body-secondary]="!isAuthRoute()" [class.py-3]="!isAuthRoute()">
   <router-outlet></router-outlet>
 </main>
-<app-footer></app-footer>
+<app-footer *ngIf="!isAuthRoute()"></app-footer>
 <app-toast></app-toast>

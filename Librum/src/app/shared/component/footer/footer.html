@@ -2,11 +2,20 @@
     <div class="footer-container d-flex justify-content-center align-items-center flex-column">
         <div class="row">
             <div class="col-md-3 mb-4">
-                <h5>My Librum</h5>
+
+                <div class="footer-logo">
+                    <img src="assets/images/librumIco.ico" alt="Logo My Librum">
+                    <h5>My Librum</h5>
+                </div>
+                <p class="small">
+                    My Librum é um projeto independente de coração para todos os bibliotecários.
+                </p>
                 <p class="small">
                     Todos os direitos reservados.
                 </p>
                 <p class="small">&copy; 2026 My Librum.</p>
+                <p class="small">Versão ALPHA</p>
+                <p class="small">Todos os direitos reservados</p>
             </div>
 
             <div class="col-md-2 mb-4">
@@ -14,28 +23,42 @@
                 <ul class="list-unstyled">
                     <li><app-link-personalizado link="/dashboard">Home</app-link-personalizado></li>
                     <li><app-link-personalizado link="/estanteVirtual">Estante</app-link-personalizado></li>
-                    <li><app-link-personalizado link="/cadastro-bibliotecaria">Cadastro de Bibliotecária</app-link-personalizado></li>
                     <li><app-link-personalizado link="/ajuda">Ajuda</app-link-personalizado></li>
                 </ul>
             </div>
 
 
             <div class="col-md-2 mb-4">
-                <h4>Conta do Usuário</h4>
+                <h4>Suporte</h4>
                 <ul class="list-unstyled">
-                    <li><app-link-personalizado link="/">Suporte</app-link-personalizado></li>
-                    <li><app-link-personalizado link="/email">Email</app-link-personalizado></li>
-                    <li><app-link-personalizado link="/telefone">Telefone</app-link-personalizado></li>
-                    <li><app-link-personalizado link="/Termos">Termos</app-link-personalizado></li>
+                    <li><app-link-personalizado link="/suporte">Suporte</app-link-personalizado></li>
+                    <li><app-link-personalizado link="/termos">Termos</app-link-personalizado></li>
+                    <li><app-link-personalizado link="/privacidade">Privacidade</app-link-personalizado></li>
+                </ul>
+            </div>
+
+            <div class="col-md-2 mb-4">
+                <h4>Acesso Rápido</h4>
+                <ul class="list-unstyled">
+                    <li><app-link-personalizado link="/cadastrar-usuario">Cadastro de Usuário</app-link-personalizado>
+                    </li>
+                    <li><app-link-personalizado link="/cadastro-bibliotecaria">Cadastro de
+                            Bibliotecária</app-link-personalizado></li>
+                    <li><app-link-personalizado link="/cadastrar-material">Cadastro de Material</app-link-personalizado>
+                    </li>
                 </ul>
             </div>
 
         </div>
 
     </div>
-    <div class="d-flex justify-content-between border-top pt-3 mt-3 small">
-        <span>Versão ALPHA</span>
-        <span>Todos os direitos reservados</span>
-    </div>
+
+  <div
+  class="duck-zone"
+  *ngIf="showDucks"
+>
+  🦆
+</div>
 
 </footer>
+

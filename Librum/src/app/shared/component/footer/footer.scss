@@ -1,3 +1,62 @@
 .footer .row {
   column-gap: 40px;
 }
+.footer .small {
+
+  font-size: 12px;
+}
+.footer-logo{
+  display: flex;
+
+  align-items: center;
+  
+  gap: 10px;
+
+  margin-bottom: 10px;
+}
+
+.footer-logo img {
+
+  width: 32px;
+
+  height: 32px;
+
+  object-fit: contain;
+}
+
+.footer-logo h5 {
+
+  margin: 0;
+}
+
+.footer h4{
+  white-space: nowrap;
+}
+
+.duck-zone {
+
+  position: fixed;
+
+  bottom: 10px;
+
+  right: -400px;
+
+  font-size: 40px;
+
+  z-index: 9999;
+
+  animation: ducksWalk 10s linear infinite;
+}
+
+@keyframes ducksWalk {
+
+  from {
+
+    right: -400px;
+  }
+
+  to {
+
+    right: 100%;
+  }
+}
