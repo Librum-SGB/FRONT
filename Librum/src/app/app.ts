@@ -4,11 +4,13 @@ import { Navbar } from './shared/component/navbar/navbar';
 import { ToastComponent } from './shared/component/toast/toast.component';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
+import { Footer } from './shared/component/footer/footer';
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, ToastComponent, CommonModule],
+  imports: [RouterOutlet, Navbar, ToastComponent, CommonModule, Footer],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
