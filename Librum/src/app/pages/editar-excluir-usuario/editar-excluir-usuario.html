@@ -3,7 +3,6 @@
 
     <h5 class="mb-4">Consultar / Editar Usuários</h5>
 
-    <!-- FILTRO -->
     <div class="row mb-4">
       <div class="col-md-2">
         <select class="form-select" [(ngModel)]="filtro">
@@ -21,29 +20,31 @@
       </div>
     </div>
 
-    <!-- CARDS -->
     <div class="row">
-      <div class="col-md-3 mb-4" *ngFor="let usuario of usuariosFiltrados()">
+      <div
+        class="col-md-3 mb-4"
+        *ngFor="let usuario of usuariosFiltrados()">
+
         <div class="card text-center p-3 h-100">
 
           <div class="mb-3">
             <img
-              src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-              width="70">
+              [src]="usuario.foto"
+              class="rounded-circle"
+              style="width: 80px; height: 80px; object-fit: cover;">
           </div>
 
           <h6>{{ usuario.nome }}</h6>
-          <small>{{ usuario.id }}</small>
+          <small>ID: {{ usuario.id }}</small>
 
           <div class="mt-3 mb-3">
             <span
               class="badge"
               [ngClass]="{
-                'bg-success': usuario.status === 'Ativo',
-                'bg-secondary': usuario.status === 'Inativo',
-                'bg-danger': usuario.status === 'Bloqueado'
+                'bg-success': !usuario.estaBloqueado,
+                'bg-danger': usuario.estaBloqueado
               }">
-              {{ usuario.status }}
+              {{ usuario.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
             </span>
           </div>
 
@@ -61,12 +62,8 @@
   </div>
 </div>
 
-<!-- MODAL -->
-<div
-  class="modal fade"
-  id="modalUsuario"
-  tabindex="-1">
-
+<!-- MODAL USUÁRIO -->
+<div class="modal fade" id="modalUsuario" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
 
@@ -79,8 +76,9 @@
 
         <div class="text-center mb-4">
           <img
-            src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-            width="80">
+            [src]="usuarioSelecionado.foto"
+            class="rounded-circle"
+            style="width: 100px; height: 100px; object-fit: cover;">
         </div>
 
         <p><strong>ID:</strong> {{ usuarioSelecionado.id }}</p>
@@ -89,23 +87,181 @@
         <p><strong>Email:</strong> {{ usuarioSelecionado.email }}</p>
         <p><strong>Telefone:</strong> {{ usuarioSelecionado.telefone }}</p>
         <p><strong>Endereço:</strong> {{ usuarioSelecionado.endereco }}</p>
-        <p><strong>Data de Nascimento:</strong> {{ usuarioSelecionado.dataNascimento }}</p>
-        <p><strong>Data de Cadastro:</strong> {{ usuarioSelecionado.dataCadastro }}</p>
-        <p><strong>Tipo:</strong> {{ usuarioSelecionado.tipoCliente }}</p>
-        <p><strong>Status:</strong> {{ usuarioSelecionado.status }}</p>
+        <p><strong>Bairro:</strong> {{ usuarioSelecionado.bairro }}</p>
+        <p><strong>Cidade:</strong> {{ usuarioSelecionado.cidade }}</p>
+        <p><strong>Estado:</strong> {{ usuarioSelecionado.estado }}</p>
+        <p><strong>CEP:</strong> {{ usuarioSelecionado.cep }}</p>
+        <p><strong>Data Nascimento:</strong> {{ usuarioSelecionado.dataNascimento | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Data Criação:</strong> {{ usuarioSelecionado.dataCriacao | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Última Atualização:</strong> {{ usuarioSelecionado.dataUltimaAtualizacao | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Limite Livros:</strong> {{ usuarioSelecionado.limiteLivros }}</p>
+        <p>
+          <strong>Status:</strong>
+          {{ usuarioSelecionado.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <div class="row w-100 g-2">
+
+          <div class="col-12 col-md-4">
+            <button class="btn btn-primary w-100">
+              Histórico
+            </button>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <button
+              class="btn btn-warning w-100"
+              (click)="editarUsuario()">
+              Editar
+            </button>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <button
+              class="btn btn-danger w-100"
+              (click)="abrirModalExcluir()">
+              Excluir
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal fade" id="editarModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5>Editar Usuário</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="text-center mb-4">
+          <img
+            [src]="usuarioEditando.foto"
+            class="rounded-circle mb-3"
+            style="width: 100px; height: 100px; object-fit: cover;">
+
+          <input
+            type="file"
+            class="form-control"
+            accept="image/*"
+            (change)="alterarFoto($event)">
+        </div>
+
+        <div class="mb-3">
+          <label>ID</label>
+          <input
+            type="text"
+            class="form-control"
+            [value]="usuarioEditando.id"
+            disabled>
+        </div>
+
+        <div class="mb-3">
+          <label>Nome</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.nome">
+        </div>
+
+        <div class="mb-3">
+          <label>CPF</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.cpf">
+        </div>
+
+        <div class="mb-3">
+          <label>Email</label>
+          <input type="email" class="form-control" [(ngModel)]="usuarioEditando.email">
+        </div>
+
+        <div class="mb-3">
+          <label>Telefone</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.telefone">
+        </div>
+
+        <div class="mb-3">
+          <label>Endereço</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.endereco">
+        </div>
+
+        <div class="mb-3">
+          <label>Bairro</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.bairro">
+        </div>
+
+        <div class="mb-3">
+          <label>Cidade</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.cidade">
+        </div>
+
+        <div class="mb-3">
+          <label>Estado</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.estado">
+        </div>
+
+        <div class="mb-3">
+          <label>CEP</label>
+          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.cep">
+        </div>
+
+        <div class="mb-3">
+          <label>Limite de Livros</label>
+          <input type="number" class="form-control" [(ngModel)]="usuarioEditando.limiteLivros">
+        </div>
+
+        <div class="mb-3">
+          <label>Status</label>
+          <select class="form-select" [(ngModel)]="usuarioEditando.estaBloqueado">
+            <option [ngValue]="false">Ativo</option>
+            <option [ngValue]="true">Bloqueado</option>
+          </select>
+        </div>
 
       </div>
 
-      <div class="modal-footer d-flex justify-content-between">
-        <button class="btn btn-primary">
-          Histórico
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
         </button>
 
-        <button class="btn btn-warning" (click)="editarUsuario()">
-          Editar
+        <button class="btn btn-success" (click)="salvarEdicao()">
+          Salvar Alterações
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EXCLUIR -->
+<div class="modal fade" id="excluirModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5>Confirmar Exclusão</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        Tem certeza que deseja excluir
+        <strong>{{ usuarioSelecionado?.nome }}</strong>?
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
         </button>
 
-        <button class="btn btn-danger" (click)="excluirUsuario()">
+        <button class="btn btn-danger" (click)="confirmarExclusao()">
           Excluir
         </button>
       </div>
