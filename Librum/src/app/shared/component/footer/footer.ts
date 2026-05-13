@@ -25,7 +25,7 @@ export class Footer implements OnInit {
 
     window.addEventListener('keydown', (event) => {
 
-      // Detecta seta para baixo
+    
 
       if (event.key === 'ArrowDown') {
 
@@ -34,23 +34,20 @@ export class Footer implements OnInit {
         return;
       }
 
-      // Enquanto segura ↓
-
       if (this.isHoldingDown) {
 
         this.secretWord += event.key.toLowerCase();
 
-        // Ativa os patinhos
+ 
 
-        if (this.secretWord.includes('pato')) {
+        if (this.secretWord.includes('capi')) {
 
           this.showDucks = true;
 
-          // Atualiza a tela instantaneamente
-
+          
           this.cdr.detectChanges();
 
-          console.log('🦆 Patinhos ativados');
+          console.log('Capivara Ativada');
           setTimeout(() => {
 
             this.showDucks = false;
@@ -75,7 +72,7 @@ export class Footer implements OnInit {
 
     window.addEventListener('keyup', (event) => {
 
-      // Soltou a seta ↓
+    
 
       if (event.key === 'ArrowDown') {
 
