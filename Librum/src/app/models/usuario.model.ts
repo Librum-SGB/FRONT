@@ -10,6 +10,8 @@ export interface Usuario {
 
   filialId: number;
 
+  foto?: string;
+
   endereco?: string;
   numero?: string;
   bairro?: string;
