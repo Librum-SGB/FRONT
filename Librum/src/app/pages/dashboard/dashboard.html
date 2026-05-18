@@ -84,11 +84,9 @@
               <td>juanito</td>
               <td>há 2 dias</td>
               <td>
-                <p class="badge" [ngClass]="{
-                  'bg-success': 'emAndamento' == 'emAndamento',
-                  'bg-warning': 'aVencer' === 'aVencer',
-                  'bg-danger': 'vencido' === 'vencido',
-                }">Em andamento</p>
+                <app-badge status="warning">
+                  Em andamento
+                </app-badge>
               </td>
             </tr>
           </tbody>
