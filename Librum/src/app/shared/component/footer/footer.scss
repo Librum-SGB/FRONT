@@ -37,26 +37,31 @@
 
   position: fixed;
 
-  bottom: 10px;
+  bottom: 20px;
 
-  right: -400px;
-
-  font-size: 40px;
+  right: -200px;
 
   z-index: 9999;
 
-  animation: ducksWalk 10s linear infinite;
+  animation: ducksWalk 10s linear forwards;
+}
+
+.duck-zone img {
+
+  width: 120px;
+
+  height: auto;
 }
 
 @keyframes ducksWalk {
 
   from {
 
-    right: -400px;
+    transform: translateX(0);
   }
 
   to {
 
-    right: 100%;
+    transform: translateX(-2200px);
   }
 }
