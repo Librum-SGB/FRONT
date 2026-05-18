@@ -9,22 +9,23 @@ import { ToastService } from '../../shared/services/toast.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './tela-login.html',
-  styleUrls: ['./tela-login.scss']
+  styleUrls: ['./tela-login.scss'],
 })
 export class TelaLoginComponent {
-
-  email: string = '';
-  senha: string = '';
+  email: string = 'teste@teste.com';
+  senha: string = '123456';
   mostrarSenha: boolean = false;
 
-  constructor(private router: Router, private toastService: ToastService) { }
+  constructor(
+    private router: Router,
+    private toastService: ToastService,
+  ) {}
 
   toggleSenha() {
     this.mostrarSenha = !this.mostrarSenha;
   }
 
   entrar() {
-   
     if (this.email === 'teste@teste.com' && this.senha === '123456') {
       this.toastService.showSuccess('Login bem-sucedido!');
       this.router.navigate(['/dashboard']);
@@ -37,7 +38,6 @@ export class TelaLoginComponent {
     this.router.navigate(['/esqueci-senha']);
   }
   irParaCadastro() {
-  this.router.navigate(['/cadastro-bibliotecaria']);
-}
-
+    this.router.navigate(['/cadastro-bibliotecaria']);
+  }
 }
