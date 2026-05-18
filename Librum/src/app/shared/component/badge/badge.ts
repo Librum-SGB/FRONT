@@ -1,5 +1,4 @@
-import { Component, Input, NgModule } from '@angular/core';
-import { StatusEmprestimo } from '../../../enum/status.enum';
+import { Component, Input } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -9,6 +8,5 @@ import { NgClass } from '@angular/common';
   styleUrl: './badge.scss',
 })
 export class Badge {
-  statusEmprestimo = StatusEmprestimo;
   @Input() status: 'success' | 'warning' | 'danger' | 'primary' | 'secondary' = 'success';
 }
