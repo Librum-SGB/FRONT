@@ -85,6 +85,7 @@ export class EditarExcluirMaterial {
 
     if (index !== -1) {
       this.materiais[index] = this.materialEditando;
+      this.toastService.showToast('success', 'Material editado com sucesso!');
     }
 
     console.log('Editado:', this.materialEditando);
