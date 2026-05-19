@@ -1,0 +1,53 @@
+.container {
+  max-width: 850px;
+  margin-top: 20px;
+}
+
+h4 {
+  color: var(--cor-azul-escuro);
+  font-weight: 600;
+}
+
+.card-contato-azul { background-color: #f0f4ff; }
+.card-contato-verde { background-color: #f0fff4; }
+.card-contato-roxo { background-color: #faf5ff; }
+
+.btn-chat-suporte {
+  background-color: var(--cor-roxo);
+  color: white;
+  border: none;
+  width: 100%;
+  font-size: 0.8rem;
+  padding: 5px;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.btn-enviar-suporte {
+  background-color: #1f2f6b;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.faq-title {
+  color: var(--cor-laranja);
+  font-weight: 600;
+}
+
+.list-group-item {
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  margin-bottom: 5px;
+  border-radius: 8px !important;
+  &:hover {
+    background-color: #f8fafc;
+  }
+}
