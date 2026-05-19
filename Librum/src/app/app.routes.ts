@@ -7,6 +7,10 @@ import { EditarExcluirMaterial } from './pages/editar-excluir-material/editar-ex
 import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 import { CadastroBibliotecariaComponent } from './pages/cadastro-bibliotecaria/cadastro-bibliotecaria';
 import { TelaSuporte } from './pages/tela-suporte/tela-suporte';
+import { CadastrarUsuario } from './pages/cadastrar-usuario/cadastrar-usuario';
+import { HistorioEmprestimo } from './pages/historio-emprestimo/historio-emprestimo';
+import { EditarExcluirUsuario } from './pages/editar-excluir-usuario/editar-excluir-usuario';
+import { Relatorio } from './pages/relatorio/relatorio';
 
 export const routes: Routes = [
   { path: '', component: TelaLoginComponent },
@@ -17,5 +21,8 @@ export const routes: Routes = [
   { path: 'editarExcluirMaterial', component: EditarExcluirMaterial },
   { path: 'cadastro-bibliotecaria', component: CadastroBibliotecariaComponent },
   { path: 'suporte', component: TelaSuporte },
-
+  { path: 'cadastrar-usuario', component: CadastrarUsuario },
+  { path: 'editar-excluir-usuario', component: EditarExcluirUsuario },
+  { path: 'historicoEmprestimo', component: HistorioEmprestimo },
+  { path: 'relatorio', component: Relatorio },
 ];
