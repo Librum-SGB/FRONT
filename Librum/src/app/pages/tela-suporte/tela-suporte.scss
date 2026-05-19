@@ -1,0 +1,66 @@
+.container {
+  max-width: 850px;
+  margin-top: 20px;
+}
+
+h4 {
+  color: var(--cor-azul-escuro);
+  font-weight: 600;
+}
+
+/* Cards de Contato com texto e ícones brancos */
+.card-contato-azul, .card-contato-verde, .card-contato-roxo { 
+  color: white !important;
+  h6, i, p, span, small { color: white !important; }
+}
+
+.card-contato-azul { background-color: #5b8fd9; }
+.card-contato-verde { background-color: #a2dfb8; }
+.card-contato-roxo { background-color: #7446d8; }
+
+.btn-chat-suporte {
+  background-color: white;
+  color: #7446d8;
+  border: none;
+  width: 100%;
+  font-size: 0.8rem;
+  padding: 5px;
+  border-radius: 5px;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.btn-enviar-suporte {
+  background-color: var(--cor-azul-escuro);
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.faq-title {
+  color: var(--cor-laranja);
+  font-weight: 600;
+}
+
+.list-group-item {
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  margin-bottom: 5px;
+  border-radius: 8px !important;
+  &:hover {
+    /* Corrigido para a variável certa do seu projeto */
+    background-color: var(--cor-cinza-escuro);
+    color: white;
+    span, i { color: white !important; }
+  }
+}
+
+.bg-white { background-color: #fff !important; }
+

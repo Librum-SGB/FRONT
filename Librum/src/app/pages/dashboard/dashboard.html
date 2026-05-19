@@ -1,6 +1,6 @@
 <main>
-  <section class="row mt-3 row-gap-2 ">
-    <div class="col-sm-6 col-md-3">
+  <section class=" row mt-3 row-gap-2 ">
+    <div class=" col-sm-6 col-md-3">
       <app-card-informativo titulo="Alunos Cadastrados" valor="1203" classe="bg-verde">
         <i class="bi bi-people-fill fs-1"></i>
       </app-card-informativo>
@@ -62,10 +62,10 @@
           <app-card-status titulo="em andamento" conteudo="2" />
         </div>
         <div class="col-12 col-md-4">
-          <app-card-status titulo="a vencer" conteudo="2" classe="bg-warning-subtle" />
+          <app-card-status titulo="a vencer" conteudo="2" cor="warning" />
         </div>
         <div class="col-12 col-md-4">
-          <app-card-status titulo="vencidos" conteudo="2" classe="bg-danger-subtle" />
+          <app-card-status titulo="vencidos" conteudo="2" cor="danger" />
         </div>
       </div>
       <div class="row">
@@ -84,11 +84,29 @@
               <td>juanito</td>
               <td>há 2 dias</td>
               <td>
-                <p class="badge" [ngClass]="{
-                  'bg-success': 'emAndamento' == 'emAndamento',
-                  'bg-warning': 'aVencer' === 'aVencer',
-                  'bg-danger': 'vencido' === 'vencido',
-                }">Em andamento</p>
+                <app-badge status="success">
+                  Em andamento
+                </app-badge>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Ttw</th>
+              <td>juanito</td>
+              <td>há 2 dias</td>
+              <td>
+                <app-badge status="warning">
+                  A vencer
+                </app-badge>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Ttw</th>
+              <td>juanito</td>
+              <td>há 2 dias</td>
+              <td>
+                <app-badge status="danger">
+                  Vencido
+                </app-badge>
               </td>
             </tr>
           </tbody>

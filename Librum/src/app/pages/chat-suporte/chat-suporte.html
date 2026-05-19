@@ -1,0 +1,39 @@
+<div class="chat-wrapper">
+  <div class="chat-container">
+    
+    <div class="chat-header">
+      <div class="header-info">
+        
+        <button type="button" class="btn-voltar-setinha" (click)="voltarParaSuporte()" title="Voltar">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        
+        <span class="status-dot"></span>
+        <h5>Suporte Librum</h5>
+      </div>
+    </div>
+
+    <div class="chat-messages">
+      <div *ngFor="let msg of mensagens" class="msg-row" [ngClass]="msg.origem === 'user' ? 'msg-user' : 'msg-support'">
+        <div class="message-bubble">
+          {{ msg.texto }}
+          <span class="time">{{ msg.hora }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-footer">
+      <div class="input-wrapper">
+        <input 
+          type="text" 
+          [(ngModel)]="textoMensagem" 
+          (keydown.enter)="enviarMensagem()" 
+          placeholder="Digite sua mensagem...">
+      </div>
+      <button class="btn-send" (click)="enviarMensagem()">
+        Enviar
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -8,10 +8,11 @@ import { FormsModule } from '@angular/forms';
 import { Tarefa } from '../../models/tarefa.model';
 import { TarefaService } from '../../shared/services/tarefas.service';
 import { prioridade } from '../../enum/prioridade.enum';
+import { Badge } from '../../shared/component/badge/badge';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ItemListaTarefa, CardInformativo, CardStatus, NgClass, BotaoAcaoRapida, FormsModule],
+  imports: [ItemListaTarefa, CardInformativo, CardStatus, BotaoAcaoRapida, FormsModule, Badge],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
