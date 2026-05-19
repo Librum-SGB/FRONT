@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router'; // 1. ADICIONE ESTE IMPORT
 
 @Component({
   selector: 'app-tela-suporte',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink], // 2. ADICIONE AQUI
   templateUrl: './tela-suporte.html',
   styleUrls: ['./tela-suporte.scss']
 })

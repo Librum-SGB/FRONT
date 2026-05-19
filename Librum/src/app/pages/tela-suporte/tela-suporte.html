@@ -1,60 +1,119 @@
-<div class="container py-4">
-  <h4 class="mb-4">Central de Suporte</h4>
+<div class="container">
+  <header class="mt-4 mb-4">
+    <h3>Central de Suporte</h3>
+  </header>
 
   <div class="row g-3 mb-4">
     <div class="col-md-4">
-      <div class="card p-3 border-0 shadow-sm card-contato-azul">
-        <h6 class="mb-1"><i class="bi bi-telephone me-2"></i>Telefone</h6>
-        <p class="small mb-0">(11) 3555-5000</p>
+      <div class="card-contato-azul p-3 rounded-3 h-100">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-telephone fs-3"></i>
+          <div>
+            <h6>Telefone</h6>
+            <p class="mb-0 fw-bold">(11) 3555-5000</p>
+            <small>Seg a Sex, 8h às 18h</small>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="col-md-4">
-      <div class="card p-3 border-0 shadow-sm card-contato-verde">
-        <h6 class="mb-1"><i class="bi bi-envelope me-2"></i>Email</h6>
-        <p class="small mb-0">suporte@senai.br</p>
+      <div class="card-contato-verde p-3 rounded-3 h-100">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-envelope fs-3"></i>
+          <div>
+            <h6>Email</h6>
+            <p class="mb-0 fw-bold">suporte@senai.br</p>
+            <small>Resposta em até 24h</small>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="col-md-4">
-      <div class="card p-3 border-0 shadow-sm card-contato-roxo">
-        <h6 class="mb-1"><i class="bi bi-chat-dots me-2"></i>Chat</h6>
-        <button class="btn-chat-suporte">Iniciar Chat</button>
+      <div class="card-contato-roxo p-3 rounded-3 h-100">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-chat-dots fs-3"></i>
+          <div>
+            <h6>Chat Online</h6>
+            <button type="button" class="btn-chat-suporte" routerLink="/chat-suporte">Iniciar Chat</button>
+            <small class="d-block mt-1">Disponível agora</small>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card p-4 border-0 shadow-sm mb-4">
-    <h6 class="mb-3"><i class="bi bi-pencil-square me-2"></i>Enviar Mensagem</h6>
+  <section class="bg-body p-4 rounded-3 shadow-sm mb-4">
+    <h5 class="mb-3"><i class="bi bi-file-earmark-text me-2"></i>Enviar Mensagem</h5>
     <form [formGroup]="supportForm" (ngSubmit)="enviarMensagem()">
       <div class="mb-3">
-        <label class="form-label small text-secondary">Assunto</label>
+        <label class="form-label small fw-bold text-secondary">Assunto</label>
         <select class="form-select" formControlName="assunto">
           <option value="">Selecione um assunto...</option>
-          <option value="duvida">Dúvida</option>
-          <option value="erro">Erro</option>
+          <option value="duvida">Dúvida Geral</option>
+          <option value="erro">Reportar Erro</option>
+          <option value="sugestao">Sugestão</option>
         </select>
       </div>
       <div class="mb-3">
-        <label class="form-label small text-secondary">Mensagem</label>
-        <textarea class="form-control" rows="3" formControlName="mensagem" placeholder="Como podemos ajudar?"></textarea>
+        <label class="form-label small fw-bold text-secondary">Mensagem</label>
+        <textarea class="form-control" rows="4" formControlName="mensagem" placeholder="Descreva sua dúvida ou problema..."></textarea>
       </div>
       <button type="submit" class="btn-enviar-suporte" [disabled]="supportForm.invalid">
-        Enviar Mensagem
+        <i class="bi bi-send me-2"></i>Enviar Mensagem
       </button>
     </form>
-  </div>
+  </section>
 
-  <div class="mb-4">
-    <h6 class="mb-3 faq-title"><i class="bi bi-question-circle me-2"></i>Perguntas Frequentes</h6>
-    <div class="list-group shadow-sm">
-      <div *ngFor="let item of faqs; let i = index" class="list-group-item list-group-item-action" (click)="toggleFaq(i)">
+  <section class="mb-4">
+    <h5 class="faq-title mb-3"><i class="bi bi-question-circle-fill me-2"></i>Perguntas Frequentes (FAQ)</h5>
+    <div class="list-group">
+      <div class="list-group-item p-3" *ngFor="let item of faqs; let i = index" (click)="toggleFaq(i)">
         <div class="d-flex justify-content-between align-items-center">
-          <span class="small fw-medium">{{ item.question }}</span>
+          <span class="fw-bold">{{ item.question }}</span>
           <i class="bi" [class.bi-chevron-down]="!item.open" [class.bi-chevron-up]="item.open"></i>
         </div>
-        <div *ngIf="item.open" class="mt-2 small text-secondary">
+        <div class="mt-2 text-secondary" *ngIf="item.open">
           {{ item.answer }}
         </div>
       </div>
     </div>
-  </div>
-</div>
+  </section>
+
+  <section class="mb-5 mt-4">
+    <div class="row row-cols-1 row-cols-md-2 g-3">
+      
+      <div class="col">
+        <div class="p-3 rounded-3" style="background-color: #1e1e24; border: 1px solid #2d2d35;">
+          <div class="d-flex align-items-center gap-3">
+            <div style="background-color: rgba(231, 76, 60, 0.15); color: #e74c3c; width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            </div>
+            <div>
+              <h5 class="mb-0" style="color: #ffffff; font-size: 0.95rem; font-weight: 600;">Manual do Sistema</h5>
+              <small class="text-secondary" style="font-size: 0.8rem;">Documentação completa em PDF para leitura.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="p-3 rounded-3" style="background-color: #1e1e24; border: 1px solid #2d2d35;">
+          <div class="d-flex align-items-center gap-3">
+            <div style="background-color: rgba(91, 143, 217, 0.15); color: #5b8fd9; width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+              <i class="bi bi-play-btn-fill"></i>
+            </div>
+            <div>
+              <h5 class="mb-0" style="color: #ffffff; font-size: 0.95rem; font-weight: 600;">Vídeos Tutoriais</h5>
+              <small class="text-secondary" style="font-size: 0.8rem;">Passo a passo em vídeo das principais funções.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div> 
+
