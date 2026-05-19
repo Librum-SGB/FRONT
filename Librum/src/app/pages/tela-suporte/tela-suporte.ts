@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router'; // 1. ADICIONE ESTE IMPORT
+import { RouterLink } from '@angular/router'; 
 
 @Component({
   selector: 'app-tela-suporte',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink], // 2. ADICIONE AQUI
+  imports: [CommonModule, ReactiveFormsModule, RouterLink], 
   templateUrl: './tela-suporte.html',
   styleUrls: ['./tela-suporte.scss']
 })
 export class TelaSuporte implements OnInit {
-  supportForm!: FormGroup;
+    supportForm!: FormGroup;
 
   faqs = [
     { question: 'Como cadastrar um novo livro?', answer: 'Vá no menu Cadastrar Material e preencha os dados.', open: false },
