@@ -12,35 +12,24 @@
       </div>
 
       <div class="col-md-10">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Buscar usuário..."
-          [(ngModel)]="busca">
+        <input type="text" class="form-control" placeholder="Buscar usuário..." [(ngModel)]="busca">
       </div>
     </div>
 
     <div class="row">
-      <div
-        class="col-md-3 mb-4"
-        *ngFor="let usuario of usuariosFiltrados()">
+      <div class="col-md-3 mb-4" *ngFor="let usuario of usuariosFiltrados()">
 
         <div class="card text-center p-3 h-100">
 
           <div class="mb-3">
-            <img
-              [src]="usuario.foto"
-              class="rounded-circle"
-              style="width: 80px; height: 80px; object-fit: cover;">
+            <img [src]="usuario.foto" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
           </div>
 
           <h6>{{ usuario.nome }}</h6>
           <small>ID: {{ usuario.id }}</small>
 
           <div class="mt-3 mb-3">
-            <span
-              class="badge"
-              [ngClass]="{
+            <span class="badge" [ngClass]="{
                 'bg-success': !usuario.estaBloqueado,
                 'bg-danger': usuario.estaBloqueado
               }">
@@ -48,10 +37,7 @@
             </span>
           </div>
 
-          <button
-            class="btn btn-primary w-100"
-            data-bs-toggle="modal"
-            data-bs-target="#modalUsuario"
+          <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalUsuario"
             (click)="selecionarUsuario(usuario)">
             Mais informações
           </button>
@@ -75,9 +61,7 @@
       <div class="modal-body" *ngIf="usuarioSelecionado">
 
         <div class="text-center mb-4">
-          <img
-            [src]="usuarioSelecionado.foto"
-            class="rounded-circle"
+          <img [src]="usuarioSelecionado.foto" class="rounded-circle"
             style="width: 100px; height: 100px; object-fit: cover;">
         </div>
 
@@ -105,23 +89,19 @@
         <div class="row w-100 g-2">
 
           <div class="col-12 col-md-4">
-            <button class="btn btn-primary w-100">
+            <button class="btn btn-primary w-100" routerLink="/historicoEmprestimo">
               Histórico
             </button>
           </div>
 
           <div class="col-12 col-md-4">
-            <button
-              class="btn btn-warning w-100"
-              (click)="editarUsuario()">
+            <button class="btn btn-warning w-100" (click)="editarUsuario()">
               Editar
             </button>
           </div>
 
           <div class="col-12 col-md-4">
-            <button
-              class="btn btn-danger w-100"
-              (click)="abrirModalExcluir()">
+            <button class="btn btn-danger w-100" (click)="abrirModalExcluir()">
               Excluir
             </button>
           </div>
@@ -146,25 +126,15 @@
       <div class="modal-body">
 
         <div class="text-center mb-4">
-          <img
-            [src]="usuarioEditando.foto"
-            class="rounded-circle mb-3"
+          <img [src]="usuarioEditando.foto" class="rounded-circle mb-3"
             style="width: 100px; height: 100px; object-fit: cover;">
 
-          <input
-            type="file"
-            class="form-control"
-            accept="image/*"
-            (change)="alterarFoto($event)">
+          <input type="file" class="form-control" accept="image/*" (change)="alterarFoto($event)">
         </div>
 
         <div class="mb-3">
           <label>ID</label>
-          <input
-            type="text"
-            class="form-control"
-            [value]="usuarioEditando.id"
-            disabled>
+          <input type="text" class="form-control" [value]="usuarioEditando.id" disabled>
         </div>
 
         <div class="mb-3">

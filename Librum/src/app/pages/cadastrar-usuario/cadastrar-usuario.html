@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <div class="card p-4 shadow-sm">
 
-    <h6 class="mb-4">Cadastrar Novo Usuário</h6>
+    <h5 class="mb-4">Cadastrar Novo Usuário</h5>
 
     <div class="row mb-3">
       <div class="col-md-8">
@@ -83,20 +83,12 @@
     <div class="row mb-3">
       <div class="col-md-6">
         <label>Senha *</label>
-        <input 
-          type="password" 
-          class="form-control" 
-          [(ngModel)]="usuario.senha" 
-          required>
+        <input type="password" class="form-control" [(ngModel)]="usuario.senha" required>
       </div>
 
       <div class="col-md-6">
         <label>Confirmar Senha *</label>
-        <input 
-          type="password" 
-          class="form-control" 
-          [(ngModel)]="confirmarSenha" 
-          required>
+        <input type="password" class="form-control" [(ngModel)]="confirmarSenha" required>
       </div>
     </div>
 
@@ -113,10 +105,7 @@
     <div class="d-flex justify-content-end gap-2">
       <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
 
-      <button 
-        class="btn btn-primary" 
-        (click)="salvar()"
-        [disabled]="usuario.senha !== confirmarSenha">
+      <button class="btn btn-primary" (click)="salvar()" [disabled]="usuario.senha !== confirmarSenha">
         Salvar
       </button>
     </div>

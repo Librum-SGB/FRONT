@@ -2,15 +2,18 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Usuario } from '../../models/usuario.model';
+import { RouterLink } from "@angular/router";
+import { ToastService } from '../../shared/services/toast.service';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })
+
 export class EditarExcluirUsuario {
   filtro = 'nome';
   busca = '';
@@ -18,7 +21,7 @@ export class EditarExcluirUsuario {
   usuarioSelecionado: Usuario | null = null;
   usuarioEditando: Usuario = {} as Usuario;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private toastService: ToastService) { }
 
   usuarios: Usuario[] = [
     {
@@ -118,6 +121,9 @@ export class EditarExcluirUsuario {
 
       this.usuarios[index] = { ...this.usuarioEditando };
       this.usuarioSelecionado = { ...this.usuarioEditando };
+
+      this.toastService.showToast('success', 'Usuário editado com sucesso!');
+
     }
 
     bootstrap.Modal.getInstance(
@@ -138,6 +144,7 @@ export class EditarExcluirUsuario {
       usuario => usuario.id !== this.usuarioSelecionado?.id
     );
 
+    this.toastService.showToast('success', 'Usuário excluído com sucesso!');
     this.usuarioSelecionado = null;
 
     bootstrap.Modal.getInstance(
