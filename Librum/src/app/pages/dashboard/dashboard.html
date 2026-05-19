@@ -1,22 +1,22 @@
 <main>
-  <section class="row mt-3 row-gap-2 ">
-    <div class="col-sm-6 col-md-3">
-      <app-card-informativo titulo="teste" valor="1203" classe="bg-verde">
+  <section class=" row mt-3 row-gap-2 ">
+    <div class=" col-sm-6 col-md-3">
+      <app-card-informativo titulo="Alunos Cadastrados" valor="1203" classe="bg-verde">
         <i class="bi bi-people-fill fs-1"></i>
       </app-card-informativo>
     </div>
     <div class="col-sm-6 col-md-3">
-      <app-card-informativo titulo="teste22" valor="1203" classe="bg-azul-escuro">
+      <app-card-informativo titulo="Livros nos acrevos" valor="1203" classe="bg-azul-escuro">
         <i class="bi bi-book fs-1"></i>
       </app-card-informativo>
     </div>
     <div class="col-sm-6 col-md-3">
-      <app-card-informativo titulo="teste" valor="1203" classe="bg-azul-claro">
+      <app-card-informativo titulo="Emprestimos ativos" valor="1203" classe="bg-azul-claro">
         <i class="bi bi-arrow-clockwise fs-1"></i>
       </app-card-informativo>
     </div>
     <div class="col-sm-6 col-md-3">
-      <app-card-informativo titulo="teste" valor="1203" classe="bg-laranja">
+      <app-card-informativo titulo="A vencer" valor="1203" classe="bg-laranja">
         <i class="bi bi-exclamation-circle fs-1"></i>
       </app-card-informativo>
     </div>
@@ -31,7 +31,8 @@
       </div>
       <div class="row">
         <div class="col-10 ">
-          <input type="text" class="form-control" id="novaTarefa" [(ngModel)]="novaTarefa" placeholder="Nova Tarefa">
+          <input type="text" class="form-control" id="novaTarefa" [(ngModel)]="descNovaTarefa"
+            placeholder="Nova Tarefa">
         </div>
         <div class="col-2">
           <button class="btn btn-primary w-100" (click)="adicionarTarefa()"><i class="bi bi-plus "></i></button>
@@ -39,9 +40,11 @@
       </div>
       <div class="row mt-3">
         <ul class="list-unstyled flex gap-5">
-          @for(t of tarefas;track $index){
-          <li><app-item-lista-tarefa [descricao]="t.descricao" [concluida]="t.concluida"
-              (mudarEstado)="atualizarTarefa($index, $event)" (deletar)="deletarTarefa($index)" /></li>
+          @for(t of listaTarefa;track t.id){
+          <li>
+            <app-item-lista-tarefa [tarefa]="t" (mudarEstado)="toggleTarefa($event)" (deletar)="deletarTarefa($event)">
+            </app-item-lista-tarefa>
+          </li>
           }
         </ul>
       </div>
@@ -59,10 +62,10 @@
           <app-card-status titulo="em andamento" conteudo="2" />
         </div>
         <div class="col-12 col-md-4">
-          <app-card-status titulo="a vencer" conteudo="2" classe="bg-warning-subtle" />
+          <app-card-status titulo="a vencer" conteudo="2" cor="warning" />
         </div>
         <div class="col-12 col-md-4">
-          <app-card-status titulo="vencidos" conteudo="2" classe="bg-danger-subtle" />
+          <app-card-status titulo="vencidos" conteudo="2" cor="danger" />
         </div>
       </div>
       <div class="row">
@@ -81,11 +84,29 @@
               <td>juanito</td>
               <td>há 2 dias</td>
               <td>
-                <p class="badge" [ngClass]="{
-                  'bg-success': 'emAndamento' == 'emAndamento',
-                  'bg-warning': 'aVencer' === 'aVencer',
-                  'bg-danger': 'vencido' === 'vencido',
-                }">Em andamento</p>
+                <app-badge status="success">
+                  Em andamento
+                </app-badge>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Ttw</th>
+              <td>juanito</td>
+              <td>há 2 dias</td>
+              <td>
+                <app-badge status="warning">
+                  A vencer
+                </app-badge>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Ttw</th>
+              <td>juanito</td>
+              <td>há 2 dias</td>
+              <td>
+                <app-badge status="danger">
+                  Vencido
+                </app-badge>
               </td>
             </tr>
           </tbody>

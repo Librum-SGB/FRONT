@@ -1,6 +1,17 @@
 .dropdown-menu {
-    max-width: 320px; 
-    width: 320px;
-    max-height: 80vh;  
-    overflow-y: auto;  
+  max-width: 320px;
+  width: 320px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* ativo padrão */
+.nav-link.active {
+  border-bottom: 1px blue solid;
+  font-weight: 500;
+}
+
+/* hover normal */
+.nav-link:hover {
+  font-weight: bolder;
 }

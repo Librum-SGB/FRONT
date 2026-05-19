@@ -1,4 +1,4 @@
-<div class="login-container">
+<div class="login-container" data-bs-theme="light">
 
   <!-- TOPO -->
   <div class="login-header">
@@ -30,7 +30,7 @@
                [(ngModel)]="senha">
 
         <button class="btn btn-eye" type="button" (click)="toggleSenha()">
-          👁
+          <i class="bi" [ngClass]="mostrarSenha ? 'bi-eye-slash' : 'bi-eye'"></i>
         </button>
       </div>
     </div>

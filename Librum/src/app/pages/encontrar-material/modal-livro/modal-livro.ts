@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Exemplar } from '../../../models/exemplar.model';
 import { Modal } from '../../../shared/component/modal/modal';
+import { Livro } from '../../../models/livro.model';
+import { ExemplarVirtualDto, LivroVirtualDto } from '../../../dto/estantevirtual.dto';
 
 @Component({
   selector: 'app-modal-livro',
@@ -10,7 +12,7 @@ import { Modal } from '../../../shared/component/modal/modal';
 })
 export class ModalLivro {
   @Input() isOpen: boolean = false;
-  @Input() livro?: Exemplar;
+  @Input() exemplar?: ExemplarVirtualDto;
   @Output() isOpenChange = new EventEmitter<boolean>();
 
   close() {

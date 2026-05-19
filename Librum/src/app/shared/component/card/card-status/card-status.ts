@@ -10,5 +10,6 @@ import { NgClass } from '@angular/common';
 export class CardStatus {
   @Input({ required: true }) titulo: string = 'Titulo';
   @Input({ required: true }) conteudo: string = 'conteudo';
-  @Input({ required: false }) classe: string = 'bg-success-subtle';
+  @Input()
+  cor: 'success' | 'warning' | 'danger' | 'primary' | 'secondary' = 'success';
 }

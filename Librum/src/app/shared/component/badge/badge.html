@@ -1,0 +1,13 @@
+<p class="badge" [ngClass]="{
+    'bg-success-subtle text-success': status === 'success',
+
+    'bg-warning-subtle text-warning': status === 'warning',
+
+    'bg-danger-subtle text-danger': status === 'danger',
+
+    'bg-primary-subtle text-primary': status === 'primary',
+
+    'bg-secondary-subtle text-secondary': status === 'secondary'
+  }">
+  <ng-content />
+</p>

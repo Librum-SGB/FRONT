@@ -1,6 +1,16 @@
-<div class="card rounded-2 text-center" [ngClass]="classe">
-  <div class="card-body">
-    <p>{{titulo}}</p>
-    <h4>{{conteudo}}</h4>
+<div class="card rounded-2 text-center border-0" [ngClass]="{
+    'bg-success-subtle text-success ': cor === 'success',
+
+    'bg-warning-subtle text-warning': cor === 'warning',
+
+    'bg-danger-subtle text-danger': cor === 'danger',
+
+    'bg-primary-subtle text-primary': cor === 'primary',
+
+    'bg-secondary-subtle text-secondary': cor === 'secondary'
+  }">
+  <div class="card-body fw-bold">
+    <p>{{ titulo }}</p>
+    <h4>{{ conteudo }}</h4>
   </div>
 </div>
