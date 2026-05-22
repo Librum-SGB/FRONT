@@ -1,31 +1,34 @@
-<footer class="footer bg-body py-3">
+<footer class="footer bg-body py-2">
     <div class="footer-container d-flex justify-content-center align-items-center flex-column">
         <div class="row">
-            <div class="col-md-3 mb-4">
+            <div class="col-md-3 mb-2">
 
                 <div class="footer-logo">
-                    <img src="assets/images/librumIco.ico" alt="Logo My Librum">
+                    <img src="assets/images/librumLogo.ico" alt="Logo My Librum">
                     <h5>My Librum</h5>
                 </div>
-                <p class="small">
-                    My Librum é um projeto independente de coração para todos os bibliotecários.
+                <p class="small fst-italic">
+                    "Organizando conhecimento, conectando leitores."
                 </p>
                 <p class="small">&copy; 2026 My Librum.</p>
                 <p class="small">Versão ALPHA</p>
                 <p class="small">Todos os direitos reservados</p>
+                <p class="small">Desenvolvido por Equipe My Librum</p>
+
             </div>
 
-            <div class="col-md-2 mb-4">
+            <div class="col-md-2 mb-2">
                 <h4>Links</h4>
                 <ul class="list-unstyled">
                     <li><app-link-personalizado link="/dashboard">Home</app-link-personalizado></li>
                     <li><app-link-personalizado link="/estanteVirtual">Estante</app-link-personalizado></li>
-                    <li><app-link-personalizado link="/ajuda">Ajuda</app-link-personalizado></li>
+                    <li><app-link-personalizado link="/emprestimo">Empréstimos</app-link-personalizado></li>
+                    <li><app-link-personalizado link="/relatorio">Relatórios</app-link-personalizado></li>
                 </ul>
             </div>
 
 
-            <div class="col-md-2 mb-4">
+            <div class="col-md-2 mb-2">
                 <h4>Suporte</h4>
                 <ul class="list-unstyled">
                     <li><app-link-personalizado link="/suporte">Suporte</app-link-personalizado></li>
@@ -34,16 +37,15 @@
                 </ul>
             </div>
 
-            <div class="col-md-2 mb-4">
+            <div class="col-md-2 mb-2">
                 <h4>Acesso Rápido</h4>
                 <ul class="list-unstyled">
                     <li><app-link-personalizado link="/cadastrar-usuario">Cadastro de Usuário</app-link-personalizado>
                     </li>
                     <li><app-link-personalizado link="/cadastro-bibliotecaria">Cadastro de
-                            Bibliotecária</app-link-personalizado></li>
-                    <li><app-link-personalizado link="/cadastrar-material">Cadastro de Material</app-link-personalizado>
+                            Funcionário</app-link-personalizado></li>
+                    <li><app-link-personalizado link="/cadastrarMaterial">Cadastro de Material</app-link-personalizado>
                     </li>
-                    <li><app-link-personalizado link="/cadastro-bibliotecaria">Relatórios</app-link-personalizado></li>
                 </ul>
             </div>
 
@@ -51,14 +53,8 @@
 
     </div>
 
-  <div
-  class="duck-zone"
-  *ngIf="showDucks"
-  
-  
->
- <img src="assets/images/capivara.gif">
-</div>
+    <div class="duck-zone" *ngIf="showDucks">
+        <img src="assets/images/capivara.gif">
+    </div>
 
 </footer>
-

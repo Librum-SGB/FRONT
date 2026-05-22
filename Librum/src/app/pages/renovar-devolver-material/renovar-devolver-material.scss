@@ -1,0 +1,41 @@
+.search-emprestimo {
+  .form-control:focus {
+    box-shadow: none;
+    outline: none;
+    border-color: rgba(var(--bs-secondary-rgb), 0.25);
+  }
+}
+
+.btn-success-librum { 
+  background-color: var(--cor-verde, #28c76f); 
+  color: white; 
+  border: none; 
+  font-weight: 600; 
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.9; color: white; } 
+}
+
+.btn-warning-librum { 
+  background-color: var(--cor-laranja, #ff7a1a); 
+  color: white; 
+  border: none; 
+  font-weight: 600; 
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.9; color: white; } 
+}
+
+.card-hover { 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  &:hover { 
+    transform: translateY(-3px); 
+    border-color: var(--cor-azul-claro, #5b8fd9) !important; 
+  } 
+}
+
+.animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+
+@keyframes fadeIn { 
+  from { opacity: 0; transform: translateY(10px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}

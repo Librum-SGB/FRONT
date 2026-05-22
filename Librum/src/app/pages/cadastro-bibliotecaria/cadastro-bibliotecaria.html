@@ -1,38 +1,65 @@
-<div class="login-container">
+<div class="login-container" data-bs-theme="light">
   <div class="login-header">
     <div class="icon-box">
-      <i class="bi bi-person-plus"></i>
+      <i class="bi bi-person-badge"></i>
     </div>
-    <h2>Librum</h2>
-    <p>Cadastro de Bibliotecária</p>
+    <h2>My Librum</h2>
+    <p>Cadastro de Funcionário</p>
   </div>
 
   <div class="card p-4 shadow">
-    <h5 class="text-center mb-4 text-secondary">Novo Cadastro Bibliotecária</h5>
+    <h5 class="text-center mb-2 text-secondary">Novo Funcionário</h5>
+    <p class="text-center small text-secondary mb-4">Crie o acesso de bibliotecária, assistente ou suporte</p>
 
     <div class="mb-3">
-      <label class="form-label text-secondary">Nome Completo</label>
+      <label class="form-label text-secondary small">Cargo / Função *</label>
+      <select class="form-select" [(ngModel)]="cargo">
+        <option value="" disabled>Selecione o cargo...</option>
+        <option *ngFor="let item of cargos" [value]="item.value">{{ item.label }}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-secondary small">Nome Completo *</label>
       <input type="text" class="form-control" placeholder="Nome completo" [(ngModel)]="nome">
     </div>
 
     <div class="mb-3">
-      <label class="form-label text-secondary">Email</label>
+      <label class="form-label text-secondary small">Email *</label>
       <input type="email" class="form-control" placeholder="seu@email.com" [(ngModel)]="email">
     </div>
 
     <div class="mb-3">
-      <label class="form-label text-secondary">Matrícula Bibliotecária</label>
+      <label class="form-label text-secondary small">Matrícula *</label>
       <input type="text" class="form-control" placeholder="Ex: 2026-001" [(ngModel)]="matricula">
     </div>
 
     <div class="mb-3">
-      <label class="form-label text-secondary">Senha</label>
-      <input type="password" class="form-control" [(ngModel)]="senha">
+      <label class="form-label text-secondary small">Senha *</label>
+      <div class="input-group">
+        <input
+          [type]="mostrarSenha ? 'text' : 'password'"
+          class="form-control"
+          placeholder="Crie uma senha"
+          [(ngModel)]="senha">
+        <button class="btn btn-eye" type="button" (click)="toggleSenha()" aria-label="Mostrar senha">
+          <i class="bi" [ngClass]="mostrarSenha ? 'bi-eye-slash' : 'bi-eye'"></i>
+        </button>
+      </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label text-secondary">Confirmar Senha</label>
-      <input type="password" class="form-control" [(ngModel)]="confirmarSenha">
+    <div class="mb-4">
+      <label class="form-label text-secondary small">Confirmar Senha *</label>
+      <div class="input-group">
+        <input
+          [type]="mostrarConfirmarSenha ? 'text' : 'password'"
+          class="form-control"
+          placeholder="Repita a senha"
+          [(ngModel)]="confirmarSenha">
+        <button class="btn btn-eye" type="button" (click)="toggleConfirmarSenha()" aria-label="Mostrar confirmação de senha">
+          <i class="bi" [ngClass]="mostrarConfirmarSenha ? 'bi-eye-slash' : 'bi-eye'"></i>
+        </button>
+      </div>
     </div>
 
     <button class="btn btn-login w-100" (click)="cadastrar()">
@@ -42,5 +69,9 @@
     <div class="text-center mt-3 text-secondary">
       <a (click)="voltar()">Voltar para o Login</a>
     </div>
+  </div>
+
+  <div class="footer">
+    © 2026 LIBRUM - Todos os direitos reservados
   </div>
 </div>
