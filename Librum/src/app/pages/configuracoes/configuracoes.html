@@ -1,0 +1,146 @@
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm">
+
+        <h5 class="mb-4">Configurações</h5>
+
+        <!-- aparência -->
+        <h6>Aparência</h6>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <button class="btn w-100" [ngClass]="
+            themeService.getCurrentTheme() === 'light'
+              ? 'btn-primary'
+              : 'btn-outline-secondary'
+          " (click)="alterarTema('light')">
+                    Tema Claro
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <button class="btn w-100" [ngClass]="
+            themeService.getCurrentTheme() === 'dark'
+              ? 'btn-primary'
+              : 'btn-outline-secondary'
+          " (click)="alterarTema('dark')">
+                    Tema Escuro
+                </button>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- dados -->
+        <h6>Dados do Bibliotecário</h6>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>ID</label>
+                <input type="text" class="form-control" [value]="bibliotecario.id" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label>Matrícula</label>
+                <input type="text" class="form-control" [(ngModel)]="bibliotecario.matricula">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Nome Completo</label>
+            <input type="text" class="form-control" [(ngModel)]="bibliotecario.nome">
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" class="form-control" [(ngModel)]="bibliotecario.email">
+        </div>
+
+        <div class="mb-3">
+            <label>Senha</label>
+            <input type="password" class="form-control" [(ngModel)]="bibliotecario.senha">
+        </div>
+
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-primary" (click)="salvarAlteracoes()">
+                Salvar Alterações
+            </button>
+        </div>
+
+        <hr>
+
+        <!-- notificações -->
+        <h6>Notificações</h6>
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.gerais">
+            <label class="form-check-label ms-2">
+                Notificações Gerais
+            </label>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.email">
+            <label class="form-check-label ms-2">
+                Notificações por Email
+            </label>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.alertas">
+            <label class="form-check-label ms-2">
+                Alertas do Sistema
+            </label>
+        </div>
+
+        <hr>
+
+        <!-- segurança -->
+        <h6>Segurança</h6>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <button class="btn btn-outline-primary w-100" (click)="alterarSenha()">
+                    Alterar Senha
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <button class="btn btn-outline-success w-100" (click)="ativar2FA()">
+                    Autenticação em 2 Fatores
+                </button>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- sistema -->
+        <h6>Sistema</h6>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Versão do Sistema</label>
+                <input type="text" class="form-control" [value]="versaoSistema" disabled>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end">
+                <button class="btn btn-primary w-100" (click)="verificarAtualizacoes()">
+                    Verificar Atualizações
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <label>Último Backup</label>
+                <input type="text" class="form-control" [value]="ultimoBackup" disabled>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-success w-100" (click)="fazerBackup()">
+                    Fazer Backup
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
