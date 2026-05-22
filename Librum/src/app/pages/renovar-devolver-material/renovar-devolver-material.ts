@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // Import da sua Badge que vimos na foto do seu VS Code
-import { Badge } from '../../shared/component/badge/badge'; 
+import { Badge } from '../../shared/component/badge/badge';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-renovar-devolver-material',
@@ -12,6 +13,9 @@ import { Badge } from '../../shared/component/badge/badge';
   styleUrl: './renovar-devolver-material.scss',
 })
 export class RenovarDevolverMaterial {
+
+  constructor(private toastService: ToastService) { }
+
   searchId: string = '';
   emprestimoSelecionado: any = null;
 
@@ -41,14 +45,14 @@ export class RenovarDevolverMaterial {
 
     if (apenasNumeros) {
       // Transforma "3" em "003" para bater com o padrão "EMP-003"
-      const numeroFormatado = termo.padStart(3, '0'); 
+      const numeroFormatado = termo.padStart(3, '0');
       const idParaBuscar = `EMP-${numeroFormatado}`;
-      
+
       this.emprestimoSelecionado = this.emprestimos.find(e => e.id === idParaBuscar) || null;
     } else {
       // Se digitou letras, busca por parte do nome do Usuário, do Livro ou ID completo
-      this.emprestimoSelecionado = this.emprestimos.find(e => 
-        e.usuario.toUpperCase().includes(termo) || 
+      this.emprestimoSelecionado = this.emprestimos.find(e =>
+        e.usuario.toUpperCase().includes(termo) ||
         e.livro.toUpperCase().includes(termo) ||
         e.id.toUpperCase() === termo
       ) || null;
@@ -60,6 +64,12 @@ export class RenovarDevolverMaterial {
     this.searchId = emp.id;
   }
 
-  renovar() { alert('Renovado!'); }
-  devolver() { alert('Devolvido!'); }
+  renovar() {
+    this.toastService.showToast('success', 'Empréstimo renovado com sucesso!');
+  }
+
+  devolver() {
+    this.toastService.showToast('success', 'Empréstimo devolvido com sucesso!');
+  }
+
 }
