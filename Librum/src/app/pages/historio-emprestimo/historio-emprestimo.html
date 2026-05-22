@@ -19,17 +19,17 @@
     <div class="col-sm-12 col-md-4">
       <app-card-status titulo="Em andamento"
         [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ANDAMENTO).length.toString()"
-        classe="bg-primary-subtle text-primary" />
+        cor="primary" />
     </div>
     <div class="col-sm-12 col-md-4">
       <app-card-status titulo="Desenvolvidos"
         [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.DEVOLVIDO).length.toString()"
-        classe="bg-success-subtle text-success" />
+        cor="success" />
     </div>
     <div class="col-sm-12 col-md-4">
       <app-card-status titulo="Atrasados"
         [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ATRASADO).length.toString()"
-        classe="bg-danger-subtle text-danger" />
+        cor="danger" />
     </div>
   </div>
   <div class="row px-3">
