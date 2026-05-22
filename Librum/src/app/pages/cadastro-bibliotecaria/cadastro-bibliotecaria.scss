@@ -11,10 +11,16 @@
 }
 
 .card {
-  width: 100%;          
-  max-width: 400px;      
-  margin-top: 20px;       
-  margin-bottom: 20px;    
+  width: 100%;
+  max-width: 420px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.form-select:focus,
+.form-control:focus {
+  box-shadow: none;
+  border-color: #86b7fe;
 }
 
 
