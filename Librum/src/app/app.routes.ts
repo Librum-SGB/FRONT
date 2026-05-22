@@ -29,7 +29,7 @@ export const routes: Routes = [
   { path: 'editar-excluir-usuario', component: EditarExcluirUsuario },
   { path: 'historicoEmprestimo', component: HistorioEmprestimo },
   { path: 'relatorio', component: Relatorio },
-  { path: 'configuracoes', component: Configuracoes }
+  { path: 'configuracoes', component: Configuracoes },
   { path: 'chat-suporte', component: ChatSuporte },
-  { path: 'renovar-devolver', component: RenovarDevolverMaterial }
+  { path: 'renovar-devolver', component: RenovarDevolverMaterial },
 ];
