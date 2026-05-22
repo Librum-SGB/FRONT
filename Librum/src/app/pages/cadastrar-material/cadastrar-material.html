@@ -3,125 +3,301 @@
   <h5 class="mb-3">Cadastrar Material no Acervo</h5>
 
   <label class="form-label">Tipo de Material</label>
+
   <div class="d-flex gap-3 mb-4">
 
-    <button type="button" class="btn btn-outline-primary btn-lg w-100 p-4 active">
+    <button type="button" class="btn btn-lg w-100 p-4"
+      [ngClass]="tipoMaterial == 'livro' ? 'btn-primary' : 'btn-outline-secondary'" (click)="selecionarTipo('livro')">
+
       <i class="bi bi-book fs-3"></i><br>
       <span class="fs-5">Livro</span>
     </button>
 
-    <button type="button" class="btn btn-outline-secondary btn-lg w-100 p-4">
+    <button type="button" class="btn btn-lg w-100 p-4"
+      [ngClass]="tipoMaterial == 'periodico' ? 'btn-primary' : 'btn-outline-secondary'"
+      (click)="selecionarTipo('periodico')">
+
       <i class="bi bi-journal fs-3"></i><br>
       <span class="fs-5">Periódico</span>
     </button>
 
-    <button type="button" class="btn btn-outline-secondary btn-lg w-100 p-4">
+    <button type="button" class="btn btn-lg w-100 p-4"
+      [ngClass]="tipoMaterial == 'outros' ? 'btn-primary' : 'btn-outline-secondary'" (click)="selecionarTipo('outros')">
+
       <i class="bi bi-disc fs-3"></i><br>
       <span class="fs-5">Outros Materiais</span>
     </button>
 
   </div>
 
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <label class="form-label">ID</label>
-      <input type="text" class="form-control" placeholder="L-00001" [(ngModel)]="id">
+  <!-- LIVRO -->
+  <div *ngIf="tipoMaterial == 'livro'">
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">ID</label>
+        <input type="text" class="form-control" placeholder="L-00001" disabled>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Título *</label>
+        <input type="text" class="form-control" [(ngModel)]="titulo">
+      </div>
     </div>
 
-    <div class="col-md-6 mb-3">
-      <label class="form-label">Título *</label>
-      <input type="text" class="form-control" [(ngModel)]="titulo" required>
+    <div class="mb-3">
+      <label class="form-label">Subtítulo</label>
+      <input type="text" class="form-control" [(ngModel)]="subtitulo">
     </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Autor *</label>
+        <input type="text" class="form-control" [(ngModel)]="autor">
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Editora *</label>
+        <input type="text" class="form-control" [(ngModel)]="editora">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Ano de Publicação *</label>
+        <input type="number" class="form-control" [(ngModel)]="anoPublicacao">
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label">ISBN *</label>
+        <input type="text" class="form-control" [(ngModel)]="isbn">
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Edição</label>
+        <input type="text" class="form-control" [(ngModel)]="edicao">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Gênero</label>
+
+        <select class="form-select" [(ngModel)]="genero">
+          <option selected disabled>Selecione...</option>
+          <option>Romance</option>
+          <option>Ficção Científica</option>
+          <option>Fantasia</option>
+          <option>Terror</option>
+          <option>Suspense</option>
+          <option>Biografia</option>
+        </select>
+
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Qtd de Exemplares</label>
+        <input type="number" class="form-control" [(ngModel)]="quantidadeExemplares">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Sinopse</label>
+      <textarea class="form-control" rows="3" [(ngModel)]="sinopse"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Localização na Estante</label>
+        <input type="text" class="form-control" [(ngModel)]="localizacao">
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Unidade</label>
+
+        <select class="form-select" [(ngModel)]="unidade">
+          <option selected disabled>Selecione...</option>
+          <option>Biblioteca Central</option>
+          <option>Unidade Norte</option>
+          <option>Unidade Sul</option>
+        </select>
+
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">Data de Aquisição</label>
+      <input type="date" class="form-control" [(ngModel)]="dataAquisicao">
+    </div>
+
   </div>
 
-  <div class="mb-3">
-    <label class="form-label">Subtítulo</label>
-    <input type="text" class="form-control" [(ngModel)]="subtitulo">
-  </div>
+  <!-- PERIÓDICO -->
+  <div *ngIf="tipoMaterial == 'periodico'">
 
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <label class="form-label">Autor *</label>
-      <input type="text" class="form-control" [(ngModel)]="autor" required>
+    <div class="row">
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">ID</label>
+        <input type="text" class="form-control" placeholder="P-00001" disabled>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Título *</label>
+        <input type="text" class="form-control" [(ngModel)]="tituloPeriodico">
+      </div>
+
     </div>
 
-    <div class="col-md-6 mb-3">
-      <label class="form-label">Editora *</label>
-      <input type="text" class="form-control" [(ngModel)]="editora" required>
-    </div>
-  </div>
+    <div class="row">
 
-  <div class="row">
-    <div class="col-md-4 mb-3">
-      <label class="form-label">Ano de Publicação *</label>
-      <input type="text" class="form-control" [(ngModel)]="anoPublicacao" required>
-    </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Editor *</label>
+        <input type="text" class="form-control" [(ngModel)]="editor">
+      </div>
 
-    <div class="col-md-4 mb-3">
-      <label class="form-label">ISBN *</label>
-      <input type="text" class="form-control" [(ngModel)]="isbn" required>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Edição / Volume / Número *</label>
+        <input type="text" class="form-control" [(ngModel)]="edicaoVolumeNumero">
+      </div>
+
     </div>
 
-    <div class="col-md-4 mb-3">
-      <label class="form-label">Edição</label>
-      <input type="text" class="form-control" [(ngModel)]="edicao">
-    </div>
-  </div>
+    <div class="row">
 
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <label class="form-label">Gênero</label>
-      <select class="form-select" [(ngModel)]="genero">
-        <option selected disabled>Selecione...</option>
-        <option>Romance</option>
-        <option>Ficção Científica</option>
-        <option>Fantasia</option>
-        <option>Terror</option>
-        <option>Suspense</option>
-        <option>Biografia</option>
-        <option>História</option>
-        <option>Autoajuda</option>
-      </select>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Data de Publicação</label>
+        <input type="date" class="form-control" [(ngModel)]="dataPublicacao">
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">ISSN *</label>
+        <input type="text" class="form-control" [(ngModel)]="issn">
+      </div>
+
     </div>
 
-    <div class="col-md-6 mb-3">
-      <label class="form-label">Qtd de Exemplares</label>
-      <input type="number" class="form-control" [(ngModel)]="quantidadeExemplares">
-    </div>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">Sinopse</label>
-    <textarea class="form-control" rows="3" [(ngModel)]="sinopse"></textarea>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6 mb-3">
-      <label class="form-label">Localização na Estante</label>
-      <input type="text" class="form-control" placeholder="Ex: A1-02" [(ngModel)]="localizacao">
+    <div class="mb-3">
+      <label class="form-label">Tema</label>
+      <input type="text" class="form-control" [(ngModel)]="tema">
     </div>
 
-    <div class="col-md-6 mb-3">
+    <div class="mb-3">
+      <label class="form-label">Descrição</label>
+      <textarea class="form-control" rows="3" [(ngModel)]="descricaoPeriodico"></textarea>
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Qtd de Exemplares</label>
+        <input type="number" class="form-control" [(ngModel)]="quantidadeExemplaresPeriodico">
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Localização na Estante</label>
+        <input type="text" class="form-control" [(ngModel)]="localizacaoPeriodico">
+      </div>
+
+    </div>
+
+    <div class="mb-4">
       <label class="form-label">Unidade</label>
-      <select class="form-select" [(ngModel)]="unidade">
+
+      <select class="form-select" [(ngModel)]="unidadePeriodico">
         <option selected disabled>Selecione...</option>
         <option>Biblioteca Central</option>
         <option>Unidade Norte</option>
         <option>Unidade Sul</option>
-        <option>Unidade Leste</option>
-        <option>Unidade Oeste</option>
       </select>
+
     </div>
+
   </div>
 
-  <div class="mb-4">
-    <label class="form-label">Data de Aquisição</label>
-    <input type="text" class="form-control" placeholder="dd/mm/aaaa" [(ngModel)]="dataAquisicao">
+  <!-- OUTROS MATERIAIS -->
+  <div *ngIf="tipoMaterial == 'outros'">
+
+    <div class="row">
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">ID</label>
+        <input type="text" class="form-control" placeholder="OM-00001" disabled>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Nome *</label>
+        <input type="text" class="form-control" [(ngModel)]="nomeMaterial">
+      </div>
+
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tipo *</label>
+
+      <select class="form-select" [(ngModel)]="tipoOutroMaterial">
+        <option selected disabled>Selecione...</option>
+        <option>DVD</option>
+        <option>Mapa</option>
+        <option>Jogo</option>
+        <option>Outro</option>
+      </select>
+
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Autor</label>
+      <input type="text" class="form-control" [(ngModel)]="autorMaterial">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descrição</label>
+      <textarea class="form-control" rows="3" [(ngModel)]="descricaoMaterial"></textarea>
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Qtd de Exemplares</label>
+        <input type="number" class="form-control" [(ngModel)]="quantidadeMaterial">
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Localização na Estante</label>
+        <input type="text" class="form-control" [(ngModel)]="localizacaoMaterial">
+      </div>
+
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Unidade</label>
+
+      <select class="form-select" [(ngModel)]="unidadeMaterial">
+        <option selected disabled>Selecione...</option>
+        <option>Biblioteca Central</option>
+        <option>Unidade Norte</option>
+        <option>Unidade Sul</option>
+      </select>
+
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">Observação</label>
+      <textarea class="form-control" rows="3" [(ngModel)]="observacao"></textarea>
+    </div>
+
   </div>
 
   <hr>
 
-  <div class="d-flex gap-2">
-    <button class="btn btn-primary" (click)="salvar()">Salvar</button>
-    <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+  <div class="d-flex justify-content-end gap-2">
+    <button class="btn btn-secondary" (click)="cancelar()">
+      Cancelar
+    </button>
+
+    <button class="btn btn-primary" (click)="salvar()">
+      Salvar
+    </button>
   </div>
+
+</div>
