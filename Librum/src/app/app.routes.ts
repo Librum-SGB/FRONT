@@ -11,6 +11,7 @@ import { CadastrarUsuario } from './pages/cadastrar-usuario/cadastrar-usuario';
 import { HistorioEmprestimo } from './pages/historio-emprestimo/historio-emprestimo';
 import { EditarExcluirUsuario } from './pages/editar-excluir-usuario/editar-excluir-usuario';
 import { Relatorio } from './pages/relatorio/relatorio';
+import { Configuracoes } from './pages/configuracoes/configuracoes';
 import { ChatSuporte } from './pages/chat-suporte/chat-suporte';
 // ADICIONEI ESSA LINHA ABAIXO:
 import { RenovarDevolverMaterial } from './pages/renovar-devolver-material/renovar-devolver-material';
@@ -28,7 +29,7 @@ export const routes: Routes = [
   { path: 'editar-excluir-usuario', component: EditarExcluirUsuario },
   { path: 'historicoEmprestimo', component: HistorioEmprestimo },
   { path: 'relatorio', component: Relatorio },
+  { path: 'configuracoes', component: Configuracoes }
   { path: 'chat-suporte', component: ChatSuporte },
-
-  { path: 'renovar-devolver', component: RenovarDevolverMaterial },
+  { path: 'renovar-devolver', component: RenovarDevolverMaterial }
 ];

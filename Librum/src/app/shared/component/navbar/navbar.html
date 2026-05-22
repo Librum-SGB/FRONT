@@ -5,7 +5,8 @@
       aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarText">
+
+    <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
@@ -23,21 +24,31 @@
           <a class="nav-link" routerLink="/estanteVirtual" routerLinkActive="active">Estante Virtual</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="#" routerLinkActive="active">Configurações</a>
+          <a class="nav-link" routerLink="/configuracoes" routerLinkActive="active">Configurações</a>
         </li>
       </ul>
-      <select class="form-select w-25" aria-label="Default select example">
-        <option selected>Selecionar Unidade</option>
-        <option value="1">Unidade x</option>
-        <option value="2">Unidade y</option>
-        <option value="3">Unidade z</option>
-      </select>
+
+      <div class="w-25 d-flex align-items-center gap-3">
+        <select class="form-select w-100" aria-label="Default select example">
+          <option selected>Selecionar Unidade</option>
+          <option value="1">Unidade x</option>
+          <option value="2">Unidade y</option>
+          <option value="3">Unidade z</option>
+        </select>
+      </div>
+
+      <button class="dropdown-item ms-4 me-2" style="width: 20px;" (click)="toggleTema()">
+        @if (tema.getCurrentTheme() == 'dark') {
+        <i class="bi bi-moon-fill"></i>
+        } @else {
+        <i class="bi bi-brightness-high-fill"></i>
+        }
+      </button>
 
       <div class="dropdown">
+
         <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-
           <i class="bi bi-person-circle fs-3"></i>
-
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end shadow">
@@ -52,26 +63,15 @@
           </li>
 
           <li>
-            <a class="dropdown-item" href="#">
+            <a class="dropdown-item" routerLink="/configuracoes">
               Configurações
             </a>
           </li>
 
           <li>
-            <a class="dropdown-item" href="/suporte">
+            <a class="dropdown-item" routerLink="/suporte">
               Suporte
             </a>
-          </li>
-
-          <li>
-            <button class="dropdown-item" (click)="toggleTema()">
-
-              @if (tema.getCurrentTheme() == 'dark') {
-              <i class="bi bi-moon-fill"></i>
-              } @else {
-              <i class="bi bi-brightness-high-fill"></i>
-              }
-            </button>
           </li>
 
           <li>
@@ -79,13 +79,14 @@
           </li>
 
           <li>
-            <a class="dropdown-item text-danger" href="">
+            <a class="dropdown-item text-danger" routerLink="">
               Sair
             </a>
           </li>
 
         </ul>
       </div>
+
       <div class="dropdown">
         <button class="btn bg-transparent border-0 dropdown-toggle" type="button" data-bs-toggle="dropdown"
           aria-expanded="false">
@@ -188,7 +189,7 @@
           </li>
 
           <li>
-            <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+            <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/configuracoes">
               <i class="bi bi-gear"></i>
               Configurações
             </a>
