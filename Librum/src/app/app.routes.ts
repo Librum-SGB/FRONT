@@ -15,6 +15,7 @@ import { Configuracoes } from './pages/configuracoes/configuracoes';
 import { ChatSuporte } from './pages/chat-suporte/chat-suporte';
 // ADICIONEI ESSA LINHA ABAIXO:
 import { RenovarDevolverMaterial } from './pages/renovar-devolver-material/renovar-devolver-material';
+import { Bloqueios } from './pages/bloqueios/bloqueios';
 
 export const routes: Routes = [
   { path: '', component: TelaLoginComponent },
@@ -32,4 +33,5 @@ export const routes: Routes = [
   { path: 'configuracoes', component: Configuracoes },
   { path: 'chat-suporte', component: ChatSuporte },
   { path: 'renovar-devolver', component: RenovarDevolverMaterial },
+  { path: 'bloqueios', component: Bloqueios },
 ];

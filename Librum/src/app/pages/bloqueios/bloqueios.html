@@ -1,0 +1,160 @@
+<div class="card p-4 shadow-sm border-0">
+
+    <h3 class="fw-bold mb-2">
+        Bloqueios e Penalidades
+    </h3>
+
+    <p class="text-secondary mb-4">
+        Unidade São Paulo - Centro
+    </p>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card border-danger-subtle bg-danger-subtle h-100">
+                <div class="card-body">
+
+                    <p class="text-danger mb-1">
+                        Usuários Bloqueados
+                    </p>
+
+                    <h1 class="fw-normal text-danger">
+                        {{ totalBloqueados }}
+                    </h1>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-warning-subtle bg-warning-subtle h-100">
+                <div class="card-body">
+
+                    <p class="text-warning-emphasis mb-1">
+                        Pendentes
+                    </p>
+
+                    <h1 class="fw-normal text-warning-emphasis">
+                        {{ totalPendentes }}
+                    </h1>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-primary-subtle bg-primary-subtle h-100">
+                <div class="card-body">
+
+                    <p class="text-primary mb-1">
+                        Total
+                    </p>
+
+                    <h1 class="fw-normal text-primary">
+                        {{ totalUsuarios }}
+                    </h1>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-3 mb-4">
+
+        <select class="form-select w-auto" [(ngModel)]="filtroSelecionado">
+
+            <option value="todos">Todos</option>
+            <option value="id">ID</option>
+            <option value="nome">Nome</option>
+            <option value="status">Status</option>
+
+        </select>
+
+        <div class="input-group">
+
+            <span class="input-group-text bg-transparent">
+                <i class="bi bi-search"></i>
+            </span>
+
+            <input type="text" class="form-control" placeholder="Buscar..." [(ngModel)]="pesquisa">
+
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data Devolução</th>
+                    <th>Dias Atrasados</th>
+                    <th>Penalidade</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let emprestimo of emprestimosFiltrados">
+
+                    <td>
+                        {{ emprestimo.observacao }}
+                    </td>
+
+                    <td>
+                        {{ formatarData(emprestimo.dataDevolucaoPrevista) }}
+                    </td>
+
+                    <td>
+
+                        <span [ngClass]="(emprestimo.diasAtraso || 0) >= 20
+              ? 'text-danger'
+              : 'text-warning-emphasis'">
+
+                            {{ emprestimo.diasAtraso }} dias
+
+                        </span>
+
+                    </td>
+
+                    <td>
+                        {{ emprestimo.penalidadeDias }} dias de suspensão
+                    </td>
+
+                    <td>
+
+                        <span class="badge rounded-pill" [ngClass]="emprestimo.status === 'BLOQUEADO'
+              ? 'text-bg-danger-subtle text-danger'
+              : 'text-bg-warning-subtle text-warning-emphasis'">
+
+                            {{ emprestimo.status }}
+
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="alert alert-warning-subtle border-warning-subtle mt-4 mb-0">
+
+        <p class="fw-semibold mb-3">
+            ⚠ Sistema de Penalidades
+        </p>
+
+        <ul class="mb-0">
+
+            <li>
+                Para cada dia de atraso o usuário fica suspenso por 1 dia
+            </li>
+
+            <li>
+                Bloqueios acima de 20 dias requerem autorização do coordenador para liberação
+            </li>
+
+            <li>
+                Usuários com 3 bloqueios no ano podem ter o cadastro suspenso
+            </li>
+
+        </ul>
+    </div>
+</div>

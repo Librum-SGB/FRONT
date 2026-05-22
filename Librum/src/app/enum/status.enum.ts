@@ -2,6 +2,7 @@ export enum StatusEmprestimo {
   ANDAMENTO = 'ANDAMENTO',
   DEVOLVIDO = 'DEVOLVIDO',
   ATRASADO = 'ATRASADO',
+  BLOQUEADO = 'BLOQUEADO',
 }
 
 export enum StatusExemplar {
