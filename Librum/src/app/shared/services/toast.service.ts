@@ -1,33 +1,35 @@
-import { Injectable } from '@angular/core';
-import { ToastComponent } from '../component/toast/toast.component';
+import { Injectable, signal } from '@angular/core';
+import { MensagemToast, TEMPO } from '../../enum/toast.enum';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ToastService {
-  private toastComponent: ToastComponent | null = null;
+  private mensagem = signal<MensagemToast | null>(null);
 
-  setToastComponent(component: ToastComponent) {
-    this.toastComponent = component;
+  mensagemAtual = this.mensagem.asReadonly();
+
+  sucesso(texto: string): void {
+    this.mensagem.set({ texto, tipo: 'sucesso' });
+    this.limparApos(TEMPO.TEMPO_MENSAGEM);
   }
 
-  showToast(type: 'success' | 'error' | 'info' | 'warning', message: string) {
-    this.toastComponent?.showToast(type, message);
+  erro(texto: string): void {
+    this.mensagem.set({ texto, tipo: 'erro' });
+    this.limparApos(TEMPO.TEMPO_MENSAGEM);
   }
 
-  showSuccess(message: string) {
-    this.showToast('success', message);
+  aviso(texto: string): void {
+    this.mensagem.set({ texto, tipo: 'aviso' });
+    this.limparApos(TEMPO.TEMPO_MENSAGEM);
   }
 
-  showError(message: string) {
-    this.showToast('error', message);
+  info(texto: string): void {
+    this.mensagem.set({ texto, tipo: 'info' });
+    this.limparApos(TEMPO.TEMPO_MENSAGEM);
   }
 
-  showInfo(message: string) {
-    this.showToast('info', message);
-  }
-
-  showWarning(message: string) {
-    this.showToast('warning', message);
+  private limparApos(ms: number): void {
+    setTimeout(() => this.mensagem.set(null), ms);
   }
 }

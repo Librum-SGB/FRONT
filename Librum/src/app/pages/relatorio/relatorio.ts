@@ -27,10 +27,10 @@ export class Relatorio {
 
   gerarRelatorio() {
     if (this.selectedTipos.length <= 0) {
-      this.toastService.showError('Selecione tipos de dados para gerar relatórios');
+      this.toastService.sucesso('Selecione tipos de dados para gerar relatórios');
       return;
     }
-    this.toastService.showSuccess('Relatório gerado');
+    this.toastService.sucesso('Relatório gerado');
   }
 
   onCheckboxChange(event: any, id: number) {

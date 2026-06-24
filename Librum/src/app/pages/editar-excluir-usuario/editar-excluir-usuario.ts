@@ -2,7 +2,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Usuario } from '../../models/usuario.model';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
 
 declare var bootstrap: any;
@@ -13,7 +13,6 @@ declare var bootstrap: any;
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })
-
 export class EditarExcluirUsuario {
   filtro = 'nome';
   busca = '';
@@ -21,7 +20,10 @@ export class EditarExcluirUsuario {
   usuarioSelecionado: Usuario | null = null;
   usuarioEditando: Usuario = {} as Usuario;
 
-  constructor(private cdr: ChangeDetectorRef, private toastService: ToastService) { }
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
+  ) {}
 
   usuarios: Usuario[] = [
     {
@@ -41,7 +43,7 @@ export class EditarExcluirUsuario {
       estaBloqueado: false,
       dataCriacao: new Date(),
       dataUltimaAtualizacao: new Date(),
-      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
     },
     {
       id: 2,
@@ -60,7 +62,7 @@ export class EditarExcluirUsuario {
       estaBloqueado: false,
       dataCriacao: new Date(),
       dataUltimaAtualizacao: new Date(),
-      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
     },
     {
       id: 3,
@@ -79,8 +81,8 @@ export class EditarExcluirUsuario {
       estaBloqueado: true,
       dataCriacao: new Date(),
       dataUltimaAtualizacao: new Date(),
-      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png'
-    }
+      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
+    },
   ];
 
   usuariosFiltrados(): Usuario[] {
@@ -102,19 +104,13 @@ export class EditarExcluirUsuario {
 
     this.usuarioEditando = { ...this.usuarioSelecionado };
 
-    bootstrap.Modal.getInstance(
-      document.getElementById('modalUsuario')
-    )?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('modalUsuario'))?.hide();
 
-    new bootstrap.Modal(
-      document.getElementById('editarModal')
-    ).show();
+    new bootstrap.Modal(document.getElementById('editarModal')).show();
   }
 
   salvarEdicao(): void {
-    const index = this.usuarios.findIndex(
-      usuario => usuario.id === this.usuarioEditando.id
-    );
+    const index = this.usuarios.findIndex((usuario) => usuario.id === this.usuarioEditando.id);
 
     if (index !== -1) {
       this.usuarioEditando.dataUltimaAtualizacao = new Date();
@@ -122,38 +118,27 @@ export class EditarExcluirUsuario {
       this.usuarios[index] = { ...this.usuarioEditando };
       this.usuarioSelecionado = { ...this.usuarioEditando };
 
-      this.toastService.showToast('success', 'Usuário editado com sucesso!');
-
+      this.toastService.sucesso('Usuário editado com sucesso!');
     }
 
-    bootstrap.Modal.getInstance(
-      document.getElementById('editarModal')
-    )?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('editarModal'))?.hide();
   }
 
   abrirModalExcluir(): void {
-    new bootstrap.Modal(
-      document.getElementById('excluirModal')
-    ).show();
+    new bootstrap.Modal(document.getElementById('excluirModal')).show();
   }
 
   confirmarExclusao(): void {
     if (!this.usuarioSelecionado) return;
 
-    this.usuarios = this.usuarios.filter(
-      usuario => usuario.id !== this.usuarioSelecionado?.id
-    );
+    this.usuarios = this.usuarios.filter((usuario) => usuario.id !== this.usuarioSelecionado?.id);
 
-    this.toastService.showToast('success', 'Usuário excluído com sucesso!');
+    this.toastService.sucesso('Usuário excluído com sucesso!');
     this.usuarioSelecionado = null;
 
-    bootstrap.Modal.getInstance(
-      document.getElementById('excluirModal')
-    )?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('excluirModal'))?.hide();
 
-    bootstrap.Modal.getInstance(
-      document.getElementById('modalUsuario')
-    )?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('modalUsuario'))?.hide();
   }
 
   alterarFoto(event: Event): void {
@@ -169,13 +154,13 @@ export class EditarExcluirUsuario {
 
       this.usuarioEditando = {
         ...this.usuarioEditando,
-        foto: novaFoto
+        foto: novaFoto,
       };
 
       if (this.usuarioSelecionado) {
         this.usuarioSelecionado = {
           ...this.usuarioSelecionado,
-          foto: novaFoto
+          foto: novaFoto,
         };
       }
 

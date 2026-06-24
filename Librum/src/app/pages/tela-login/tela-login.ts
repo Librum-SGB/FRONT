@@ -27,10 +27,10 @@ export class TelaLoginComponent {
 
   entrar() {
     if (this.email === 'teste@teste.com' && this.senha === '123456') {
-      this.toastService.showSuccess('Login bem-sucedido!');
+      this.toastService.sucesso('Login bem-sucedido!');
       this.router.navigate(['/dashboard']);
     } else {
-      this.toastService.showError('Email ou senha incorretos!');
+      this.toastService.erro('Email ou senha incorretos!');
     }
   }
 

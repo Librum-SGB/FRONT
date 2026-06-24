@@ -10,8 +10,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './editar-excluir-material.scss',
 })
 export class EditarExcluirMaterial {
-
-  constructor(private toastService: ToastService) { }
+  constructor(private toastService: ToastService) {}
 
   materiais = [
     {
@@ -25,7 +24,7 @@ export class EditarExcluirMaterial {
       localizacao: 'Estante A1',
       exemplares: 5,
       unidade: 'Central',
-      disponibilidade: 'Disponível'
+      disponibilidade: 'Disponível',
     },
     {
       codigo: 'L-00002',
@@ -38,7 +37,7 @@ export class EditarExcluirMaterial {
       localizacao: 'Estante B2',
       exemplares: 3,
       unidade: 'Norte',
-      disponibilidade: 'Disponível'
+      disponibilidade: 'Disponível',
     },
     {
       codigo: 'L-00003',
@@ -51,7 +50,7 @@ export class EditarExcluirMaterial {
       localizacao: 'Estante C3',
       exemplares: 2,
       unidade: 'Sul',
-      disponibilidade: 'Indisponível'
+      disponibilidade: 'Indisponível',
     },
     {
       codigo: 'P-00001',
@@ -64,8 +63,8 @@ export class EditarExcluirMaterial {
       localizacao: 'Estante D1',
       exemplares: 10,
       unidade: 'Central',
-      disponibilidade: 'Disponível'
-    }
+      disponibilidade: 'Disponível',
+    },
   ];
 
   materialSelecionado: any;
@@ -81,19 +80,19 @@ export class EditarExcluirMaterial {
   }
 
   salvarEdicao() {
-    const index = this.materiais.findIndex(m => m.codigo === this.materialEditando.codigo);
+    const index = this.materiais.findIndex((m) => m.codigo === this.materialEditando.codigo);
 
     if (index !== -1) {
       this.materiais[index] = this.materialEditando;
-      this.toastService.showToast('success', 'Material editado com sucesso!');
+      this.toastService.sucesso('Material editado com sucesso!');
     }
 
     console.log('Editado:', this.materialEditando);
   }
 
   excluirMaterial(material: any) {
-    this.toastService.showToast('success', `Material "${material.titulo}" excluído com sucesso.`);
-    this.materiais = this.materiais.filter(m => m !== material);
+    this.toastService.sucesso(`Material "${material.titulo}" excluído com sucesso.`);
+    this.materiais = this.materiais.filter((m) => m !== material);
   }
 
   tipoFiltro: string = 'todos';
@@ -102,13 +101,11 @@ export class EditarExcluirMaterial {
   materiaisFiltrados() {
     const busca = this.textoBusca.toLowerCase();
 
-    return this.materiais.filter(material => {
-
+    return this.materiais.filter((material) => {
       // Se não digitou nada, mostra tudo
       if (!busca) return true;
 
       switch (this.tipoFiltro) {
-
         case 'codigo':
           return material.codigo.toLowerCase().includes(busca);
 
@@ -130,8 +127,6 @@ export class EditarExcluirMaterial {
             material.genero.toLowerCase().includes(busca)
           );
       }
-
     });
   }
-
 }

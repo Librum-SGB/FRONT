@@ -1,0 +1,22 @@
+@if (toast.mensagemAtual(); as mensagem) {
+<div class="toast-box border rounded-3 p-3 d-flex align-items-center gap-3 " [ngClass]="{
+       'bg-success-subtle border-success': mensagem.tipo === 'sucesso',
+       'bg-danger-subtle border-danger': mensagem.tipo === 'erro',
+       'bg-warning-subtle border-warning': mensagem.tipo === 'aviso',
+       'bg-primary-subtle border-primary': mensagem.tipo === 'info'
+     }">
+
+  <span class="icone-toast">
+    <span class="icone-toast">
+      <i *ngIf="mensagem.tipo == 'sucesso'" class="bi bi-check-circle-fill"></i>
+
+      <i *ngIf="mensagem.tipo == 'erro'" class="bi bi-x-circle-fill"></i>
+
+      <i *ngIf="mensagem.tipo == 'aviso'" class="bi bi-exclamation-triangle-fill"></i>
+    </span>
+  </span>
+
+  <p class="text-body fw-semibold mb-0">{{ mensagem.texto }}</p>
+
+</div>
+}

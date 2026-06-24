@@ -10,14 +10,13 @@ import { ToastService } from '../../shared/services/toast.service';
   styleUrl: './cadastrar-usuario.scss',
 })
 export class CadastrarUsuario implements OnInit {
-
   usuario: any = {};
   confirmarSenha: string = '';
 
   constructor(
     private router: Router,
-    private toastService: ToastService
-  ) { }
+    private toastService: ToastService,
+  ) {}
 
   ngOnInit() {
     this.gerarId();
@@ -40,25 +39,22 @@ export class CadastrarUsuario implements OnInit {
   }
 
   salvar() {
-
     if (!this.usuario.senha || !this.confirmarSenha) {
-          this.toastService.showToast('info', 'As senhas são diferentes.');
+      this.toastService.aviso('As senhas são diferentes.');
       return;
     }
 
     if (this.usuario.senha !== this.confirmarSenha) {
-      this.toastService.showToast('error', 'As senhas não coincidem!');
+      this.toastService.erro('As senhas não coincidem!');
       return;
     }
 
-    this.toastService.showToast('success', 'Usuário cadastrado com sucesso!');
+    this.toastService.sucesso('Usuário cadastrado com sucesso!');
     this.router.navigate(['/dashboard']);
-
   }
 
   cancelar() {
-    this.toastService.showToast('info', 'Cadastro de usuário cancelado.');
+    this.toastService.aviso('Cadastro de usuário cancelado.');
     this.router.navigate(['/dashboard']);
   }
-
 }

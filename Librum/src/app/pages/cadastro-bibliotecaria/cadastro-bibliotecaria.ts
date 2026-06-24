@@ -48,16 +48,14 @@ export class CadastroBibliotecariaComponent {
 
   cadastrar(): void {
     if (!this.cargo || !this.nome || !this.email || !this.matricula || !this.senha) {
-      this.toastService.showWarning('Preencha todos os campos obrigatórios!');
+      this.toastService.aviso('Preencha todos os campos obrigatórios!');
       return;
     }
     if (this.senha !== this.confirmarSenha) {
-      this.toastService.showError('As senhas não coincidem!');
+      this.toastService.erro('As senhas não coincidem!');
       return;
     }
-    this.toastService.showSuccess(
-      `Cadastro de ${this.labelCargo()} realizado com sucesso!`,
-    );
+    this.toastService.sucesso(`Cadastro de ${this.labelCargo()} realizado com sucesso!`);
     this.router.navigate(['/']);
   }
 

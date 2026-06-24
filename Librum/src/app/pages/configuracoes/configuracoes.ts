@@ -5,7 +5,6 @@ import { Bibliotecario } from '../../models/biblitecario.model';
 import { ToastService } from '../../shared/services/toast.service';
 import { ThemeService } from '../../shared/services/theme.service';
 
-
 @Component({
   selector: 'app-configuracoes',
   imports: [CommonModule, FormsModule],
@@ -13,19 +12,18 @@ import { ThemeService } from '../../shared/services/theme.service';
   styleUrl: './configuracoes.scss',
 })
 export class Configuracoes {
-
   bibliotecario: Bibliotecario = {
     id: 1,
     nome: 'Maria Silva',
     email: 'maria.silva@senai.br',
     matricula: 'BIB2025001',
-    senha: '123456'
+    senha: '123456',
   };
 
   notificacoes = {
     gerais: true,
     email: true,
-    alertas: true
+    alertas: true,
   };
 
   versaoSistema = 'v2.5.1';
@@ -33,45 +31,30 @@ export class Configuracoes {
 
   constructor(
     private toastService: ToastService,
-    public themeService: ThemeService
-  ) { }
+    public themeService: ThemeService,
+  ) {}
 
   alterarTema(theme: 'light' | 'dark'): void {
     this.themeService.setTheme(theme);
   }
 
   salvarAlteracoes(): void {
-    this.toastService.showToast(
-      'success',
-      'Alterações salvas com sucesso!'
-    );
+    this.toastService.sucesso('Alterações salvas com sucesso!');
   }
 
   verificarAtualizacoes(): void {
-    this.toastService.showToast(
-      'info',
-      'Sistema já está atualizado!'
-    );
+    this.toastService.aviso('Sistema já está atualizado!');
   }
 
   fazerBackup(): void {
-    this.toastService.showToast(
-      'success',
-      'Backup realizado com sucesso!'
-    );
+    this.toastService.sucesso('Backup realizado com sucesso!');
   }
 
   alterarSenha(): void {
-    this.toastService.showToast(
-      'info',
-      'Redirecionando para alteração de senha...'
-    );
+    this.toastService.aviso('Redirecionando para alteração de senha...');
   }
 
   ativar2FA(): void {
-    this.toastService.showToast(
-      'success',
-      'Autenticação em dois fatores ativada!'
-    );
+    this.toastService.sucesso('Autenticação em dois fatores ativada!');
   }
 }

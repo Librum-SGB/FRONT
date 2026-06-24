@@ -1,16 +1,15 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { Navbar } from './shared/component/navbar/navbar';
-import { ToastComponent } from './shared/component/toast/toast.component';
+import { Toast } from './shared/component/toast/toast';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { Footer } from './shared/component/footer/footer';
 
-
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, ToastComponent, CommonModule, Footer],
+  imports: [RouterOutlet, Navbar, Toast, CommonModule, Footer],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -19,18 +18,19 @@ export class App {
   currentRoute: string = '';
 
   constructor(private router: Router) {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
-      this.currentRoute = event.urlAfterRedirects;
-    });
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.currentRoute = event.urlAfterRedirects;
+      });
   }
 
   isAuthRoute(): boolean {
-  
-    return this.currentRoute === '/' || 
-           this.currentRoute === '/esqueci-senha' || 
-           this.currentRoute === '/cadastro-bibliotecaria' || 
-           this.currentRoute === '';
+    return (
+      this.currentRoute === '/' ||
+      this.currentRoute === '/esqueci-senha' ||
+      this.currentRoute === '/cadastro-bibliotecaria' ||
+      this.currentRoute === ''
+    );
   }
 }

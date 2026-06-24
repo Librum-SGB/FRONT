@@ -1,0 +1,47 @@
+.toast-box {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  min-width: 280px;
+  max-width: 360px;
+  z-index: 2000;
+  animation: slideIn 3s ease-in-out;
+
+  &.sucesso {
+    border-color: #10b98160;
+  }
+
+  &.erro {
+    border-color: #ef444460;
+  }
+
+  &.aviso {
+    border-color: #92400e60;
+  }
+}
+
+.icone-toast {
+  font-size: 1.25rem;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  15% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  85% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
