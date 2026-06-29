@@ -3,15 +3,18 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { ToastService } from '../../shared/services/toast.service';
+import { IMaskDirective } from 'angular-imask';
+import { MaskConstants } from '../../enum/const';
 
 @Component({
   selector: 'app-cadastrar-material',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, IMaskDirective],
   templateUrl: './cadastrar-material.html',
   styleUrl: './cadastrar-material.scss',
 })
 export class CadastrarMaterial {
   tipoMaterial: string = 'livro';
+  protected readonly Mask = MaskConstants;
 
   // LIVRO
   id = '';
