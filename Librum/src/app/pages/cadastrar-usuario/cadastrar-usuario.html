@@ -34,7 +34,7 @@
 
       <div class="col-md-6">
         <label>CPF *</label>
-        <input type="text" class="form-control" [(ngModel)]="usuario.cpf" required>
+        <input type="text" class="form-control" [imask]="Mask.CPF" [(ngModel)]="usuario.cpf" required>
       </div>
     </div>
 
@@ -50,7 +50,7 @@
     <div class="row mb-3">
       <div class="col-md-6">
         <label>Telefone *</label>
-        <input type="text" class="form-control" [(ngModel)]="usuario.telefone" required>
+        <input type="text" class="form-control" [imask]="Mask.CELULAR" [(ngModel)]="usuario.telefone" required>
       </div>
 
       <div class="col-md-6">

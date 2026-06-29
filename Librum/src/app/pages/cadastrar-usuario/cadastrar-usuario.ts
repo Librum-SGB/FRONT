@@ -2,16 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
+import { MaskConstants } from '../../enum/const';
+import { IMaskDirective } from 'angular-imask';
 
 @Component({
   selector: 'app-cadastrar-usuario',
-  imports: [FormsModule],
+  imports: [FormsModule, IMaskDirective],
   templateUrl: './cadastrar-usuario.html',
   styleUrl: './cadastrar-usuario.scss',
 })
 export class CadastrarUsuario implements OnInit {
   usuario: any = {};
   confirmarSenha: string = '';
+  protected readonly Mask = MaskConstants;
 
   constructor(
     private router: Router,
