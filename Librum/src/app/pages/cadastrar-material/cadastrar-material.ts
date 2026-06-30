@@ -91,6 +91,7 @@ export class CadastrarMaterial implements OnInit {
   }
 
   selecionarTipo(tipo: string) {
+    this.limpar();
     this.tipoMaterial = tipo;
   }
 
