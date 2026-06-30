@@ -31,51 +31,66 @@
   </div>
 
   <!-- LIVRO -->
-  <div *ngIf="tipoMaterial == 'livro'">
+  <form [formGroup]="formLivro" (ngSubmit)="salvarLivro()" *ngIf="tipoMaterial == 'livro'">
+    <div *ngIf="mensagensErro.length > 0" class="alert alert-danger">
+
+      <strong>Dados inválidos :</strong>
+
+      <ul class="mb-0 mt-2">
+        <li *ngFor="let erro of mensagensErro">
+          {{ erro }}
+        </li>
+      </ul>
+
+    </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">ID</label>
-        <input type="text" class="form-control" placeholder="L-00001" disabled>
+        <input type="text" class="form-control" placeholder="L-00001" formControlName="id"
+          [class.is-invalid]="isInvalidLivro('id')">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Título *</label>
-        <input type="text" class="form-control" [(ngModel)]="titulo">
+        <input type="text" class="form-control" formControlName="titulo" [class.is-invalid]="isInvalidLivro('titulo')">
       </div>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Subtítulo</label>
-      <input type="text" class="form-control" [(ngModel)]="subtitulo">
+      <input type="text" class="form-control" formControlName="subtitulo"
+        [class.is-invalid]="isInvalidLivro('subtitulo')">
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Autor *</label>
-        <input type="text" class="form-control" [(ngModel)]="autor">
+        <input type="text" class="form-control" formControlName="autor" [class.is-invalid]="isInvalidLivro('autor')">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Editora *</label>
-        <input type="text" class="form-control" [(ngModel)]="editora">
+        <input type="text" class="form-control" formControlName="editora"
+          [class.is-invalid]="isInvalidLivro('editora')">
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label">Ano de Publicação *</label>
-        <input type="date" class="form-control" [(ngModel)]="anoPublicacao">
+        <input type="date" class="form-control" formControlName="anoPublicacao"
+          [class.is-invalid]="isInvalidLivro('anoPublicacao')">
       </div>
 
       <div class="col-md-4 mb-3">
         <label class="form-label">ISBN *</label>
-        <input type="text" class="form-control" [(ngModel)]="isbn">
+        <input type="text" class="form-control" formControlName="isbn" [class.is-invalid]="isInvalidLivro('isbn')">
       </div>
 
       <div class="col-md-4 mb-3">
         <label class="form-label">Edição</label>
-        <input type="text" class="form-control" [(ngModel)]="edicao">
+        <input type="text" class="form-control" formControlName="edicao" [class.is-invalid]="isInvalidLivro('edicao')">
       </div>
     </div>
 
@@ -83,54 +98,58 @@
       <div class="col-md-6 mb-3">
         <label class="form-label">Gênero</label>
 
-        <select class="form-select" [(ngModel)]="genero">
-          <option selected disabled>Selecione...</option>
-          <option>Romance</option>
-          <option>Ficção Científica</option>
-          <option>Fantasia</option>
-          <option>Terror</option>
-          <option>Suspense</option>
-          <option>Biografia</option>
-        </select>
+        <select class="form-select" formControlName="genero" [class.is-invalid]="isInvalidLivro('genero')">
 
+          <option value="" disabled>Selecione...</option>
+          <option value="Romance">Romance</option>
+          <option value="Ficção Científica">Ficção Científica</option>
+          <option value="Fantasia">Fantasia</option>
+          <option value="Terror">Terror</option>
+          <option value="Suspense">Suspense</option>
+          <option value="Biografia">Biografia</option>
+        </select>
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Qtd de Exemplares</label>
-        <input type="number" class="form-control" [imask]="Mask.INTEIRO" [(ngModel)]="quantidadeExemplares">
+        <input type="number" class="form-control" min="1" formControlName="qtdExemplar"
+          [class.is-invalid]="isInvalidLivro('qtdExemplar')">
       </div>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Sinopse</label>
-      <textarea class="form-control" rows="3" [(ngModel)]="sinopse"></textarea>
+      <textarea class="form-control" rows="3" formControlName="sinopse"
+        [class.is-invalid]="isInvalidLivro('sinopse')"></textarea>
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Localização na Estante</label>
-        <input type="text" class="form-control" [(ngModel)]="localizacao">
+        <input type="text" class="form-control" formControlName="localizacaoEstante"
+          [class.is-invalid]="isInvalidLivro('localizacaoEstante')">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Unidade</label>
 
-        <select class="form-select" [(ngModel)]="unidade">
-          <option selected disabled>Selecione...</option>
+        <select class="form-select" formControlName="unidade" [class.is-invalid]="isInvalidLivro('unidade')">
+
+          <option value="" disabled>Selecione...</option>
           <option>Biblioteca Central</option>
           <option>Unidade Norte</option>
           <option>Unidade Sul</option>
         </select>
-
       </div>
     </div>
 
     <div class="mb-4">
       <label class="form-label">Data de Aquisição</label>
-      <input type="date" class="form-control" [(ngModel)]="dataAquisicao">
+      <input type="date" class="form-control" formControlName="dataAquisicao"
+        [class.is-invalid]="isInvalidLivro('dataAquisicao')">
     </div>
 
-  </div>
+  </form>
 
   <div *ngIf="tipoMaterial == 'periodico'">
 
@@ -290,11 +309,11 @@
   <hr>
 
   <div class="d-flex justify-content-end gap-2">
-    <button class="btn btn-secondary" (click)="cancelar()">
-      Cancelar
+    <button class="btn btn-secondary" (click)="limpar()">
+      Limpar
     </button>
 
-    <button class="btn btn-primary" (click)="salvar()">
+    <button class="btn btn-primary" (click)="salvarLivro()">
       Salvar
     </button>
   </div>
