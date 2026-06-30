@@ -5,6 +5,16 @@
   overflow-y: auto;
 }
 
+.navbar-logo {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navbar-logo img {
+  width: 40px;
+  height: auto;
+}
+
 /* ativo padrão */
 .nav-link.active {
   border-bottom: 1px blue solid;
