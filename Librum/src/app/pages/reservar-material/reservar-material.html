@@ -1,0 +1,121 @@
+<div class="container py-4">
+  <div class="mb-4">
+    <h1 class="h3 mb-1">Reservar Material</h1>
+    <p class="text-muted mb-0">Unidade x</p>
+  </div>
+
+
+
+  <div class="row g-4">
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-4">Etapa 1</h2>
+
+          <input class="form-control mb-3" type="text" value="Unidade x" disabled>
+          <input class="form-control mb-4" type="text" placeholder="Buscar Material..." [(ngModel)]="buscaMaterial">
+
+          <div class="overflow-auto pe-2" style="max-height: 360px;">
+            <div class="card mb-3 " *ngFor="let livro of livrosFiltrados">
+              <div class="card-body d-flex justify-content-between align-items-center gap-3">
+                <div>
+                  <h3 class="h6 mb-1">{{ livro.id }} - {{ livro.titulo }}</h3>
+                  <p class="text-muted mb-0">{{ livro.disponiveis }} disponiveis</p>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  (click)="selecionarMaterial(livro)"
+                  [disabled]="materiaisSelecionados.includes(livro)">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="border rounded p-3 my-4">
+            <strong>Materiais Selecionados ({{ materiaisSelecionados.length }})</strong>
+
+            <p class="text-muted mb-0" *ngIf="materiaisSelecionados.length === 0">
+              Nenhum material selecionado
+            </p>
+
+            <ul class="list-group mt-2" *ngIf="materiaisSelecionados.length > 0">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+                *ngFor="let material of materiaisSelecionados">
+                {{ material.titulo }}
+                <button class="btn btn-sm btn-outline-danger" type="button" (click)="removerMaterial(material)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="d-grid">
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="continuar()"
+              [disabled]="materiaisSelecionados.length === 0">
+              Continuar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4" [class.opacity-50]="etapaAtual === 1">
+      <div class="card">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-4">Etapa 2</h2>
+
+          <input
+            class="form-control mb-4"
+            type="text"
+            placeholder="Buscar Usuario"
+            [(ngModel)]="buscaUsuario"
+            [disabled]="etapaAtual === 1">
+
+          <div class="overflow-auto pe-2" style="max-height: 360px;">
+            <div class="card mb-3" *ngFor="let usuario of usuariosFiltrados">
+              <div class="card-body d-flex justify-content-between align-items-center gap-3">
+                <div>
+                  <h3 class="h6 mb-1">{{ usuario.id }} - {{ usuario.nome }}</h3>
+                  <p class="text-muted mb-0">{{ usuario.email }}</p>
+                  <span class="badge bg-danger" *ngIf="usuario.estaBloqueado">Bloqueado</span>
+                </div>
+                <button
+                  class="btn btn-outline-primary"
+                  type="button"
+                  (click)="selecionarUsuario(usuario)"
+                  [disabled]="etapaAtual === 1 || usuario.estaBloqueado">
+                  Selecionar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="border rounded p-3 my-4">
+            <strong>Usuario Selecionado</strong>
+            <p class="text-muted mb-0" *ngIf="!usuarioSelecionado">Nenhum usuario selecionado</p>
+            <p class="mb-0" *ngIf="usuarioSelecionado">{{ usuarioSelecionado.nome }}</p>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-secondary" type="button" (click)="voltar()" [disabled]="etapaAtual === 1">
+              Voltar
+            </button>
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="concluirReserva()"
+              [disabled]="etapaAtual === 1 || !usuarioSelecionado">
+              Concluir Reserva
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
