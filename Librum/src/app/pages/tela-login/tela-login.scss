@@ -1,34 +1,51 @@
 .login-container {
-  height: 100vh;
+  min-height: 100vh;
   background: #031453;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
 
+  padding: 20px;
+}
 
 .login-header {
   text-align: center;
   color: white;
-  margin-bottom: 25px;
+  margin-bottom: 18px;
 }
 
+.login-header h2 {
+  margin: 8px 0 4px;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.login-header p {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
 
 .card {
-  width: 360px;
+  width: 100%;
+  max-width: 330px;
   border-radius: 16px;
   background: #ffffffea;
+  padding: 1.5rem !important;
 }
-
 
 .btn-login {
   background: #1f2f6b;
   color: white;
   border-radius: 8px;
+  transition: 0.2s;
 }
 
+.btn-login:hover {
+  background: #16245a;
+}
 
 .btn-eye {
   background: #1f2f6b;
@@ -36,60 +53,38 @@
   border-radius: 0 8px 8px 0;
 }
 
-
-.icon-box {
-  width: 90px;
-  height: 90px;
-  background: #e6e6e6;
-  border-radius: 18px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin: 0 auto 10px;
-}
-
-.icon-box i {
-  font-size: 45px;
-  color: #14276d;
+.btn-eye:hover {
+  background: #16245a;
+  color: white;
 }
 
 .logo-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 10px;
-  background: transparent;
-  border: none;
-  padding: 0;
+  margin-bottom: 10px;
 }
 
 .login-logo {
-  display: block;
-  width: 120px;
+  width: 90px;
   height: auto;
-  max-height: 120px;
   object-fit: contain;
-  background: transparent;
-  border: none;
-  border-radius: 0;
 }
 
-/* LINK */
 a {
   color: #3b82f6;
   cursor: pointer;
+  text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
 }
 
-
 .footer {
   position: absolute;
-  bottom: 10px;
+  bottom: 15px;
   color: #ddd;
   font-size: 12px;
+  text-align: center;
 }

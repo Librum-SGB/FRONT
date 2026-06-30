@@ -13,7 +13,6 @@ import { EditarExcluirUsuario } from './pages/editar-excluir-usuario/editar-excl
 import { Relatorio } from './pages/relatorio/relatorio';
 import { Configuracoes } from './pages/configuracoes/configuracoes';
 import { ChatSuporte } from './pages/chat-suporte/chat-suporte';
-// ADICIONEI ESSA LINHA ABAIXO:
 import { RenovarDevolverMaterial } from './pages/renovar-devolver-material/renovar-devolver-material';
 import { Bloqueios } from './pages/bloqueios/bloqueios';
 
