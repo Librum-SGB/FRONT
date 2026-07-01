@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from '../../shared/services/toast.service';
 import { IMaskDirective } from 'angular-imask';
 import { MaskConstants } from '../../enum/const';
-import { disabled } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-cadastrar-material',
@@ -24,6 +23,7 @@ export class CadastrarMaterial implements OnInit {
   salvarLivro() {
     if (this.formLivro.valid) {
       this.limpar();
+      this.toastService.sucesso('Livro salvo');
       return;
     }
     this.enviado = true;
