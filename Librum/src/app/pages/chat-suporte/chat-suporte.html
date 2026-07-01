@@ -1,38 +1,60 @@
 <div class="chat-wrapper">
-  <div class="chat-container">
+  <div class="chat-container bg-body border border-secondary-subtle rounded-3 shadow-sm">
     
-    <div class="chat-header">
-      <div class="header-info">
-        
-        <button type="button" class="btn-voltar-setinha" (click)="voltarParaSuporte()" title="Voltar">
-          <i class="bi bi-arrow-left"></i>
+    <!-- 1. CABEÇALHO DO CHAT  -->
+    <div class="chat-header border-bottom border-secondary-subtle card-contato-azul p-3 text-white">
+      <div class="header-info d-flex align-items-center gap-2">
+        <!-- Botão de voltar com a setinha -->
+        <button type="button" class="btn-voltar-setinha text-body" (click)="voltarParaSuporte()" title="Voltar">
+          <i class="bi bi-arrow-left fs-5"></i>
         </button>
         
+        <!-- Ponto indicador de status (online) -->
         <span class="status-dot"></span>
-        <h5>Suporte Librum</h5>
+        
+        <!-- Título do Suporte -->
+        <h5 class="mb-0 " style="font-size: 1.1rem;">Suporte Librum</h5>
       </div>
     </div>
 
-    <div class="chat-messages">
-      <div *ngFor="let msg of mensagens" class="msg-row" [ngClass]="msg.origem === 'user' ? 'msg-user' : 'msg-support'">
-        <div class="message-bubble">
-          {{ msg.texto }}
-          <span class="time">{{ msg.hora }}</span>
+    <!-- 2. ÁREA DAS MENSAGENS (Onde a conversa aparece) -->
+    <div class="chat-messages p-3 overflow-auto bg-body" style="height: 400px;">
+      
+      <!-- Linha da mensagem: Alinha para a direita se for 'user' ou esquerda se for suporte -->
+      <div *ngFor="let msg of mensagens" class="d-flex mb-3" 
+           [ngClass]="msg.origem === 'user' ? 'justify-content-end' : 'justify-content-start'">
+        
+        <!-- 3. BOLHA DA MENSAGEM (Usuário Azul / Suporte Cinza) -->
+        <div class="p-2 rounded-3 shadow-sm" style="max-width: 75%; font-size: 0.9rem;"
+             [ngClass]="msg.origem === 'user' ? 'bg-primary text-white' : 'bg-body-secondary text-body'">
+          
+          <!-- Texto da mensagem -->
+          <div>{{ msg.texto }}</div>
+          
+          <!-- Horário da mensagem (muda de cor dependendo de quem enviou para não sumir) -->
+          <div class="text-end mt-1" style="font-size: 0.65rem;"
+               [ngClass]="msg.origem === 'user' ? 'text-white-50' : 'text-muted'">
+            {{ msg.hora }}
+          </div>
+
         </div>
       </div>
     </div>
 
-    <div class="chat-footer">
-      <div class="input-wrapper">
+    <!-- 4. RODAPÉ DO CHAT (Campo de texto e botão) -->
+    <div class="chat-footer p-3 bg-body border-top border-secondary-subtle">
+      <div class="input-group">
         <input 
           type="text" 
+          class="form-control bg-body text-body border-secondary-subtle"
           [(ngModel)]="textoMensagem" 
           (keydown.enter)="enviarMensagem()" 
           placeholder="Digite sua mensagem...">
+        
+        <button class="btn btn-primary" type="button" (click)="enviarMensagem()">
+          Enviar
+        </button>
       </div>
-      <button class="btn-send" (click)="enviarMensagem()">
-        Enviar
-      </button>
     </div>
 
   </div>
