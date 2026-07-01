@@ -1,5 +1,5 @@
 <div class="container py-4">
-  <h3 class="mb-4">Central de Suporte</h3>
+  <h3 class="mb-4 text-body">Central de Suporte</h3>
 
   <div class="row g-3 mb-4">
     <div class="col-md-4">
@@ -24,12 +24,12 @@
     </div>
   </div>
 
-  <div class="card p-4 border-0 shadow-sm mb-4">
-    <h6 class="mb-3"><i class="bi bi-pencil-square me-2"></i>Enviar Mensagem</h6>
+  <div class="card p-4 border-0 shadow-sm mb-4 bg-body text-body">
+    <h6 class="mb-3 text-body"><i class="bi bi-pencil-square me-2"></i>Enviar Mensagem</h6>
     <form [formGroup]="supportForm" (ngSubmit)="enviarMensagem()">
       <div class="mb-3">
         <label class="form-label small text-secondary">Assunto</label>
-        <select class="form-select" formControlName="assunto">
+        <select class="form-select bg-body text-body" formControlName="assunto">
           <option value="">Selecione um assunto...</option>
           <option value="duvida">Dúvida</option>
           <option value="erro">Erro</option>
@@ -38,7 +38,7 @@
       </div>
       <div class="mb-3">
         <label class="form-label small text-secondary">Mensagem</label>
-        <textarea class="form-control" [maxLength]="255" rows="3" formControlName="mensagem" placeholder="Como podemos ajudar?"></textarea>
+        <textarea class="form-control bg-body text-body" [maxLength]="255" rows="3" formControlName="mensagem" placeholder="Como podemos ajudar?"></textarea>
       </div>
       <button type="submit" class="btn btn-primary w-100" [disabled]="supportForm.invalid">
         Enviar Mensagem
@@ -46,32 +46,37 @@
     </form>
   </div>
 
+  <!-- SEÇÃO DE PERGUNTAS FREQUENTES (FAQ) ATUALIZADA -->
   <div class="mb-4">
-    <h6 class="mb-3 faq-title"><i class="bi bi-question-circle me-2"></i>Perguntas Frequentes</h6>
+    <h6 class="mb-3 faq-title text-body"><i class="bi bi-question-circle me-2"></i>Perguntas Frequentes</h6>
     <div class="list-group shadow-sm">
-      <div *ngFor="let item of faqs; let i = index" class="list-group-item list-group-item-action" (click)="toggleFaq(i)">
+      <div *ngFor="let item of faqs; let i = index" 
+           class="list-group-item list-group-item-action bg-body text-body border-secondary-subtle" 
+           (click)="toggleFaq(i)" 
+           style="cursor: pointer;">
         <div class="d-flex justify-content-between align-items-center">
-          <span class="small fw-medium">{{ item.question }}</span>
-          <i class="bi" [class.bi-chevron-down]="!item.open" [class.bi-chevron-up]="item.open"></i>
+          <span class="small fw-medium text-body">{{ item.question }}</span>
+          <i class="bi text-secondary" [class.bi-chevron-down]="!item.open" [class.bi-chevron-up]="item.open"></i>
         </div>
-        <div *ngIf="item.open" class="mt-2 small text-secondary">
+        <div *ngIf="item.open" class="mt-2 small text-secondary-emphasis">
           {{ item.answer }}
         </div>
       </div>
     </div>
   </div>
 
+  <!-- SEÇÃO DE LINKS ÚTEIS REATIVOS (SEM CORES ESCURAS FIXAS) -->
   <section class="mb-4 mt-4">
     <div class="row row-cols-1 row-cols-md-2 g-3">
       
       <div class="col">
-        <div class="p-3 rounded-3 h-100" style="background-color: #1e1e24; border: 1px solid #2d2d35;">
+        <div class="p-3 rounded-3 h-100 bg-body-tertiary border border-secondary-subtle">
           <div class="d-flex align-items-center gap-3">
             <div class="card-icon-wrapper" style="background-color: rgba(231, 76, 60, 0.15); color: #e74c3c; width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
               <i class="bi bi-file-earmark-pdf-fill"></i>
             </div>
             <div>
-              <h5 class="mb-0" style="color: #ffffff; font-size: 0.95rem; font-weight: 600;">Manual do Sistema</h5>
+              <h5 class="mb-0 text-body" style="font-size: 0.95rem; font-weight: 600;">Manual do Sistema</h5>
               <small class="text-secondary" style="font-size: 0.8rem;">Documentação completa em PDF para leitura.</small>
             </div>
           </div>
@@ -79,13 +84,13 @@
       </div>
 
       <div class="col">
-        <div class="p-3 rounded-3 h-100" style="background-color: #1e1e24; border: 1px solid #2d2d35;">
+        <div class="p-3 rounded-3 h-100 bg-body-tertiary border border-secondary-subtle">
           <div class="d-flex align-items-center gap-3">
             <div class="card-icon-wrapper" style="background-color: rgba(91, 143, 217, 0.15); color: #5b8fd9; width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
               <i class="bi bi-play-btn-fill"></i>
             </div>
             <div>
-              <h5 class="mb-0" style="color: #ffffff; font-size: 0.95rem; font-weight: 600;">Vídeos Tutoriais</h5>
+              <h5 class="mb-0 text-body" style="font-size: 0.95rem; font-weight: 600;">Vídeos Tutoriais</h5>
               <small class="text-secondary" style="font-size: 0.8rem;">Passo a passo em vídeo das principais funções.</small>
             </div>
           </div>
