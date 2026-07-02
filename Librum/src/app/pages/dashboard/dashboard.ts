@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ItemListaTarefa } from '../../shared/component/item-lista-tarefa/item-lista-tarefa';
 import { CardInformativo } from '../../shared/component/card/card-informativo/card-informativo';
 import { CardStatus } from '../../shared/component/card/card-status/card-status';
-import { NgClass } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { BotaoAcaoRapida } from '../../shared/component/botao-acao-rapida/botao-acao-rapida';
 import { FormsModule } from '@angular/forms';
 import { Tarefa } from '../../models/tarefa.model';
 import { TarefaService } from '../../shared/services/tarefas.service';
 import { prioridade } from '../../enum/prioridade.enum';
 import { Badge } from '../../shared/component/badge/badge';
+import { ConfiguracaoService } from '../../shared/services/configuracao.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,10 +20,19 @@ import { Badge } from '../../shared/component/badge/badge';
 export class Dashboard implements OnInit {
   listaTarefa: Tarefa[] = [];
   descNovaTarefa: string = '';
-  constructor(private tarefaService: TarefaService) {}
+  exibeAcaoRapida: boolean = false;
+  constructor(
+    private tarefaService: TarefaService,
+    private configuracaoService: ConfiguracaoService,
+  ) {}
 
   ngOnInit(): void {
     this.listaTarefa = this.tarefaService.getTarefas();
+    this.exibeAcaoRapida = this.configuracaoService.getExibirAcaoRapida();
+
+    this.configuracaoService.configAcaoRapida.subscribe((valor) => {
+      this.exibeAcaoRapida = valor;
+    });
   }
 
   adicionarTarefa() {
@@ -48,5 +58,9 @@ export class Dashboard implements OnInit {
   deletarTarefa(id: number) {
     this.tarefaService.removerTarefa(id);
     this.listaTarefa = this.tarefaService.getTarefas();
+  }
+
+  elternarExibicao() {
+    this.configuracaoService.alterarExibicaoAcaoRapida();
   }
 }

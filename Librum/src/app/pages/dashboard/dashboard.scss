@@ -1,13 +1,8 @@
 .dashboard {
-  width: 48%;
-  padding-block: 0.5rem;
-  padding-inline: 1rem;
-  min-height: 400px;
-  max-height: 450px;
+  width: 49%;
 }
 
-/* Tablet e desktop */
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .dashboard {
     width: 100%;
   }
