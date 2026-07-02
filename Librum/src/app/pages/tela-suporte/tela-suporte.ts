@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router'; 
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-tela-suporte',
@@ -19,7 +20,7 @@ export class TelaSuporte implements OnInit {
     { question: 'Usuário bloqueado, o que fazer?', answer: 'Regularize as pendências no perfil do usuário.', open: false }
   ];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.supportForm = this.fb.group({
@@ -34,7 +35,7 @@ export class TelaSuporte implements OnInit {
 
   enviarMensagem() {
     if (this.supportForm.valid) {
-      alert('Mensagem enviada com sucesso!');
+      this.toastService.sucesso('Mensagem enviada com sucesso!');
       this.supportForm.reset();
     }
   }
