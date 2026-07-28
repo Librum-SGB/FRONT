@@ -28,11 +28,10 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.listaTarefa = this.tarefaService.getTarefas();
-    this.exibeAcaoRapida = this.configuracaoService.getExibirAcaoRapida();
-
-    this.configuracaoService.configAcaoRapida.subscribe((valor) => {
-      this.exibeAcaoRapida = valor;
-    });
+    this.exibeAcaoRapida = this.configuracaoService.configuracaoAtivaByChave(
+      ConfiguracaoService.CHAVE_ACAO_RAPIDA,
+      1,
+    );
   }
 
   adicionarTarefa() {
@@ -58,9 +57,5 @@ export class Dashboard implements OnInit {
   deletarTarefa(id: number) {
     this.tarefaService.removerTarefa(id);
     this.listaTarefa = this.tarefaService.getTarefas();
-  }
-
-  elternarExibicao() {
-    this.configuracaoService.alterarExibicaoAcaoRapida();
   }
 }
