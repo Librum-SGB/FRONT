@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { ModalLivro } from './modal-livro/modal-livro';
 import { EstanteVirtualDto, ExemplarVirtualDto } from '../../dto/estantevirtual.dto';
 import { EstanteService } from '../../shared/services/estante-virtual.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-encontrar-material',
-  imports: [CommonModule, FormsModule, ModalLivro],
+  imports: [CommonModule, FormsModule, ModalLivro, CorpoPadrao],
   templateUrl: './encontrar-material.html',
   styleUrl: './encontrar-material.scss',
 })

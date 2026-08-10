@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { Usuario } from '../../models/usuario.model';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule, RouterLink, CorpoPadrao],
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })

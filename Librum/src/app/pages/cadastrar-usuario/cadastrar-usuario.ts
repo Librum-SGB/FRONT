@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
 import { MaskConstants } from '../../enum/const';
 import { IMaskDirective } from 'angular-imask';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-cadastrar-usuario',
-  imports: [FormsModule, IMaskDirective],
+  imports: [FormsModule, IMaskDirective, CorpoPadrao],
   templateUrl: './cadastrar-usuario.html',
   styleUrl: './cadastrar-usuario.scss',
 })

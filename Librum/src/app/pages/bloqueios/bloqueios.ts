@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Emprestimo } from '../../models/emprestimo.model';
 import { StatusEmprestimo } from '../../enum/status.enum';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-bloqueios',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CorpoPadrao],
   templateUrl: './bloqueios.html',
   styleUrl: './bloqueios.scss',
 })
 export class Bloqueios {
-
   filtroSelecionado: string = 'todos';
   pesquisa: string = '';
 
@@ -30,7 +30,7 @@ export class Bloqueios {
 
       status: StatusEmprestimo.BLOQUEADO,
 
-      observacao: 'Carlos Alberto Souza'
+      observacao: 'Carlos Alberto Souza',
     },
 
     {
@@ -47,7 +47,7 @@ export class Bloqueios {
 
       status: StatusEmprestimo.BLOQUEADO,
 
-      observacao: 'Felipe Costa'
+      observacao: 'Felipe Costa',
     },
 
     {
@@ -64,7 +64,7 @@ export class Bloqueios {
 
       status: StatusEmprestimo.ATRASADO,
 
-      observacao: 'Ricardo Mendes'
+      observacao: 'Ricardo Mendes',
     },
 
     {
@@ -81,7 +81,7 @@ export class Bloqueios {
 
       status: StatusEmprestimo.BLOQUEADO,
 
-      observacao: 'Juliana Santos'
+      observacao: 'Juliana Santos',
     },
 
     {
@@ -98,7 +98,7 @@ export class Bloqueios {
 
       status: StatusEmprestimo.BLOQUEADO,
 
-      observacao: 'Bruno Oliveira'
+      observacao: 'Bruno Oliveira',
     },
 
     {
@@ -115,25 +115,22 @@ export class Bloqueios {
 
       status: StatusEmprestimo.BLOQUEADO,
 
-      observacao: 'Mariana Lima'
-    }
+      observacao: 'Mariana Lima',
+    },
   ];
 
   get emprestimosFiltrados() {
-
     if (!this.pesquisa.trim()) {
       return this.emprestimos;
     }
 
     const termo = this.pesquisa.toLowerCase();
 
-    return this.emprestimos.filter(emprestimo => {
-
+    return this.emprestimos.filter((emprestimo) => {
       const nome = emprestimo.observacao?.toLowerCase() || '';
       const status = emprestimo.status?.toLowerCase() || '';
 
       if (this.filtroSelecionado === 'todos') {
-
         return (
           emprestimo.id?.toString().includes(termo) ||
           nome.includes(termo) ||
@@ -158,15 +155,11 @@ export class Bloqueios {
   }
 
   get totalBloqueados() {
-    return this.emprestimos.filter(
-      e => e.status === StatusEmprestimo.BLOQUEADO
-    ).length;
+    return this.emprestimos.filter((e) => e.status === StatusEmprestimo.BLOQUEADO).length;
   }
 
   get totalPendentes() {
-    return this.emprestimos.filter(
-      e => e.status === StatusEmprestimo.ATRASADO
-    ).length;
+    return this.emprestimos.filter((e) => e.status === StatusEmprestimo.ATRASADO).length;
   }
 
   get totalUsuarios() {
@@ -174,7 +167,6 @@ export class Bloqueios {
   }
 
   formatarData(data: Date | undefined): string {
-
     if (!data) return '';
 
     return new Date(data).toLocaleDateString('pt-BR');

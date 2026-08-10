@@ -3,12 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { CardStatus } from '../../shared/component/card/card-status/card-status';
 import { CommonModule } from '@angular/common';
 import { StatusEmprestimo } from '../../enum/status.enum';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-historio-emprestimo',
-  imports: [FormsModule, CardStatus, CommonModule],
-  templateUrl: './historio-emprestimo.html',
-  styleUrl: './historio-emprestimo.scss',
+  imports: [FormsModule, CardStatus, CommonModule, CorpoPadrao],
+  templateUrl: './historico-emprestimo.html',
+  styleUrl: './historico-emprestimo.scss',
 })
 export class HistorioEmprestimo implements OnInit {
   ngOnInit(): void {

@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../shared/services/toast.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-reservar-material',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CorpoPadrao],
   templateUrl: './reservar-material.html',
   styleUrl: './reservar-material.scss',
 })
@@ -35,16 +36,18 @@ export class ReservarMaterial {
   buscaUsuario = '';
 
   get livrosFiltrados() {
-    return this.livros.filter((livro) =>
-      livro.titulo.toLowerCase().includes(this.buscaMaterial.toLowerCase()) ||
-      livro.id.toString().includes(this.buscaMaterial),
+    return this.livros.filter(
+      (livro) =>
+        livro.titulo.toLowerCase().includes(this.buscaMaterial.toLowerCase()) ||
+        livro.id.toString().includes(this.buscaMaterial),
     );
   }
 
   get usuariosFiltrados() {
-    return this.usuarios.filter((usuario) =>
-      usuario.nome.toLowerCase().includes(this.buscaUsuario.toLowerCase()) ||
-      usuario.id.toString().includes(this.buscaUsuario),
+    return this.usuarios.filter(
+      (usuario) =>
+        usuario.nome.toLowerCase().includes(this.buscaUsuario.toLowerCase()) ||
+        usuario.id.toString().includes(this.buscaUsuario),
     );
   }
 
@@ -55,7 +58,9 @@ export class ReservarMaterial {
   }
 
   removerMaterial(livro: any) {
-    this.materiaisSelecionados = this.materiaisSelecionados.filter((material) => material !== livro);
+    this.materiaisSelecionados = this.materiaisSelecionados.filter(
+      (material) => material !== livro,
+    );
   }
 
   continuar() {

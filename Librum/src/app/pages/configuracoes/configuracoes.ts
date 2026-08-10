@@ -5,10 +5,11 @@ import { Bibliotecario } from '../../models/biblitecario.model';
 import { ToastService } from '../../shared/services/toast.service';
 import { ThemeService } from '../../shared/services/theme.service';
 import { ConfiguracaoService } from '../../shared/services/configuracao.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-configuracoes',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CorpoPadrao],
   templateUrl: './configuracoes.html',
   styleUrl: './configuracoes.scss',
 })
