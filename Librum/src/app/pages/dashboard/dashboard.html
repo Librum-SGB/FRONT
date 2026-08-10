@@ -117,42 +117,41 @@
         </div>
       </div>
     </section>
-    @if (exibeAcaoRapida) {
-    <section class="row bg-body rounded-3 mt-3 py-3 px-2">
-      <div class="col-12">
-        <div class="row">
-          <div class="col-12">
-            <h5>Ações Rápidas</h5>
-          </div>
-        </div>
-        <div class="row row-gap-2 justify-content-center">
-          <div class="col-6 col-sm-6 col-md-2">
-            <app-botao-acao-rapida titulo="Cadastrar Aluno" classe="bg-azul-escuro"><i
-                class="bi bi-person-add"></i></app-botao-acao-rapida>
-          </div>
-          <div class="col-6 col-sm-6 col-md-2">
-            <app-botao-acao-rapida titulo="Cadastrar Livro" classe="bg-azul-claro"><i
-                class="bi bi-journal-plus"></i></app-botao-acao-rapida>
-          </div>
-          <div class="col-6 col-sm-6 col-md-2">
-            <app-botao-acao-rapida titulo="Novo Empréstimo" classe="bg-verde"><i
-                class="bi bi-calendar-check"></i></app-botao-acao-rapida>
-          </div>
-          <div class="col-6 col-sm-6 col-md-2">
-            <app-botao-acao-rapida titulo="Devolução" classe="bg-laranja"><i
-                class="bi bi-arrow-counterclockwise"></i></app-botao-acao-rapida>
-          </div>
-          <div class="col-6 col-sm-6 col-md-2">
-            <app-botao-acao-rapida titulo="Consultar" classe="bg-roxo"><i
-                class="bi bi-search"></i></app-botao-acao-rapida>
-          </div>
-          <div class="col-6 col-sm-6 col-md-2">
-            <app-botao-acao-rapida titulo="Relatórios" classe="bg-cinza"><i
-                class="bi bi-file-earmark-text"></i></app-botao-acao-rapida>
-          </div>
-        </div>
-      </div>
-    </section>
-    }
   </main>
 </app-corpo-padrao>
+@if (exibeAcaoRapida) {
+<section class="row bg-body rounded-3 mt-3 py-3 px-2">
+  <div class="col-12">
+    <div class="row">
+      <div class="col-12">
+        <h5>Ações Rápidas</h5>
+      </div>
+    </div>
+    <div class="row row-gap-2 justify-content-center">
+      <div class="col-6 col-sm-6 col-md-2">
+        <app-botao-acao-rapida titulo="Cadastrar Aluno" classe="bg-azul-escuro"><i
+            class="bi bi-person-add"></i></app-botao-acao-rapida>
+      </div>
+      <div class="col-6 col-sm-6 col-md-2">
+        <app-botao-acao-rapida titulo="Cadastrar Livro" classe="bg-azul-claro"><i
+            class="bi bi-journal-plus"></i></app-botao-acao-rapida>
+      </div>
+      <div class="col-6 col-sm-6 col-md-2">
+        <app-botao-acao-rapida titulo="Novo Empréstimo" classe="bg-verde"><i
+            class="bi bi-calendar-check"></i></app-botao-acao-rapida>
+      </div>
+      <div class="col-6 col-sm-6 col-md-2">
+        <app-botao-acao-rapida titulo="Devolução" classe="bg-laranja"><i
+            class="bi bi-arrow-counterclockwise"></i></app-botao-acao-rapida>
+      </div>
+      <div class="col-6 col-sm-6 col-md-2">
+        <app-botao-acao-rapida titulo="Consultar" classe="bg-roxo"><i class="bi bi-search"></i></app-botao-acao-rapida>
+      </div>
+      <div class="col-6 col-sm-6 col-md-2">
+        <app-botao-acao-rapida titulo="Relatórios" classe="bg-cinza"><i
+            class="bi bi-file-earmark-text"></i></app-botao-acao-rapida>
+      </div>
+    </div>
+  </div>
+</section>
+}
