@@ -5,12 +5,13 @@ import { Usuario } from '../../models/usuario.model';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { InputBusca } from '../../shared/component/input-busca/input-busca';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
-  imports: [FormsModule, CommonModule, RouterLink, CorpoPadrao],
+  imports: [FormsModule, CommonModule, RouterLink, CorpoPadrao, InputBusca],
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })
@@ -25,6 +26,10 @@ export class EditarExcluirUsuario {
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
   ) {}
+
+  pesquisarUsuario(busca: Busca): void {
+    console.log(busca);
+  }
 
   usuarios: Usuario[] = [
     {

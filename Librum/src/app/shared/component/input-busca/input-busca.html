@@ -1,0 +1,19 @@
+<form (submit)="pesquisar($event)">
+  <div class="row row-gap-3">
+    @if (showSelect) {
+    <div class="col-lg-3 col-md-2 col-sm-12">
+      <select class="form-select" name="select" [(ngModel)]="filtroSelecionado">
+        @for (opcao of opcoesFiltro; track opcao.valor) {
+        <option [value]="opcao.valor">
+          {{ opcao.label }}
+        </option>
+        }
+      </select>
+    </div>
+    }
+    <div [ngClass]="showSelect ? 'col-sm-12 col-md-10 col-lg-9':'col-12'">
+      <input type="text" name="texto" class="form-control" [(ngModel)]="textoBusca"
+        [placeholder]="TipoInput === 'LIVRO' ? 'Digite o título do livro' : 'Digite o nome do usuário'">
+    </div>
+  </div>
+</form>
