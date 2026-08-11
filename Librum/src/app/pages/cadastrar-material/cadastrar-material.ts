@@ -11,10 +11,11 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from '../../shared/services/toast.service';
 import { IMaskDirective } from 'angular-imask';
 import { MaskConstants } from '../../enum/const';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-cadastrar-material',
-  imports: [FormsModule, CommonModule, IMaskDirective, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, IMaskDirective, ReactiveFormsModule, CorpoPadrao],
   templateUrl: './cadastrar-material.html',
   styleUrl: './cadastrar-material.scss',
 })

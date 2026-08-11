@@ -10,10 +10,19 @@ import { TarefaService } from '../../shared/services/tarefas.service';
 import { prioridade } from '../../enum/prioridade.enum';
 import { Badge } from '../../shared/component/badge/badge';
 import { ConfiguracaoService } from '../../shared/services/configuracao.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ItemListaTarefa, CardInformativo, CardStatus, BotaoAcaoRapida, FormsModule, Badge],
+  imports: [
+    ItemListaTarefa,
+    CardInformativo,
+    CardStatus,
+    BotaoAcaoRapida,
+    FormsModule,
+    Badge,
+    CorpoPadrao,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

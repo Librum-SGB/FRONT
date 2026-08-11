@@ -8,7 +8,7 @@ import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 import { CadastroBibliotecariaComponent } from './pages/cadastro-bibliotecaria/cadastro-bibliotecaria';
 import { TelaSuporte } from './pages/tela-suporte/tela-suporte';
 import { CadastrarUsuario } from './pages/cadastrar-usuario/cadastrar-usuario';
-import { HistorioEmprestimo } from './pages/historio-emprestimo/historio-emprestimo';
+import { HistorioEmprestimo } from './pages/historico-emprestimo/historico-emprestimo';
 import { EditarExcluirUsuario } from './pages/editar-excluir-usuario/editar-excluir-usuario';
 import { Relatorio } from './pages/relatorio/relatorio';
 import { Configuracoes } from './pages/configuracoes/configuracoes';
