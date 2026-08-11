@@ -32,7 +32,7 @@
                 {{ material.tipo }}
               </span>
 
-              <span class="badge rounded-pill small" [ngClass]="{
+              <span class="d-flex badge rounded-pill small" [ngClass]="{
             'bg-success-subtle text-success': material.disponibilidade === 'Disponível',
             'bg-danger-subtle text-danger': material.disponibilidade === 'Indisponível'
           }">
@@ -40,7 +40,7 @@
               </span>
             </div>
 
-            <button class="btn btn-outline-primary btn-sm mt-3 w-100 rounded-3" data-bs-toggle="modal"
+            <button class="btn btn-primary btn-sm mt-3 w-100 rounded-3" data-bs-toggle="modal"
               data-bs-target="#modalMaterial" (click)="selecionarMaterial(material)">
               Mais informações
             </button>
