@@ -30,10 +30,24 @@
             <small>ID: {{ usuario.id }}</small>
 
 
-            <div class="d-flex justify-content-center mt-3 mb-3">
-              <span class="badge rounded-pill small" [ngClass]="{
-                'bg-success-subtle text-success': !usuario.estaBloqueado,
-                'bg-danger-subtle text-danger': usuario.estaBloqueado
+          <h6>{{ usuario.nome }}</h6>
+          <small>ID: {{ usuario.id }}</small>
+
+          
+         <div class="d-flex justify-content-center mt-3 mb-3">
+          <span class="badge rounded-pill small" [ngClass]="{
+            'bg-success-subtle text-success': !usuario.estaBloqueado,
+            'bg-danger-subtle text-danger': usuario.estaBloqueado
+          }">
+          {{ usuario.estaBloqueado ? 'Bloqueado' : 'Ativo'}}
+          </span>
+
+         </div>
+
+            <div class="mt-3 mb-3">
+              <span class="badge" [ngClass]="{
+                'bg-success': !usuario.estaBloqueado,
+                'bg-danger': usuario.estaBloqueado
               }">
                 {{ usuario.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
               </span>
