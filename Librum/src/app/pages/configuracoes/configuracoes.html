@@ -71,21 +71,24 @@
     <h6>Notificações</h6>
 
     <div class="form-check form-switch mb-3">
-      <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.gerais">
+      <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.gerais"
+        (change)="toggleNotificacaoGerais()">
       <label class="form-check-label ms-2">
         Notificações Gerais
       </label>
     </div>
 
     <div class="form-check form-switch mb-3">
-      <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.email">
+      <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.email"
+        (change)="toggleNotificacaoEmail()">
       <label class="form-check-label ms-2">
         Notificações por Email
       </label>
     </div>
 
     <div class="form-check form-switch mb-3">
-      <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.alertas">
+      <input class="form-check-input" type="checkbox" [(ngModel)]="notificacoes.alertas"
+        (change)="toggleNotificacaoAlertas()">
       <label class="form-check-label ms-2">
         Alertas do Sistema
       </label>
@@ -151,4 +154,4 @@
     </div>
   </div>
 
-  <app-corpo-padrao>
+</app-corpo-padrao>

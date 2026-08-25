@@ -25,13 +25,15 @@ export class Configuracoes implements OnInit {
   isExibirAcoesRapidas = false;
 
   notificacoes = {
-    gerais: true,
-    email: true,
-    alertas: true,
+    gerais: false,
+    email: false,
+    alertas: false,
   };
 
   versaoSistema = 'v2.5.1';
   ultimoBackup = '13/11/2025 às 03:00';
+
+  private readonly filialId = 1;
 
   constructor(
     private toastService: ToastService,
@@ -42,16 +44,53 @@ export class Configuracoes implements OnInit {
   ngOnInit(): void {
     this.isExibirAcoesRapidas = this.configService.configuracaoAtivaByChave(
       ConfiguracaoService.CHAVE_ACAO_RAPIDA,
-      1,
+      this.filialId,
+    );
+
+    this.notificacoes.gerais = this.configService.configuracaoAtivaByChave(
+      ConfiguracaoService.CHAVE_NOTIFICACOES_GERAIS,
+      this.filialId,
+    );
+
+    this.notificacoes.email = this.configService.configuracaoAtivaByChave(
+      ConfiguracaoService.CHAVE_NOTIFICACOES_EMAIL,
+      this.filialId,
+    );
+
+    this.notificacoes.alertas = this.configService.configuracaoAtivaByChave(
+      ConfiguracaoService.CHAVE_NOTIFICACOES_ALERTAS,
+      this.filialId,
     );
   }
 
   alterarAcaoRapida() {
-    this.configService.toggleConfiguracao(ConfiguracaoService.CHAVE_ACAO_RAPIDA, 1);
+    this.configService.toggleConfiguracao(ConfiguracaoService.CHAVE_ACAO_RAPIDA, this.filialId);
+  }
+
+  toggleNotificacaoGerais(): void {
+    this.configService.toggleConfiguracao(
+      ConfiguracaoService.CHAVE_NOTIFICACOES_GERAIS,
+      this.filialId,
+    );
+  }
+
+  toggleNotificacaoEmail(): void {
+    this.configService.toggleConfiguracao(
+      ConfiguracaoService.CHAVE_NOTIFICACOES_EMAIL,
+      this.filialId,
+    );
+  }
+
+  toggleNotificacaoAlertas(): void {
+    this.configService.toggleConfiguracao(
+      ConfiguracaoService.CHAVE_NOTIFICACOES_ALERTAS,
+      this.filialId,
+    );
   }
 
   alterarTema(theme: 'light' | 'dark'): void {
     this.themeService.setTheme(theme);
+    this.configService.definirValor(ConfiguracaoService.CHAVE_TEMA, this.filialId, theme);
   }
 
   salvarAlteracoes(): void {
