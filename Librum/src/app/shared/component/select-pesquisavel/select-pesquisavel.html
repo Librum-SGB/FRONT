@@ -1,0 +1,27 @@
+<div class="select-pesquisavel">
+    <div class="select-pesquisavel-campo">
+        <input type="text" class="form-control pe-5" [placeholder]="placeholder" [class.is-invalid]="invalido"
+            [(ngModel)]="busca" (input)="filtrar()" (focus)="abrirLista()">
+
+        <button type="button" class="btn-add-input" *ngIf="permitirCriar" (click)="onCriarClick()">
+            <i class="bi bi-plus"></i>
+        </button>
+
+        <ul class="list-group select-pesquisavel-lista" *ngIf="mostrarLista">
+            <li class="list-group-item list-group-item-action" style="cursor: pointer;"
+                *ngFor="let item of itensFiltrados" (click)="selecionar(item)">
+                {{ item.nome }}
+            </li>
+            <li class="list-group-item text-muted" *ngIf="itensFiltrados.length === 0">
+                Nenhum resultado encontrado
+            </li>
+        </ul>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="multiplo && valoresMultiplos.length > 0">
+        <span class="badge text-bg-secondary d-flex align-items-center gap-1" *ngFor="let id of valoresMultiplos">
+            {{ nomeDoItem(id) }}
+            <i class="bi bi-x-circle" style="cursor: pointer;" (click)="remover(id)"></i>
+        </span>
+    </div>
+</div>

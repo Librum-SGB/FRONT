@@ -1,0 +1,50 @@
+.select-pesquisavel {
+    width: 100%;
+}
+
+// wrapper único do input + botão + lista, pra lista ter EXATAMENTE a largura do input
+.select-pesquisavel-campo {
+    position: relative;
+    width: 100%;
+}
+
+.select-pesquisavel-lista {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    max-height: 190px; // ~5 itens de 38px cada, o resto rola
+    overflow-y: auto;
+    margin-top: 2px;
+}
+
+// botão "+" sobreposto no canto direito do input, verticalmente centralizado
+.btn-add-input {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--bs-primary, #0d6efd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.15s ease-in-out;
+
+    &:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+
+    i {
+        font-size: 1rem;
+        pointer-events: none;
+    }
+}
