@@ -6,7 +6,7 @@
         <input type="text" [(ngModel)]="busca" (input)="onBuscar()" class="form-control" placeholder="Buscar livro...">
       </div>
       <div class="col-12 col-md-2">
-        <button class="btn btn-success w-100">Nova estante</button>
+        <button class="btn btn-success w-100" (click)="modalEstanteAberta = true">Nova estante</button>
       </div>
     </div>
     @if(estantesFiltradas.length > 0){
@@ -48,5 +48,6 @@
     }
     <app-modal-livro [(isOpen)]="modalAberta" [exemplar]="livroEscolhido" />
   </div>
-
 </app-corpo-padrao>
+<app-modal-nova-estante [(isOpen)]="modalEstanteAberta"
+  (estanteCriada)="onEstanteCriada($event)"></app-modal-nova-estante>
