@@ -8,6 +8,24 @@ import { Observable, of } from 'rxjs';
 export class EstanteService {
   constructor() {}
 
+  criarEstante(novaEstanteData: Partial<EstanteVirtualDto>): Observable<EstanteVirtualDto> {
+    // Gera o próximo ID incrementando o maior ID existente
+    const novoId =
+      this.ESTANTES_VIRTUAIS.length > 0
+        ? Math.max(...this.ESTANTES_VIRTUAIS.map((e) => e.id)) + 1
+        : 1;
+
+    const novaEstante: EstanteVirtualDto = {
+      id: novoId,
+      localizacao: novaEstanteData.localizacao ?? '',
+      capacidade: novaEstanteData.capacidade,
+      prateleiras: novaEstanteData.prateleiras ?? [],
+    };
+
+    this.ESTANTES_VIRTUAIS.push(novaEstante);
+    return of(novaEstante);
+  }
+
   // 🔹 GET - todas as estantes
   getEstantes(): Observable<EstanteVirtualDto[]> {
     return of(this.ESTANTES_VIRTUAIS);
