@@ -24,6 +24,7 @@ import { CadastroAutorModal } from '../../shared/component/cadastro-autor-modal/
 import { CadastroEditoraModal } from '../../shared/component/cadastro-editora-modal/cadastro-editora-modal';
 import { CadastroGeneroModal } from '../../shared/component/cadastro-genero-modal/cadastro-genero-modal';
 import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
+import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 
 @Component({
   selector: 'app-cadastrar-material',
@@ -37,6 +38,7 @@ import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/sel
     CadastroEditoraModal,
     CadastroGeneroModal,
     SelectPesquisavel,
+    LbrButtom,
   ],
   templateUrl: './cadastrar-material.html',
   styleUrl: './cadastrar-material.scss',
@@ -77,7 +79,7 @@ export class CadastrarMaterial implements OnInit {
     private autorService: AutorService,
     private editoraService: EditoraService,
     private generoService: GeneroService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const hoje = new Date().toISOString().split('T')[0];
@@ -179,17 +181,25 @@ export class CadastrarMaterial implements OnInit {
 
       if (control.hasError('minlength')) {
         const erro = control.getError('minlength');
-        this.mensagensErro.push(`${nome} deve possuir no mínimo ${erro.requiredLength} caracteres.`);
+        this.mensagensErro.push(
+          `${nome} deve possuir no mínimo ${erro.requiredLength} caracteres.`,
+        );
       }
       if (control.hasError('maxlength')) {
         const erro = control.getError('maxlength');
-        this.mensagensErro.push(`${nome} deve possuir no máximo ${erro.requiredLength} caracteres.`);
+        this.mensagensErro.push(
+          `${nome} deve possuir no máximo ${erro.requiredLength} caracteres.`,
+        );
       }
       if (control.hasError('min')) {
-        this.mensagensErro.push(`${nome} deve ser maior ou igual a ${control.getError('min').min}.`);
+        this.mensagensErro.push(
+          `${nome} deve ser maior ou igual a ${control.getError('min').min}.`,
+        );
       }
       if (control.hasError('max')) {
-        this.mensagensErro.push(`${nome} deve ser menor ou igual a ${control.getError('max').max}.`);
+        this.mensagensErro.push(
+          `${nome} deve ser menor ou igual a ${control.getError('max').max}.`,
+        );
       }
       if (control.hasError('pattern')) {
         this.mensagensErro.push(`${nome} possui um formato inválido.`);
@@ -291,7 +301,7 @@ export class CadastrarMaterial implements OnInit {
       tema: form.tema,
       descricao: form.descricao || undefined,
       observacao: form.observacao || undefined,
-    }
+    };
 
     this.materialService.create(payload).subscribe({
       next: () => {

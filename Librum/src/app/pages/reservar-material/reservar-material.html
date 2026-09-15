@@ -21,7 +21,7 @@
                     <h3 class="h6 mb-1">{{ livro.id }} - {{ livro.titulo }}</h3>
                     <p class="text-muted mb-0">{{ livro.disponiveis }} disponiveis</p>
                   </div>
-                  <button class="btn btn-primary" type="button" (click)="selecionarMaterial(livro)"
+                  <button lbrButton variant="cadastrar" (click)="selecionarMaterial(livro)"
                     [disabled]="materiaisSelecionados.includes(livro)">
                     +
                   </button>
@@ -40,7 +40,7 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center"
                   *ngFor="let material of materiaisSelecionados">
                   {{ material.titulo }}
-                  <button class="btn btn-sm btn-outline-danger" type="button" (click)="removerMaterial(material)">
+                  <button lbrButton variant="excluir" type="button" (click)="removerMaterial(material)">
                     <i class="bi bi-trash"></i>
                   </button>
                 </li>
@@ -48,7 +48,7 @@
             </div>
 
             <div class="d-grid">
-              <button class="btn btn-primary" type="button" (click)="continuar()"
+              <button lbrButton variant="concluir" type="button" (click)="continuar()"
                 [disabled]="materiaisSelecionados.length === 0">
                 Continuar
               </button>
@@ -73,7 +73,7 @@
                     <p class="text-muted mb-0">{{ usuario.email }}</p>
                     <span class="badge bg-danger" *ngIf="usuario.estaBloqueado">Bloqueado</span>
                   </div>
-                  <button class="btn btn-outline-primary" type="button" (click)="selecionarUsuario(usuario)"
+                  <button lbrButton variant="outros" type="button" (click)="selecionarUsuario(usuario)"
                     [disabled]="etapaAtual === 1 || usuario.estaBloqueado">
                     Selecionar
                   </button>
@@ -88,10 +88,10 @@
             </div>
 
             <div class="d-flex gap-2 mt-4">
-              <button class="btn btn-secondary" type="button" (click)="voltar()" [disabled]="etapaAtual === 1">
+              <button lbrButton variant="cancelar" type="button" (click)="voltar()" [disabled]="etapaAtual === 1">
                 Voltar
               </button>
-              <button class="btn btn-primary" type="button" (click)="concluirReserva()"
+              <button lbrButton variant="concluir" type="button" (click)="concluirReserva()"
                 [disabled]="etapaAtual === 1 || !usuarioSelecionado">
                 Concluir Reserva
               </button>

@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { EstanteVirtualDto, PrateleiraVirtualDto } from '../../../dto/estantevirtual.dto';
 import { FormsModule } from '@angular/forms';
+import { LbrButtom } from '../lbr-buttom/lbr-buttom';
 
 @Component({
   selector: 'app-modal-nova-estante',
-  imports: [FormsModule],
+  imports: [FormsModule, LbrButtom],
   templateUrl: './modal-nova-estante.html',
   styleUrl: './modal-nova-estante.scss',
 })

@@ -75,16 +75,16 @@
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar"
+            <button lbrButton variant="editar" data-bs-toggle="modal" data-bs-target="#modalEditar"
               (click)="abrirEdicao(materialSelecionado)">
               <i class="bi bi-pencil"></i>Editar
             </button>
 
-            <button class="btn btn-danger" (click)="excluirMaterial(materialSelecionado)">
+            <button lbrButton variant="excluir" (click)="excluirMaterial(materialSelecionado)">
               <i class="bi bi-trash"></i> Excluir
             </button>
 
-            <button class="btn btn-secondary" data-bs-dismiss="modal">
+            <button lbrButton variant="cancela/limpa" data-bs-dismiss="modal">
               Fechar
             </button>
 
@@ -171,8 +171,8 @@
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn-success" (click)="salvarEdicao()">Salvar</button>
-            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button lbrButton variant="cadastrar" (click)="salvarEdicao()">Salvar</button>
+            <button lbrButton variant="cancelar" data-bs-dismiss="modal">Cancelar</button>
           </div>
 
         </div>

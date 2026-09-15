@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from '../../shared/services/toast.service';
 import { FormsModule } from '@angular/forms';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 
 @Component({
   selector: 'app-editar-excluir-material',
-  imports: [CommonModule, FormsModule, CorpoPadrao],
+  imports: [CommonModule, FormsModule, CorpoPadrao, LbrButtom],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',
 })

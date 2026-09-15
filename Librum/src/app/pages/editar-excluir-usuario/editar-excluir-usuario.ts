@@ -6,12 +6,13 @@ import { RouterLink } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { InputBusca } from '../../shared/component/input-busca/input-busca';
+import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
-  imports: [FormsModule, CommonModule, RouterLink, CorpoPadrao, InputBusca],
+  imports: [FormsModule, CommonModule, RouterLink, CorpoPadrao, InputBusca, LbrButtom],
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })

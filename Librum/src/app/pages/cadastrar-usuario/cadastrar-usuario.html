@@ -103,9 +103,9 @@
     </div>
 
     <div class="d-flex justify-content-end gap-2">
-      <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+      <button lbrButton variant="cancelar" (click)="cancelar()">Cancelar</button>
 
-      <button class="btn btn-primary" (click)="salvar()" [disabled]="usuario.senha !== confirmarSenha">
+      <button lbrButton variant="cadastrar" (click)="salvar()" [disabled]="usuario.senha !== confirmarSenha">
         Salvar
       </button>
     </div>

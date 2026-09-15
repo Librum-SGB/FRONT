@@ -41,10 +41,16 @@
       </div>
 
       <div class="row g-2 mb-3">
-        <div class="col-6"><button class="btn btn-success-librum w-100 py-3" (click)="renovar()"><i
-              class="bi bi-arrow-repeat fs-4 d-block"></i>Renovar</button></div>
-        <div class="col-6"><button class="btn btn-warning-librum w-100 py-3" (click)="devolver()"><i
-              class="bi bi-check-circle fs-4 d-block"></i>Devolver</button></div>
+        <div class="col-6">
+          <button lbrButton variant="renovar" size="lg" class="w-100" (click)="renovar()">
+            <i class="bi bi-arrow-repeat fs-4 d-block"></i>Renovar
+          </button>
+        </div>
+        <div class="col-6">
+          <button lbrButton variant="confirmar" size="lg" class="w-100" (click)="devolver()">
+            <i class="bi bi-check-circle fs-4 d-block"></i>Devolver
+          </button>
+        </div>
       </div>
     </div>
 
