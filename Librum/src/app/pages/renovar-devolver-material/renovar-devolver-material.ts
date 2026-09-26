@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 // Import da sua Badge que vimos na foto do seu VS Code
 import { Badge } from '../../shared/component/badge/badge';
 import { ToastService } from '../../shared/services/toast.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 
 @Component({
   selector: 'app-renovar-devolver-material',
   standalone: true,
-  imports: [CommonModule, FormsModule, Badge], // Adicionado a Badge aqui
+  imports: [CommonModule, FormsModule, Badge, CorpoPadrao, LbrButtom], // Adicionado a Badge aqui
   templateUrl: './renovar-devolver-material.html',
   styleUrl: './renovar-devolver-material.scss',
 })

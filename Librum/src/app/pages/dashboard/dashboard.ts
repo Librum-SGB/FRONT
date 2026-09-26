@@ -2,19 +2,29 @@ import { Component, OnInit } from '@angular/core';
 import { ItemListaTarefa } from '../../shared/component/item-lista-tarefa/item-lista-tarefa';
 import { CardInformativo } from '../../shared/component/card/card-informativo/card-informativo';
 import { CardStatus } from '../../shared/component/card/card-status/card-status';
-import { NgClass } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { BotaoAcaoRapida } from '../../shared/component/botao-acao-rapida/botao-acao-rapida';
 import { FormsModule } from '@angular/forms';
 import { Tarefa } from '../../models/tarefa.model';
 import { TarefaService } from '../../shared/services/tarefas.service';
 import { prioridade } from '../../enum/prioridade.enum';
 import { Badge } from '../../shared/component/badge/badge';
+import { ConfiguracaoService } from '../../shared/services/configuracao.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ItemListaTarefa, CardInformativo, CardStatus, BotaoAcaoRapida, FormsModule, Badge],
+  imports: [
+    ItemListaTarefa,
+    CardInformativo,
+    CardStatus,
+    BotaoAcaoRapida,
+    FormsModule,
+    Badge,
+    CorpoPadrao,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -22,10 +32,18 @@ export class Dashboard implements OnInit {
   listaTarefa: Tarefa[] = [];
   descNovaTarefa: string = '';
   tarefaSelecionada: Tarefa | null = null;
-  constructor(private tarefaService: TarefaService) {}
+  exibeAcaoRapida: boolean = false;
+  constructor(
+    private tarefaService: TarefaService,
+    private configuracaoService: ConfiguracaoService,
+  ) {}
 
   ngOnInit(): void {
     this.listaTarefa = this.tarefaService.getTarefas();
+    this.exibeAcaoRapida = this.configuracaoService.configuracaoAtivaByChave(
+      ConfiguracaoService.CHAVE_ACAO_RAPIDA,
+      1,
+    );
   }
 
   adicionarTarefa() {

@@ -1,5 +1,5 @@
 @if (toast.mensagemAtual(); as mensagem) {
-<div class="toast-box border rounded-3 p-3 d-flex align-items-center gap-3 " [ngClass]="{
+<div class="toast-box border rounded-3 px-2 py-1 d-flex align-items-center gap-3 " [ngClass]="{
        'bg-success-subtle border-success': mensagem.tipo === 'sucesso',
        'bg-danger-subtle border-danger': mensagem.tipo === 'erro',
        'bg-warning-subtle border-warning': mensagem.tipo === 'aviso',

@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { TipoRelatorio } from '../../enum/tipo-relatorio.enum';
 import { NgClass } from '@angular/common';
 import { ToastService } from '../../shared/services/toast.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 
 @Component({
   selector: 'app-relatorio',
-  imports: [NgClass],
+  imports: [NgClass, CorpoPadrao, LbrButtom],
   templateUrl: './relatorio.html',
   styleUrl: './relatorio.scss',
 })

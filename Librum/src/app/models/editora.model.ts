@@ -1,9 +1,12 @@
-export interface Editora {
-  id?: number;
-
+export interface EditoraRequest {
   nome: string;
   nacionalidade?: string;
+}
 
-  dataCriacao?: Date;
-  dataUltimaAtualizacao?: Date;
+export interface EditoraResponse {
+  id: number;
+  nome: string;
+  nacionalidade?: string;
+  dataCriacao: string;
+  dataUltimaAtualizacao: string;
 }

@@ -1,0 +1,35 @@
+<app-modal title="Cadastrar Gênero" [isOpen]="true" (isOpenChange)="cancelar()">
+    <form [formGroup]="form" (ngSubmit)="salvar()">
+
+        <div class="mb-3">
+            <label class="form-label">Nome *</label>
+
+            <input type="text" class="form-control" formControlName="nome" [class.is-invalid]="
+          form.get('nome')?.invalid && form.get('nome')?.touched
+        ">
+
+            <div class="invalid-feedback" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
+                O nome é obrigatório.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Descrição</label>
+
+            <textarea class="form-control" rows="4" formControlName="descricao"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+
+            <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="salvando">
+                Cancelar
+            </button>
+
+            <button type="submit" class="btn btn-primary" [disabled]="salvando">
+                {{ salvando ? 'Salvando...' : 'Salvar' }}
+            </button>
+
+        </div>
+
+    </form>
+</app-modal>

@@ -1,9 +1,12 @@
-export interface Genero {
-  id?: number;
-
+export interface GeneroRequest {
   nome: string;
   descricao?: string;
+}
 
-  dataCriacao?: Date;
-  dataUltimaAtualizacao?: Date;
+export interface GeneroResponse {
+  id: number;
+  nome: string;
+  descricao?: string;
+  dataCriacao: string;
+  dataUltimaAtualizacao: string;
 }

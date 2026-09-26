@@ -1,19 +1,10 @@
-<div class="container mt-4">
-  <div class="card shadow-sm p-4">
+<app-corpo-padrao>
+  <div class="titulo">Consultar / Editar Usuários</div>
 
-    <h5 class="mb-4">Consultar / Editar Usuários</h5>
+  <div class="corpo">
 
     <div class="row mb-4">
-      <div class="col-md-2">
-        <select class="form-select" [(ngModel)]="filtro">
-          <option value="nome">Nome</option>
-          <option value="id">ID</option>
-        </select>
-      </div>
-
-      <div class="col-md-10">
-        <input type="text" class="form-control" placeholder="Buscar usuário..." [(ngModel)]="busca">
-      </div>
+      <app-input-busca TipoInput="USUARIO" [showSelect]="true" (buscar)="pesquisarUsuario($event)"></app-input-busca>
     </div>
 
     <div class="row">
@@ -28,16 +19,17 @@
           <h6>{{ usuario.nome }}</h6>
           <small>ID: {{ usuario.id }}</small>
 
-          <div class="mt-3 mb-3">
-            <span class="badge" [ngClass]="{
-                'bg-success': !usuario.estaBloqueado,
-                'bg-danger': usuario.estaBloqueado
+
+          <div class="d-flex justify-content-center mt-3 mb-3">
+            <span class="badge rounded-pill small" [ngClass]="{
+                'bg-success-subtle text-success': !usuario.estaBloqueado,
+                'bg-danger-subtle text-danger': usuario.estaBloqueado
               }">
               {{ usuario.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
             </span>
           </div>
 
-          <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalUsuario"
+          <button lbrButton variant="outros" class="w-100" data-bs-toggle="modal" data-bs-target="#modalUsuario"
             (click)="selecionarUsuario(usuario)">
             Mais informações
           </button>
@@ -46,7 +38,8 @@
       </div>
     </div>
   </div>
-</div>
+</app-corpo-padrao>
+
 
 <!-- MODAL USUÁRIO -->
 <div class="modal fade" id="modalUsuario" tabindex="-1">
@@ -57,6 +50,7 @@
         <h5>Informações do Usuário</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
 
       <div class="modal-body" *ngIf="usuarioSelecionado">
 
@@ -77,7 +71,8 @@
         <p><strong>CEP:</strong> {{ usuarioSelecionado.cep }}</p>
         <p><strong>Data Nascimento:</strong> {{ usuarioSelecionado.dataNascimento | date:'dd/MM/yyyy' }}</p>
         <p><strong>Data Criação:</strong> {{ usuarioSelecionado.dataCriacao | date:'dd/MM/yyyy' }}</p>
-        <p><strong>Última Atualização:</strong> {{ usuarioSelecionado.dataUltimaAtualizacao | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Última Atualização:</strong> {{ usuarioSelecionado.dataUltimaAtualizacao | date:'dd/MM/yyyy' }}
+        </p>
         <p><strong>Limite Livros:</strong> {{ usuarioSelecionado.limiteLivros }}</p>
         <p>
           <strong>Status:</strong>
@@ -89,19 +84,20 @@
         <div class="row w-100 g-2">
 
           <div class="col-12 col-md-4">
-            <button class="btn btn-primary w-100" routerLink="/historicoEmprestimo" data-bs-dismiss="modal">
+            <button lbrButton variant="outros" class="w-100" routerLink="/historicoEmprestimo"
+              data-bs-dismiss="modal">
               Histórico
             </button>
           </div>
 
           <div class="col-12 col-md-4">
-            <button class="btn btn-warning w-100" (click)="editarUsuario()">
+            <button lbrButton variant="editar" class="w-100" (click)="editarUsuario()">
               Editar
             </button>
           </div>
 
           <div class="col-12 col-md-4">
-            <button class="btn btn-danger w-100" (click)="abrirModalExcluir()">
+            <button lbrButton variant="excluir" class="w-100" (click)="abrirModalExcluir()">
               Excluir
             </button>
           </div>
@@ -228,11 +224,11 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">
+        <button lbrButton variant="cancela/limpa" data-bs-dismiss="modal">
           Cancelar
         </button>
 
-        <button class="btn btn-success" (click)="salvarEdicao()">
+        <button lbrButton variant="cadastrar" (click)="salvarEdicao()">
           Salvar Alterações
         </button>
       </div>
@@ -257,11 +253,11 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="cancelarExclusao()">
+        <button lbrButton variant="cancela/limpa" (click)="cancelarExclusao()">
           Cancelar
         </button>
 
-        <button class="btn btn-danger" (click)="confirmarExclusao()">
+        <button lbrButton variant="excluir" (click)="confirmarExclusao()">
           Excluir
         </button>
       </div>

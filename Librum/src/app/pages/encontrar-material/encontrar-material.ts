@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ModalLivro } from './modal-livro/modal-livro';
 import { EstanteVirtualDto, ExemplarVirtualDto } from '../../dto/estantevirtual.dto';
 import { EstanteService } from '../../shared/services/estante-virtual.service';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { ModalNovaEstante } from '../../shared/component/modal-nova-estante/modal-nova-estante';
 
 @Component({
   selector: 'app-encontrar-material',
-  imports: [CommonModule, FormsModule, ModalLivro],
+  imports: [CommonModule, FormsModule, ModalLivro, CorpoPadrao, ModalNovaEstante],
   templateUrl: './encontrar-material.html',
   styleUrl: './encontrar-material.scss',
 })
@@ -15,6 +17,8 @@ export class EncontrarMaterial implements OnInit {
   busca: string = '';
   livroEscolhido?: ExemplarVirtualDto;
   modalAberta = false;
+  modalEstanteAberta = false;
+
   constructor(private estanteService: EstanteService) {}
 
   ngOnInit(): void {
@@ -37,6 +41,17 @@ export class EncontrarMaterial implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao carregar estantes', err);
+      },
+    });
+  }
+
+  onEstanteCriada(novaEstante: Partial<EstanteVirtualDto>) {
+    this.estanteService.criarEstante(novaEstante).subscribe({
+      next: () => {
+        this.carregarEstantes();
+      },
+      error: (err) => {
+        console.error('Erro ao criar estante', err);
       },
     });
   }
