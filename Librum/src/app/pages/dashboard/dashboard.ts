@@ -12,6 +12,8 @@ import { Badge } from '../../shared/component/badge/badge';
 import { ConfiguracaoService } from '../../shared/services/configuracao.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-dashboard',
   imports: [
@@ -29,6 +31,7 @@ import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 export class Dashboard implements OnInit {
   listaTarefa: Tarefa[] = [];
   descNovaTarefa: string = '';
+  tarefaSelecionada: Tarefa | null = null;
   exibeAcaoRapida: boolean = false;
   constructor(
     private tarefaService: TarefaService,
@@ -63,8 +66,21 @@ export class Dashboard implements OnInit {
     this.listaTarefa = this.tarefaService.getTarefas();
   }
 
-  deletarTarefa(id: number) {
-    this.tarefaService.removerTarefa(id);
+  abrirConfirmacaoExclusaoTarefa(id: number) {
+    this.tarefaSelecionada = this.listaTarefa.find((tarefa) => tarefa.id === id) ?? null;
+
+    if (!this.tarefaSelecionada) return;
+
+    new bootstrap.Modal(document.getElementById('excluirTarefaModal')).show();
+  }
+
+  confirmarExclusaoTarefa() {
+    if (this.tarefaSelecionada?.id == null) return;
+
+    this.tarefaService.removerTarefa(this.tarefaSelecionada.id);
     this.listaTarefa = this.tarefaService.getTarefas();
+    this.tarefaSelecionada = null;
+
+    bootstrap.Modal.getInstance(document.getElementById('excluirTarefaModal'))?.hide();
   }
 }

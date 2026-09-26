@@ -106,17 +106,48 @@ export class EditarExcluirUsuario {
     this.usuarioSelecionado = usuario;
   }
 
+  private trocarModal(modalAtualId: string, proximoModalId: string): void {
+    const modalAtualElemento = document.getElementById(modalAtualId);
+    const proximoModalElemento = document.getElementById(proximoModalId);
+
+    if (!proximoModalElemento) return;
+
+    const abrirProximoModal = () => {
+      bootstrap.Modal.getOrCreateInstance(proximoModalElemento).show();
+    };
+
+    if (!modalAtualElemento) {
+      abrirProximoModal();
+      return;
+    }
+
+    const modalAtual = bootstrap.Modal.getInstance(modalAtualElemento);
+
+    if (!modalAtual) {
+      abrirProximoModal();
+      return;
+    }
+
+    modalAtualElemento.addEventListener('hidden.bs.modal', abrirProximoModal, { once: true });
+    modalAtual.hide();
+  }
+
   editarUsuario(): void {
     if (!this.usuarioSelecionado) return;
 
     this.usuarioEditando = { ...this.usuarioSelecionado };
-
-    bootstrap.Modal.getInstance(document.getElementById('modalUsuario'))?.hide();
-
-    new bootstrap.Modal(document.getElementById('editarModal')).show();
+    this.trocarModal('modalUsuario', 'editarModal');
   }
 
   salvarEdicao(): void {
+    this.trocarModal('editarModal', 'confirmarEdicaoUsuarioModal');
+  }
+
+  cancelarConfirmacaoEdicao(): void {
+    this.trocarModal('confirmarEdicaoUsuarioModal', 'editarModal');
+  }
+
+  confirmarEdicao(): void {
     const index = this.usuarios.findIndex((usuario) => usuario.id === this.usuarioEditando.id);
 
     if (index !== -1) {
@@ -128,11 +159,15 @@ export class EditarExcluirUsuario {
       this.toastService.sucesso('Usuário editado com sucesso!');
     }
 
-    bootstrap.Modal.getInstance(document.getElementById('editarModal'))?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoUsuarioModal'))?.hide();
   }
 
   abrirModalExcluir(): void {
-    new bootstrap.Modal(document.getElementById('excluirModal')).show();
+    this.trocarModal('modalUsuario', 'excluirModal');
+  }
+
+  cancelarExclusao(): void {
+    this.trocarModal('excluirModal', 'modalUsuario');
   }
 
   confirmarExclusao(): void {
@@ -144,8 +179,6 @@ export class EditarExcluirUsuario {
     this.usuarioSelecionado = null;
 
     bootstrap.Modal.getInstance(document.getElementById('excluirModal'))?.hide();
-
-    bootstrap.Modal.getInstance(document.getElementById('modalUsuario'))?.hide();
   }
 
   alterarFoto(event: Event): void {
