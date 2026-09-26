@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from '../../shared/services/toast.service';
 import { FormsModule } from '@angular/forms';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-editar-excluir-material',
   imports: [CommonModule, FormsModule],
@@ -73,13 +75,50 @@ export class EditarExcluirMaterial {
     this.materialSelecionado = material;
   }
 
+  private trocarModal(modalAtualId: string, proximoModalId: string): void {
+    const modalAtualElemento = document.getElementById(modalAtualId);
+    const proximoModalElemento = document.getElementById(proximoModalId);
+
+    if (!proximoModalElemento) return;
+
+    const abrirProximoModal = () => {
+      bootstrap.Modal.getOrCreateInstance(proximoModalElemento).show();
+    };
+
+    if (!modalAtualElemento) {
+      abrirProximoModal();
+      return;
+    }
+
+    const modalAtual = bootstrap.Modal.getInstance(modalAtualElemento);
+
+    if (!modalAtual) {
+      abrirProximoModal();
+      return;
+    }
+
+    modalAtualElemento.addEventListener('hidden.bs.modal', abrirProximoModal, { once: true });
+    modalAtual.hide();
+  }
+
   materialEditando: any = {};
 
   abrirEdicao(material: any) {
+    if (!material) return;
+
     this.materialEditando = { ...material };
+    this.trocarModal('modalMaterial', 'modalEditar');
   }
 
   salvarEdicao() {
+    this.trocarModal('modalEditar', 'confirmarEdicaoMaterialModal');
+  }
+
+  cancelarConfirmacaoEdicao() {
+    this.trocarModal('confirmarEdicaoMaterialModal', 'modalEditar');
+  }
+
+  confirmarEdicao() {
     const index = this.materiais.findIndex((m) => m.codigo === this.materialEditando.codigo);
 
     if (index !== -1) {
@@ -87,12 +126,30 @@ export class EditarExcluirMaterial {
       this.toastService.sucesso('Material editado com sucesso!');
     }
 
-    console.log('Editado:', this.materialEditando);
+    bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoMaterialModal'))?.hide();
   }
 
-  excluirMaterial(material: any) {
-    this.toastService.sucesso(`Material "${material.titulo}" excluído com sucesso.`);
-    this.materiais = this.materiais.filter((m) => m !== material);
+  abrirModalExcluir(material: any) {
+    if (!material) return;
+
+    this.materialSelecionado = material;
+    this.trocarModal('modalMaterial', 'excluirMaterialModal');
+  }
+
+  cancelarExclusao() {
+    this.trocarModal('excluirMaterialModal', 'modalMaterial');
+  }
+
+  confirmarExclusao() {
+    if (!this.materialSelecionado) return;
+
+    const materialExcluido = this.materialSelecionado;
+
+    this.materiais = this.materiais.filter((m) => m !== materialExcluido);
+    this.toastService.sucesso(`Material "${materialExcluido.titulo}" excluído com sucesso.`);
+    this.materialSelecionado = null;
+
+    bootstrap.Modal.getInstance(document.getElementById('excluirMaterialModal'))?.hide();
   }
 
   tipoFiltro: string = 'todos';

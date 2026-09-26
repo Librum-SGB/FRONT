@@ -10,6 +10,8 @@ import { TarefaService } from '../../shared/services/tarefas.service';
 import { prioridade } from '../../enum/prioridade.enum';
 import { Badge } from '../../shared/component/badge/badge';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-dashboard',
   imports: [ItemListaTarefa, CardInformativo, CardStatus, BotaoAcaoRapida, FormsModule, Badge],
@@ -19,6 +21,7 @@ import { Badge } from '../../shared/component/badge/badge';
 export class Dashboard implements OnInit {
   listaTarefa: Tarefa[] = [];
   descNovaTarefa: string = '';
+  tarefaSelecionada: Tarefa | null = null;
   constructor(private tarefaService: TarefaService) {}
 
   ngOnInit(): void {
@@ -45,8 +48,21 @@ export class Dashboard implements OnInit {
     this.listaTarefa = this.tarefaService.getTarefas();
   }
 
-  deletarTarefa(id: number) {
-    this.tarefaService.removerTarefa(id);
+  abrirConfirmacaoExclusaoTarefa(id: number) {
+    this.tarefaSelecionada = this.listaTarefa.find((tarefa) => tarefa.id === id) ?? null;
+
+    if (!this.tarefaSelecionada) return;
+
+    new bootstrap.Modal(document.getElementById('excluirTarefaModal')).show();
+  }
+
+  confirmarExclusaoTarefa() {
+    if (this.tarefaSelecionada?.id == null) return;
+
+    this.tarefaService.removerTarefa(this.tarefaSelecionada.id);
     this.listaTarefa = this.tarefaService.getTarefas();
+    this.tarefaSelecionada = null;
+
+    bootstrap.Modal.getInstance(document.getElementById('excluirTarefaModal'))?.hide();
   }
 }

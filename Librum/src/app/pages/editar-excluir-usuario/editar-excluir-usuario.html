@@ -89,7 +89,7 @@
         <div class="row w-100 g-2">
 
           <div class="col-12 col-md-4">
-            <button class="btn btn-primary w-100" routerLink="/historicoEmprestimo">
+            <button class="btn btn-primary w-100" routerLink="/historicoEmprestimo" data-bs-dismiss="modal">
               Histórico
             </button>
           </div>
@@ -107,6 +107,36 @@
           </div>
 
         </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR EDIÇÃO -->
+<div class="modal fade" id="confirmarEdicaoUsuarioModal" tabindex="-1" data-bs-backdrop="static"
+  data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5>Confirmar Edição</h5>
+        <button type="button" class="btn-close" (click)="cancelarConfirmacaoEdicao()"></button>
+      </div>
+
+      <div class="modal-body">
+        Tem certeza que deseja salvar as alterações de
+        <strong>{{ usuarioEditando.nome }}</strong>?
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelarConfirmacaoEdicao()">
+          Cancelar
+        </button>
+
+        <button class="btn btn-success" (click)="confirmarEdicao()">
+          Salvar Alterações
+        </button>
       </div>
 
     </div>
@@ -212,13 +242,13 @@
 </div>
 
 <!-- MODAL EXCLUIR -->
-<div class="modal fade" id="excluirModal" tabindex="-1">
+<div class="modal fade" id="excluirModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog">
     <div class="modal-content">
 
       <div class="modal-header">
         <h5>Confirmar Exclusão</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" (click)="cancelarExclusao()"></button>
       </div>
 
       <div class="modal-body">
@@ -227,7 +257,7 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">
+        <button class="btn btn-secondary" (click)="cancelarExclusao()">
           Cancelar
         </button>
 

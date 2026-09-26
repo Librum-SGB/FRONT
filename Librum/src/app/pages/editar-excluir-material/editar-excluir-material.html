@@ -76,12 +76,11 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar"
-            (click)="abrirEdicao(materialSelecionado)">
+          <button class="btn btn-warning" (click)="abrirEdicao(materialSelecionado)">
             <i class="bi bi-pencil"></i>Editar
           </button>
 
-          <button class="btn btn-danger" (click)="excluirMaterial(materialSelecionado)">
+          <button class="btn btn-danger" (click)="abrirModalExcluir(materialSelecionado)">
             <i class="bi bi-trash"></i> Excluir
           </button>
 
@@ -89,6 +88,54 @@
             Fechar
           </button>
 
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="confirmarEdicaoMaterialModal" tabindex="-1" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar Edição</h5>
+          <button type="button" class="btn-close" (click)="cancelarConfirmacaoEdicao()"></button>
+        </div>
+
+        <div class="modal-body">
+          Tem certeza que deseja salvar as alterações de
+          <strong>{{ materialEditando.titulo }}</strong>?
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelarConfirmacaoEdicao()">Cancelar</button>
+          <button class="btn btn-success" (click)="confirmarEdicao()">Salvar Alterações</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar Exclusão</h5>
+          <button type="button" class="btn-close" (click)="cancelarExclusao()"></button>
+        </div>
+
+        <div class="modal-body">
+          Tem certeza que deseja excluir
+          <strong>{{ materialSelecionado?.titulo }}</strong>?
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelarExclusao()">Cancelar</button>
+          <button class="btn btn-danger" (click)="confirmarExclusao()">Excluir</button>
         </div>
 
       </div>
