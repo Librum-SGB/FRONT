@@ -16,16 +16,16 @@
     <h5 class="text-center mb-3 text-secondary">Acessar Sistema</h5>
 
     <div class="mb-3">
-      <label class="form-label text-secondary">Email</label>
-      <input type="email" class="form-control" placeholder="seu@email.com" [(ngModel)]="email">
+      <label for="login-email" class="form-label text-secondary">Email</label>
+      <input id="login-email" type="email" class="form-control" placeholder="seu@email.com" autocomplete="username" [(ngModel)]="email">
     </div>
 
    
     <div class="mb-3">
-      <label class="form-label text-secondary">Senha</label>
+      <label for="login-senha" class="form-label text-secondary">Senha</label>
 
       <div class="input-group">
-        <input [type]="mostrarSenha ? 'text' : 'password'" 
+        <input id="login-senha" [type]="mostrarSenha ? 'text' : 'password'" autocomplete="current-password"
                class="form-control"
                [(ngModel)]="senha">
 
@@ -35,8 +35,8 @@
       </div>
     </div>
 
-    <button class="btn btn-login w-100" (click)="entrar()">
-      Entrar no Sistema
+    <button class="btn btn-login w-100" (click)="entrar()" [disabled]="entrando">
+      {{ entrando ? 'Entrando...' : 'Entrar no Sistema' }}
     </button>
 
     <!-- Links -->
