@@ -1,1 +1,63 @@
-<p>barra-lateral works!</p>
+<aside class="barra-lateral">
+  
+  <!-- GERENCIAMENTO DE ACERVO -->
+  <div class="menu-section">
+    <span class="section-title">GERENCIAMENTO DE ACERVO</span>
+    <a routerLink="/acervo/cadastrar" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-circle-plus icon-green"></i> Cadastrar
+    </a>
+    <a routerLink="/acervo/editar" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-pen-to-square icon-yellow"></i> Editar / Excluir
+    </a>
+    <a routerLink="/acervo/buscar" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-magnifying-glass icon-default"></i> Encontrar Material
+    </a>
+  </div>
+
+  <!-- USUÁRIOS -->
+  <div class="menu-section">
+    <span class="section-title">USUÁRIOS</span>
+    <a routerLink="/usuarios/cadastrar" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-user-plus icon-green"></i> Cadastrar Usuário
+    </a>
+    <a routerLink="/usuarios/consultar" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-users icon-blue"></i> Consultar / Editar
+    </a>
+    <a routerLink="/usuarios/historico" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-clock icon-blue"></i> Histórico de Empréstimos
+    </a>
+    <a routerLink="/usuarios/bloqueios" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-ban icon-red"></i> Bloqueios
+    </a>
+  </div>
+
+  <!-- EMPRÉSTIMOS -->
+  <div class="menu-section">
+    <span class="section-title">EMPRÉSTIMOS</span>
+    <a routerLink="/emprestimos/reservar" routerLinkActive="active" class="menu-item">
+      <i class="fa-regular fa-calendar-check icon-green"></i> Reservar
+    </a>
+    <a routerLink="/emprestimos/renovar" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-rotate icon-yellow"></i> Renovar / Devolução
+    </a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- RODAPÉ / CONFIGURAÇÕES -->
+  <div class="menu-section bottom-section">
+    <a routerLink="/relatorios" routerLinkActive="active" class="menu-item">
+      <i class="fa-regular fa-file-lines icon-default"></i> Relatórios
+    </a>
+    <a routerLink="/configuracoes" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-gear icon-default"></i> Configurações
+    </a>
+    <a routerLink="/suporte" routerLinkActive="active" class="menu-item">
+      <i class="fa-regular fa-circle-question icon-default"></i> Suporte
+    </a>
+    <a (click)="logout()" class="menu-item text-red">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+    </a>
+  </div>
+
+</aside>

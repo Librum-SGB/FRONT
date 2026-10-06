@@ -1,5 +1,5 @@
 <app-navbar *ngIf="!isAuthRoute()"></app-navbar>
-
+<app-barra-lateral *ngIf="!isAuthRoute()"></app-barra-lateral>
 <main [class.container]="!isAuthRoute()" [class.bg-body-secondary]="!isAuthRoute()" [class.py-3]="!isAuthRoute()"
   style="min-height: 59.3vh;">
   <router-outlet></router-outlet>

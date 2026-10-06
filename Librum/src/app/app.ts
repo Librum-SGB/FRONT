@@ -1,15 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { BarraLateralComponent } from './shared/component/barra-lateral/barra-lateral';
+import { Footer } from './shared/component/footer/footer';
 import { Navbar } from './shared/component/navbar/navbar';
 import { Toast } from './shared/component/toast/toast';
-import { filter } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
-import { Footer } from './shared/component/footer/footer';
-
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, Toast, CommonModule, Footer],
+  imports: [RouterOutlet, Navbar, Toast, CommonModule, Footer, BarraLateralComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
