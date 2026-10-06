@@ -33,13 +33,7 @@
     </div>
 
     <!-- MENSAGENS DE ERRO -->
-    <div *ngIf="mensagensErro.length > 0" class="alert alert-danger">
-      <strong>Dados inválidos:</strong>
-      <ul class="mb-0 mt-2">
-        <li *ngFor="let erro of mensagensErro">{{ erro }}</li>
-      </ul>
-    </div>
-
+    <app-alerta-erros *ngIf="mensagensErro.length" [mensagens]="mensagensErro"></app-alerta-erros>
     <!-- ====================================================== -->
     <!-- LIVRO -->
     <!-- ====================================================== -->

@@ -25,6 +25,8 @@ import { CadastroEditoraModal } from '../../shared/component/cadastro-editora-mo
 import { CadastroGeneroModal } from '../../shared/component/cadastro-genero-modal/cadastro-genero-modal';
 import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { FormUtils } from '../../utils/FormUtil';
+import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 
 @Component({
   selector: 'app-cadastrar-material',
@@ -39,6 +41,7 @@ import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
     CadastroGeneroModal,
     SelectPesquisavel,
     LbrButtom,
+    AlertaErros,
   ],
   templateUrl: './cadastrar-material.html',
   styleUrl: './cadastrar-material.scss',
@@ -162,63 +165,20 @@ export class CadastrarMaterial implements OnInit {
 
   // ---------- Validação genérica (reaproveitada pelos 3 forms) ----------
 
+  // ---------- usado pelo template ----------
   isInvalido(form: FormGroup, campo: string): boolean {
-    const control = form.get(campo);
-    return (control?.invalid && this.enviado) ?? false;
+    return FormUtils.isInvalido(form, campo, this.enviado);
   }
 
-  private gerarMensagensErro(form: FormGroup, nomesCampos: Record<string, string>): void {
-    this.mensagensErro = [];
-    let possuiRequired = false;
-
-    Object.keys(form.controls).forEach((campo) => {
-      const control = form.get(campo);
-      if (!control?.errors) return;
-
-      if (control.hasError('required')) possuiRequired = true;
-
-      const nome = nomesCampos[campo] ?? campo;
-
-      if (control.hasError('minlength')) {
-        const erro = control.getError('minlength');
-        this.mensagensErro.push(
-          `${nome} deve possuir no mínimo ${erro.requiredLength} caracteres.`,
-        );
-      }
-      if (control.hasError('maxlength')) {
-        const erro = control.getError('maxlength');
-        this.mensagensErro.push(
-          `${nome} deve possuir no máximo ${erro.requiredLength} caracteres.`,
-        );
-      }
-      if (control.hasError('min')) {
-        this.mensagensErro.push(
-          `${nome} deve ser maior ou igual a ${control.getError('min').min}.`,
-        );
-      }
-      if (control.hasError('max')) {
-        this.mensagensErro.push(
-          `${nome} deve ser menor ou igual a ${control.getError('max').max}.`,
-        );
-      }
-      if (control.hasError('pattern')) {
-        this.mensagensErro.push(`${nome} possui um formato inválido.`);
-      }
-    });
-
-    if (possuiRequired) {
-      this.mensagensErro.push('Preencha todos os campos obrigatórios.');
-    }
+  private validar(form: FormGroup, nomes: Record<string, string>): boolean {
+    this.enviado = true;
+    this.mensagensErro = FormUtils.gerarMensagensErro(form, nomes);
+    return form.valid;
   }
-
   // ---------- LIVRO ----------
 
   salvarLivro() {
-    if (!this.formLivro.valid) {
-      this.enviado = true;
-      this.gerarMensagensErro(this.formLivro, this.nomesCamposLivro);
-      return;
-    }
+    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
 
     const form = this.formLivro.getRawValue();
 
@@ -251,11 +211,7 @@ export class CadastrarMaterial implements OnInit {
   // ---------- PERIÓDICO ----------
 
   salvarPeriodico() {
-    if (!this.formPeriodico.valid) {
-      this.enviado = true;
-      this.gerarMensagensErro(this.formPeriodico, this.nomesCamposPeriodico);
-      return;
-    }
+    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
 
     const form = this.formPeriodico.getRawValue();
 
@@ -285,11 +241,7 @@ export class CadastrarMaterial implements OnInit {
   // ---------- OUTROS MATERIAIS ----------
 
   salvarOutro() {
-    if (!this.formOutros.valid) {
-      this.enviado = true;
-      this.gerarMensagensErro(this.formOutros, this.nomesCamposOutros);
-      return;
-    }
+    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
 
     const form = this.formOutros.getRawValue();
 

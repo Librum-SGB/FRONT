@@ -1,16 +1,18 @@
 <app-corpo-padrao>
 
   <div class="titulo">Cadastrar Novo Usuário</div>
-  <div class="corpo">
+
+  <form class="corpo" [formGroup]="formUsuario" (ngSubmit)="salvar()">
+    <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
 
     <div class="row mb-3">
       <div class="col-md-8">
-        <label>ID do Usuário</label>
-        <input type="text" class="form-control" [value]="usuario.id" disabled>
+        <label class="form-label">ID do Usuário</label>
+        <input type="text" class="form-control" formControlName="id">
       </div>
 
       <div class="col-md-4 text-center">
-        <label>Foto</label>
+        <label class="form-label">Foto</label>
         <div class="border p-3 rounded">
           <input type="file" (change)="onFileSelect($event)" class="form-control">
         </div>
@@ -18,60 +20,60 @@
     </div>
 
     <hr>
-
     <h6 class="mt-3">Dados Pessoais</h6>
 
     <div class="mb-3">
-      <label>Nome Completo *</label>
-      <input type="text" class="form-control" [(ngModel)]="usuario.nome" required>
+      <label class="form-label">Nome Completo *</label>
+      <input type="text" class="form-control" formControlName="nome" [class.is-invalid]="isInvalido('nome')">
     </div>
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <label>Data de Nascimento *</label>
-        <input type="date" class="form-control" [(ngModel)]="usuario.dataNascimento" required>
+        <label class="form-label">Data de Nascimento *</label>
+        <input type="date" class="form-control" formControlName="dataNascimento"
+          [class.is-invalid]="isInvalido('dataNascimento')">
       </div>
 
       <div class="col-md-6">
-        <label>CPF *</label>
-        <input type="text" class="form-control" [imask]="Mask.CPF" [(ngModel)]="usuario.cpf" required>
+        <label class="form-label">CPF *</label>
+        <input type="text" class="form-control" [imask]="Mask.CPF" formControlName="cpf"
+          [class.is-invalid]="isInvalido('cpf')">
       </div>
     </div>
 
     <hr>
-
     <h6>Contato</h6>
 
     <div class="mb-3">
-      <label>Endereço *</label>
-      <input type="text" class="form-control" [(ngModel)]="usuario.endereco" required>
+      <label class="form-label">Endereço *</label>
+      <input type="text" class="form-control" formControlName="endereco" [class.is-invalid]="isInvalido('endereco')">
     </div>
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <label>Telefone *</label>
-        <input type="text" class="form-control" [imask]="Mask.CELULAR" [(ngModel)]="usuario.telefone" required>
+        <label class="form-label">Telefone *</label>
+        <input type="text" class="form-control" [imask]="Mask.CELULAR" formControlName="telefone"
+          [class.is-invalid]="isInvalido('telefone')">
       </div>
 
       <div class="col-md-6">
-        <label>Email *</label>
-        <input type="email" class="form-control" [(ngModel)]="usuario.email" required>
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-control" formControlName="email" [class.is-invalid]="isInvalido('email')">
       </div>
     </div>
 
     <hr>
-
     <h6>Informações da Conta</h6>
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <label>Data de Cadastro</label>
-        <input type="text" class="form-control" [value]="usuario.dataCadastro" disabled>
+        <label class="form-label">Data de Cadastro</label>
+        <input type="text" class="form-control" formControlName="dataCadastro">
       </div>
 
       <div class="col-md-6">
-        <label>Tipo de Cliente *</label>
-        <select class="form-select" [(ngModel)]="usuario.tipoCliente" required>
+        <label class="form-label">Tipo de Cliente *</label>
+        <select class="form-select" formControlName="tipoCliente" [class.is-invalid]="isInvalido('tipoCliente')">
           <option value="">Selecione...</option>
           <option value="estudante">Estudante</option>
           <option value="professor">Professor</option>
@@ -82,32 +84,30 @@
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <label>Senha *</label>
-        <input type="password" class="form-control" [(ngModel)]="usuario.senha" required>
+        <label class="form-label">Senha *</label>
+        <input type="password" class="form-control" formControlName="senha" [class.is-invalid]="isInvalido('senha')">
       </div>
 
       <div class="col-md-6">
-        <label>Confirmar Senha *</label>
-        <input type="password" class="form-control" [(ngModel)]="confirmarSenha" required>
+        <label class="form-label">Confirmar Senha *</label>
+        <input type="password" class="form-control" formControlName="confirmarSenha"
+          [class.is-invalid]="isInvalido('confirmarSenha')">
       </div>
     </div>
 
     <div class="mb-3">
-      <label>Status</label>
-      <input type="text" class="form-control" [value]="usuario.status" disabled>
+      <label class="form-label">Status</label>
+      <input type="text" class="form-control" formControlName="status">
     </div>
 
     <div class="mb-3">
-      <label>Observação</label>
-      <textarea class="form-control" rows="3" [(ngModel)]="usuario.observacao"></textarea>
+      <label class="form-label">Observação</label>
+      <textarea class="form-control" rows="3" formControlName="observacao"></textarea>
     </div>
 
     <div class="d-flex justify-content-end gap-2">
-      <button lbrButton variant="cancelar" (click)="cancelar()">Cancelar</button>
-
-      <button lbrButton variant="cadastrar" (click)="salvar()" [disabled]="usuario.senha !== confirmarSenha">
-        Salvar
-      </button>
+      <button type="button" lbrButton variant="cancelar" (click)="cancelar()">Cancelar</button>
+      <button type="submit" lbrButton variant="cadastrar">Salvar</button>
     </div>
-  </div>
+  </form>
 </app-corpo-padrao>
