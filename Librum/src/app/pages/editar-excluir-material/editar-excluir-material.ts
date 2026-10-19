@@ -1,33 +1,48 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
+import { LbrBadge, LbrBadgeVariant } from '../../shared/component/lbr-badge/lbr-badge';
 
 import { MaterialService } from '../../services/material';
 import { AutorService } from '../../services/autor';
 import { EditoraService } from '../../services/editora';
 import { GeneroService } from '../../services/genero';
+import { ExemplarService } from '../../services/exemplar';
 
 import { MaterialResponse, MaterialRequest } from '../../models/material.model';
 import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
 import { GeneroResponse } from '../../models/genero.model';
+import { ExemplarResponse } from '../../models/exemplar.model';
 
 declare var bootstrap: any;
+
+const ITENS_POR_PAGINA = 20;
+
+// Valor do enum StatusExemplar que significa "pode ser emprestado".
+// Se no backend o nome for outro, é só trocar aqui.
+const STATUS_DISPONIVEL = 'DISPONIVEL';
 
 const PREFIXOS: Record<string, string> = {
   LIVRO: 'L',
   PERIODICO: 'P',
-  OUTROS: 'OM',
+  OUTRO: 'OM',
 };
 
 const LABELS: Record<string, string> = {
   LIVRO: 'Livro',
   PERIODICO: 'Periódico',
-  OUTROS: 'Outros Materiais',
+  OUTRO: 'Outros Materiais',
+};
+
+const VARIANTS: Record<string, LbrBadgeVariant> = {
+  LIVRO: 'livro',
+  PERIODICO: 'periodico',
+  OUTRO: 'outros',
 };
 
 // Formato usado só pra exibir na tela (já com os nomes resolvidos, não os IDs)
@@ -38,6 +53,9 @@ interface MaterialExibicao {
   subtitulo?: string;
   tipo: string;
   tipoLabel: string;
+  tipoVariant: LbrBadgeVariant;
+  disponibilidade?: 'Disponível' | 'Indisponível';
+  disponibilidadeVariant?: LbrBadgeVariant;
   autorId?: number;
   autorNome: string;
   editoraId?: number;
@@ -57,28 +75,103 @@ interface MaterialExibicao {
 
 @Component({
   selector: 'app-editar-excluir-material',
-  imports: [CommonModule, FormsModule, CorpoPadrao, LbrButtom, SelectPesquisavel],
+  imports: [CommonModule, FormsModule, CorpoPadrao, LbrButtom, SelectPesquisavel, LbrBadge],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',
 })
 export class EditarExcluirMaterial implements OnInit {
-  materiais: MaterialExibicao[] = [];
+  readonly itensPorPagina = ITENS_POR_PAGINA;
+
+  // Dados que chegam da API (signals: a tela atualiza sozinha quando eles mudam)
+  private materiaisOriginais = signal<MaterialResponse[]>([]);
+  autores = signal<AutorResponse[]>([]);
+  editoras = signal<EditoraResponse[]>([]);
+  generos = signal<GeneroResponse[]>([]);
+  private exemplares = signal<ExemplarResponse[]>([]);
+  private exemplaresCarregados = signal(false);
+  carregando = signal(true);
+
+  // Busca e paginação
+  tipoFiltro = signal('todos');
+  textoBusca = signal('');
+  paginaAtual = signal(1);
+
+  // IDs dos materiais que têm pelo menos 1 exemplar disponível
+  private materiaisComExemplarDisponivel = computed(
+    () =>
+      new Set(
+        this.exemplares()
+          .filter((e) => e.status === STATUS_DISPONIVEL)
+          .map((e) => e.materialId),
+      ),
+  );
+
+  materiais = computed(() => this.materiaisOriginais().map((m) => this.paraExibicao(m)));
+
+  materiaisFiltrados = computed(() => {
+    const busca = this.textoBusca().toLowerCase().trim();
+    if (!busca) return this.materiais();
+
+    const filtro = this.tipoFiltro();
+
+    return this.materiais().filter((material) => {
+      switch (filtro) {
+        case 'codigo':
+          return material.codigo.toLowerCase().includes(busca);
+        case 'titulo':
+          return material.titulo.toLowerCase().includes(busca);
+        case 'autor':
+          return material.autorNome.toLowerCase().includes(busca);
+        case 'genero':
+          return material.generoNomes.toLowerCase().includes(busca);
+        case 'todos':
+        default:
+          return (
+            material.codigo.toLowerCase().includes(busca) ||
+            material.titulo.toLowerCase().includes(busca) ||
+            material.autorNome.toLowerCase().includes(busca) ||
+            material.generoNomes.toLowerCase().includes(busca)
+          );
+      }
+    });
+  });
+
+  totalPaginas = computed(() =>
+    Math.max(1, Math.ceil(this.materiaisFiltrados().length / ITENS_POR_PAGINA)),
+  );
+
+  // Se a página atual deixar de existir (ex.: excluiu o último item da última página), volta pra última
+  paginaEfetiva = computed(() => Math.min(this.paginaAtual(), this.totalPaginas()));
+
+  materiaisPagina = computed(() => {
+    const inicio = (this.paginaEfetiva() - 1) * ITENS_POR_PAGINA;
+    return this.materiaisFiltrados().slice(inicio, inicio + ITENS_POR_PAGINA);
+  });
+
+  inicioExibicao = computed(() =>
+    this.materiaisFiltrados().length === 0 ? 0 : (this.paginaEfetiva() - 1) * ITENS_POR_PAGINA + 1,
+  );
+
+  fimExibicao = computed(() =>
+    Math.min(this.paginaEfetiva() * ITENS_POR_PAGINA, this.materiaisFiltrados().length),
+  );
+
+  // Janela de até 5 números de página ao redor da atual
+  paginasVisiveis = computed(() => {
+    const total = this.totalPaginas();
+    const atual = this.paginaEfetiva();
+    const janela = 5;
+
+    let inicio = Math.max(1, atual - Math.floor(janela / 2));
+    const fim = Math.min(total, inicio + janela - 1);
+    inicio = Math.max(1, fim - janela + 1);
+
+    return Array.from({ length: fim - inicio + 1 }, (_, i) => inicio + i);
+  });
+
   materialSelecionado: MaterialExibicao | null = null;
   materialEditando: any = {};
-
-  autores: AutorResponse[] = [];
-  editoras: EditoraResponse[] = [];
-  generos: GeneroResponse[] = [];
   generoIdsEditando: number[] = [];
-
-  carregando = true;
-
-  @ViewChild('autorSelectEdicao') autorSelectEdicao?: SelectPesquisavel;
-  @ViewChild('editoraSelectEdicao') editoraSelectEdicao?: SelectPesquisavel;
-  @ViewChild('generoSelectEdicao') generoSelectEdicao?: SelectPesquisavel;
-
-  tipoFiltro: string = 'todos';
-  textoBusca: string = '';
 
   constructor(
     private toastService: ToastService,
@@ -86,6 +179,7 @@ export class EditarExcluirMaterial implements OnInit {
     private autorService: AutorService,
     private editoraService: EditoraService,
     private generoService: GeneroService,
+    private exemplarService: ExemplarService,
   ) { }
 
   ngOnInit(): void {
@@ -93,63 +187,63 @@ export class EditarExcluirMaterial implements OnInit {
   }
 
   private carregarDados(): void {
-    this.carregando = true;
+    this.carregando.set(true);
 
     this.autorService.findAll().subscribe({
-      next: (data) => {
-        this.autores = data;
-        this.reprocessarNomes();
-      },
+      next: (data) => this.autores.set(data),
       error: (err) => console.error('Erro ao carregar autores:', err),
     });
 
     this.editoraService.findAll().subscribe({
-      next: (data) => {
-        this.editoras = data;
-        this.reprocessarNomes();
-      },
+      next: (data) => this.editoras.set(data),
       error: (err) => console.error('Erro ao carregar editoras:', err),
     });
 
     this.generoService.findAll().subscribe({
-      next: (data) => {
-        this.generos = data;
-        this.reprocessarNomes();
-      },
+      next: (data) => this.generos.set(data),
       error: (err) => console.error('Erro ao carregar gêneros:', err),
+    });
+
+    this.exemplarService.findAll().subscribe({
+      next: (data) => {
+        this.exemplares.set(data);
+        this.exemplaresCarregados.set(true);
+      },
+      // se falhar, a etiqueta de disponibilidade simplesmente não aparece
+      error: (err) => console.error('Erro ao carregar exemplares:', err),
     });
 
     this.materialService.findAll().subscribe({
       next: (data) => {
-        this.materiaisOriginais = data;
-        this.reprocessarNomes();
-        this.carregando = false;
+        // ordena por ID pra a lista não "embaralhar" depois de uma edição
+        this.materiaisOriginais.set([...data].sort((a, b) => a.id - b.id));
+        this.carregando.set(false);
       },
       error: (err) => {
         console.error('Erro ao carregar materiais:', err);
         this.toastService.erro('Erro ao carregar os materiais cadastrados.');
-        this.carregando = false;
+        this.carregando.set(false);
       },
     });
   }
 
-  private materiaisOriginais: MaterialResponse[] = [];
-
-  // Reprocessa a lista de exibição sempre que autores/editoras/gêneros ou materiais mudarem
-  // (os 4 fetches do ngOnInit rodam em paralelo, sem ordem garantida)
-  private reprocessarNomes(): void {
-    if (this.materiaisOriginais.length === 0) return;
-    this.materiais = this.materiaisOriginais.map((m) => this.paraExibicao(m));
-  }
-
   private paraExibicao(m: MaterialResponse): MaterialExibicao {
-    const autor = this.autores.find((a) => a.id === m.autorId);
-    const editora = this.editoras.find((e) => e.id === m.editoraId);
+    const autor = this.autores().find((a) => a.id === m.autorId);
+    const editora = this.editoras().find((e) => e.id === m.editoraId);
     const generoIds = m.generoIds ?? [];
     const nomesGeneros = generoIds
-      .map((id) => this.generos.find((g) => g.id === id)?.nome)
+      .map((id) => this.generos().find((g) => g.id === id)?.nome)
       .filter((nome): nome is string => !!nome)
       .join(', ');
+
+    let disponibilidade: MaterialExibicao['disponibilidade'];
+    let disponibilidadeVariant: LbrBadgeVariant | undefined;
+
+    if (this.exemplaresCarregados()) {
+      const disponivel = this.materiaisComExemplarDisponivel().has(m.id);
+      disponibilidade = disponivel ? 'Disponível' : 'Indisponível';
+      disponibilidadeVariant = disponivel ? 'disponivel' : 'indisponivel';
+    }
 
     return {
       id: m.id,
@@ -158,6 +252,9 @@ export class EditarExcluirMaterial implements OnInit {
       subtitulo: m.subtitulo,
       tipo: m.tipo,
       tipoLabel: LABELS[m.tipo] ?? m.tipo,
+      tipoVariant: VARIANTS[m.tipo] ?? 'outros',
+      disponibilidade,
+      disponibilidadeVariant,
       autorId: m.autorId,
       autorNome: autor?.nome ?? '—',
       editoraId: m.editoraId,
@@ -175,6 +272,29 @@ export class EditarExcluirMaterial implements OnInit {
       generoNomes: nomesGeneros || '—',
     };
   }
+
+  trackById(_: number, material: MaterialExibicao): number {
+    return material.id;
+  }
+
+  // ---------- Busca e paginação ----------
+
+  onFiltroChange(valor: string): void {
+    this.tipoFiltro.set(valor);
+    this.paginaAtual.set(1);
+  }
+
+  onBuscaChange(valor: string): void {
+    this.textoBusca.set(valor);
+    this.paginaAtual.set(1);
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginas()) return;
+    this.paginaAtual.set(pagina);
+  }
+
+  // ---------- Modais ----------
 
   selecionarMaterial(material: MaterialExibicao) {
     this.materialSelecionado = material;
@@ -240,16 +360,15 @@ export class EditarExcluirMaterial implements OnInit {
       tema: e.tema || undefined,
       descricao: e.descricao || undefined,
       observacao: e.observacao || undefined,
-      generoIds: this.generoIdsEditando.length > 0 ? this.generoIdsEditando : undefined,
+      // no livro, manda sempre a lista (mesmo vazia) pra remover todos os gêneros funcionar
+      generoIds: e.tipo === 'LIVRO' ? this.generoIdsEditando : undefined,
     };
 
     this.materialService.update(e.id, payload).subscribe({
       next: (atualizado) => {
-        const index = this.materiaisOriginais.findIndex((m) => m.id === e.id);
-        if (index !== -1) {
-          this.materiaisOriginais[index] = atualizado;
-          this.reprocessarNomes();
-        }
+        this.materiaisOriginais.update((lista) =>
+          lista.map((m) => (m.id === atualizado.id ? atualizado : m)),
+        );
         this.toastService.sucesso('Material editado com sucesso!');
         bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoMaterialModal'))?.hide();
       },
@@ -278,8 +397,7 @@ export class EditarExcluirMaterial implements OnInit {
 
     this.materialService.delete(materialExcluido.id).subscribe({
       next: () => {
-        this.materiaisOriginais = this.materiaisOriginais.filter((m) => m.id !== materialExcluido.id);
-        this.reprocessarNomes();
+        this.materiaisOriginais.update((lista) => lista.filter((m) => m.id !== materialExcluido.id));
         this.toastService.sucesso(`Material "${materialExcluido.titulo}" excluído com sucesso.`);
         this.materialSelecionado = null;
         bootstrap.Modal.getInstance(document.getElementById('excluirMaterialModal'))?.hide();
@@ -288,33 +406,6 @@ export class EditarExcluirMaterial implements OnInit {
         console.error('Erro ao excluir material:', err);
         this.toastService.erro('Erro ao excluir o material.');
       },
-    });
-  }
-
-  materiaisFiltrados() {
-    const busca = this.textoBusca.toLowerCase();
-
-    return this.materiais.filter((material) => {
-      if (!busca) return true;
-
-      switch (this.tipoFiltro) {
-        case 'codigo':
-          return material.codigo.toLowerCase().includes(busca);
-        case 'titulo':
-          return material.titulo.toLowerCase().includes(busca);
-        case 'autor':
-          return material.autorNome.toLowerCase().includes(busca);
-        case 'genero':
-          return material.generoNomes.toLowerCase().includes(busca);
-        case 'todos':
-        default:
-          return (
-            material.codigo.toLowerCase().includes(busca) ||
-            material.titulo.toLowerCase().includes(busca) ||
-            material.autorNome.toLowerCase().includes(busca) ||
-            material.generoNomes.toLowerCase().includes(busca)
-          );
-      }
     });
   }
 }
