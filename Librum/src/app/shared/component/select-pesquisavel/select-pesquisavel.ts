@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -50,7 +51,10 @@ export class SelectPesquisavel implements ControlValueAccessor, OnChanges {
   private onChange: (value: any) => void = () => { };
   private onTouched: () => void = () => { };
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(
+    private elementRef: ElementRef,
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['itens']) {
@@ -72,9 +76,17 @@ export class SelectPesquisavel implements ControlValueAccessor, OnChanges {
       this.valoresMultiplos = Array.isArray(value) ? [...value] : [];
     } else {
       this.valorUnico = (value as number) ?? null;
-      this.atualizarBuscaExibida();
+
+      if (this.valorUnico == null) {
+        // valor limpo/resetado de fora: limpa também o texto que estava aparecendo no campo
+        this.busca = '';
+      } else {
+        this.atualizarBuscaExibida();
+      }
     }
+
     this.filtrar();
+    this.cdr.markForCheck();
   }
 
   registerOnChange(fn: any): void {
