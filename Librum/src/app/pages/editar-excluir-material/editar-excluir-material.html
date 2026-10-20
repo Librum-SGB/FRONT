@@ -2,7 +2,12 @@
   <div class="titulo">Editar / Excluir Material</div>
 
   <div class="corpo">
-    <div class="row g-4">
+
+    <div *ngIf="carregando" class="text-center text-muted py-5">
+      Carregando materiais...
+    </div>
+
+    <div class="row g-4" *ngIf="!carregando">
       <div class="d-flex mb-4 gap-2">
         <select class="form-select w-auto" [(ngModel)]="tipoFiltro">
           <option value="todos">Todos</option>
@@ -15,6 +20,10 @@
         <input type="text" class="form-control" placeholder="Buscar material..." [(ngModel)]="textoBusca" />
       </div>
 
+      <div class="text-muted" *ngIf="materiaisFiltrados().length === 0">
+        Nenhum material encontrado.
+      </div>
+
       <div class="col-md-3" *ngFor="let material of materiaisFiltrados()">
         <div class="card h-100 border-0 shadow-sm rounded-4 bg-body-tertiary">
           <div class="card-body text-start">
@@ -24,14 +33,7 @@
 
             <div class="d-flex justify-content-start gap-1 mt-2">
               <span class="badge rounded-pill bg-primary-subtle text-primary small">
-                {{ material.tipo }}
-              </span>
-
-              <span class="d-flex badge rounded-pill small" [ngClass]="{
-                'bg-success-subtle text-success': material.disponibilidade === 'Disponível',
-                'bg-danger-subtle text-danger': material.disponibilidade === 'Indisponível'
-              }">
-                {{ material.disponibilidade }}
+                {{ material.tipoLabel }}
               </span>
             </div>
 
@@ -44,6 +46,7 @@
       </div>
     </div>
 
+    <!-- DETALHES -->
     <div class="modal fade" id="modalMaterial" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -55,15 +58,49 @@
           <div class="modal-body">
             <p><strong>Código:</strong> {{ materialSelecionado?.codigo }}</p>
             <p><strong>Título:</strong> {{ materialSelecionado?.titulo }}</p>
-            <p><strong>Tipo:</strong> {{ materialSelecionado?.tipo }}</p>
-            <p><strong>Autor:</strong> {{ materialSelecionado?.autor }}</p>
-            <p><strong>Editora:</strong> {{ materialSelecionado?.editora }}</p>
-            <p><strong>Ano de Publicação:</strong> {{ materialSelecionado?.anoPublicacao }}</p>
-            <p><strong>Gênero:</strong> {{ materialSelecionado?.genero }}</p>
-            <p><strong>Localização:</strong> {{ materialSelecionado?.localizacao }}</p>
-            <p><strong>Exemplares:</strong> {{ materialSelecionado?.exemplares }}</p>
-            <p><strong>Unidade:</strong> {{ materialSelecionado?.unidade }}</p>
-            <p><strong>Disponibilidade:</strong> {{ materialSelecionado?.disponibilidade }}</p>
+            <p *ngIf="materialSelecionado?.subtitulo"><strong>Subtítulo:</strong> {{ materialSelecionado?.subtitulo }}
+            </p>
+            <p><strong>Tipo:</strong> {{ materialSelecionado?.tipoLabel }}</p>
+            <p *ngIf="materialSelecionado?.editoraNome && materialSelecionado?.editoraNome !== '—'">
+              <strong>Editora:</strong> {{ materialSelecionado?.editoraNome }}
+            </p>
+
+            <!-- LIVRO -->
+            <ng-container *ngIf="materialSelecionado?.tipo === 'LIVRO'">
+              <p><strong>Autor:</strong> {{ materialSelecionado?.autorNome }}</p>
+              <p><strong>Gênero:</strong> {{ materialSelecionado?.generoNomes }}</p>
+              <p><strong>Ano de Publicação:</strong> {{ materialSelecionado?.anoPublicacao }}</p>
+              <p><strong>ISBN:</strong> {{ materialSelecionado?.isbn }}</p>
+              <p><strong>Edição:</strong> {{ materialSelecionado?.edicao }}</p>
+              <p *ngIf="materialSelecionado?.quantidadePaginas"><strong>Páginas:</strong> {{
+                materialSelecionado?.quantidadePaginas }}</p>
+              <p *ngIf="materialSelecionado?.sinopse"><strong>Sinopse:</strong> {{ materialSelecionado?.sinopse }}</p>
+            </ng-container>
+
+            <!-- PERIÓDICO -->
+            <ng-container *ngIf="materialSelecionado?.tipo === 'PERIODICO'">
+              <p><strong>Edição/Número:</strong> {{ materialSelecionado?.edicao }}</p>
+              <p><strong>Ano de Publicação:</strong> {{ materialSelecionado?.anoPublicacao }}</p>
+              <p><strong>ISSN:</strong> {{ materialSelecionado?.issn }}</p>
+              <p *ngIf="materialSelecionado?.tema"><strong>Tema:</strong> {{ materialSelecionado?.tema }}</p>
+              <p *ngIf="materialSelecionado?.descricao"><strong>Descrição:</strong> {{ materialSelecionado?.descricao }}
+              </p>
+            </ng-container>
+
+            <!-- OUTROS -->
+            <ng-container *ngIf="materialSelecionado?.tipo === 'OUTROS'">
+              <p *ngIf="materialSelecionado?.autorNome && materialSelecionado?.autorNome !== '—'">
+                <strong>Autor:</strong> {{ materialSelecionado?.autorNome }}
+              </p>
+              <p *ngIf="materialSelecionado?.tema"><strong>Tipo:</strong> {{ materialSelecionado?.tema }}</p>
+              <p *ngIf="materialSelecionado?.descricao"><strong>Descrição:</strong> {{ materialSelecionado?.descricao }}
+              </p>
+              <p *ngIf="materialSelecionado?.observacao"><strong>Observação:</strong> {{ materialSelecionado?.observacao
+                }}</p>
+            </ng-container>
+
+            <p><strong>Localização / Exemplares / Unidade:</strong> <span class="text-muted">Gerenciado em
+                Exemplares</span></p>
           </div>
 
           <div class="modal-footer">
@@ -81,11 +118,12 @@
       </div>
     </div>
 
+    <!-- EDIÇÃO -->
     <div class="modal fade" id="modalEditar" tabindex="-1">
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header bg-warning">
-            <h5 class="modal-title">Editar Material</h5>
+            <h5 class="modal-title">Editar {{ materialEditando.tipoLabel }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
 
@@ -107,20 +145,27 @@
                 </div>
               </div>
 
-              <div class="mb-3">
+              <div class="mb-3" *ngIf="materialEditando.tipo === 'LIVRO'">
                 <label class="form-label">Subtítulo</label>
                 <input class="form-control" formControlName="subtitulo">
               </div>
 
               <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Autor *</label>
-                  <input class="form-control" formControlName="autor" [class.is-invalid]="isInvalido('autor')">
+                <div class="col-md-6 mb-3" *ngIf="materialEditando.tipo !== 'PERIODICO'">
+                  <label class="form-label">Autor * {{ materialEditando.tipo === 'LIVRO' ? '' : '(opcional)' }}</label>
+                  <app-select-pesquisavel #autorSelectEdicao [itens]="autores" formControlName="autor"
+                    [class.is-invalid]="isInvalido('autor')Id" [ngModelOptions]="{standalone: true}"
+                    placeholder="Digite para buscar autor...">
+                  </app-select-pesquisavel>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Editora *</label>
-                  <input class="form-control" formControlName="editora" [class.is-invalid]="isInvalido('editora')">
+                  <label class="form-label">Editora * {{ materialEditando.tipo === 'OUTROS' ? '(opcional)' : ''
+                    }}</label>
+                  <app-select-pesquisavel #editoraSelectEdicao [itens]="editoras" formControlName="editora"
+                    [class.is-invalid]="isInvalido('editora')Id" [ngModelOptions]="{standalone: true}"
+                    placeholder="Digite para buscar editora...">
+                  </app-select-pesquisavel>
                 </div>
               </div>
 
@@ -177,24 +222,26 @@
     </div>
 
     <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirmar Exclusão</h5>
-            <button type="button" class="btn-close" (click)="cancelarExclusao()"></button>
-          </div>
+      <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Confirmar Exclusão</h5>
+              <button type="button" class="btn-close" (click)="cancelarExclusao()"></button>
+            </div>
 
-          <div class="modal-body">
-            Tem certeza que deseja excluir
-            <strong>{{ materialSelecionado?.titulo }}</strong>?
-          </div>
+            <div class="modal-body">
+              Tem certeza que deseja excluir
+              <strong>{{ materialSelecionado?.titulo }}</strong>?
+            </div>
 
-          <div class="modal-footer">
-            <button lbrButton variant="cancelar" (click)="cancelarExclusao()">Cancelar</button>
-            <button lbrButton variant="excluir" (click)="confirmarExclusao()">Excluir</button>
+            <div class="modal-footer">
+              <button lbrButton variant="cancelar" (click)="cancelarExclusao()">Cancelar</button>
+              <button lbrButton variant="excluir" (click)="confirmarExclusao()">Excluir</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </app-corpo-padrao>
