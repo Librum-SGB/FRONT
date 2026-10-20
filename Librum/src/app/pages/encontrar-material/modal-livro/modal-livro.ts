@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Exemplar } from '../../../models/exemplar.model';
 import { Modal } from '../../../shared/component/modal/modal';
-import { Livro } from '../../../models/livro.model';
-import { ExemplarVirtualDto, LivroVirtualDto } from '../../../dto/estantevirtual.dto';
+import { ExemplarVirtualDto } from '../../../dto/estantevirtual.dto';
 
 @Component({
   selector: 'app-modal-livro',

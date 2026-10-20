@@ -1,8 +1,49 @@
-<app-navbar *ngIf="!isAuthRoute()"></app-navbar>
-<app-barra-lateral *ngIf="!isAuthRoute()"></app-barra-lateral>
-<main [class.container]="!isAuthRoute()" [class.bg-body-secondary]="!isAuthRoute()" [class.py-3]="!isAuthRoute()"
-  style="min-height: 59.3vh;">
-  <router-outlet></router-outlet>
-</main>
-<app-footer *ngIf="!isAuthRoute()"></app-footer>
-<app-toast></app-toast>
+
+<div class="layout d-flex flex-column min-vh-100">
+  <!-- Navbar -->
+  <app-navbar
+    *ngIf="!isAuthRoute()"
+    (toggleSidebar)="alternarSidebar()"
+  ></app-navbar>
+
+  <!-- Área principal -->
+  <div
+    *ngIf="!isAuthRoute()"
+    class="layout-corpo d-flex flex-grow-1 position-relative"
+  >
+    <!-- Fundo escuro ao abrir o menu no celular -->
+    <div
+      *ngIf="menuMobileAberto"
+      class="menu-overlay d-lg-none"
+      (click)="fecharMenuMobile()"
+      aria-label="Fechar menu"
+    ></div>
+
+ <!-- Menu lateral -->
+    <app-barra-lateral
+      class="sidebar-container flex-shrink-0"
+      [recolhida]="sidebarRecolhida"
+      [mobileAberto]="menuMobileAberto"
+      [class.mobile-aberto]="menuMobileAberto"
+      (navegar)="fecharMenuMobile()"
+      (sair)="logout()"
+      (toggleSidebar)="alternarSidebar()"
+    ></app-barra-lateral>
+
+    <!-- Conteúdo da página -->
+    <main class="conteudo-principal flex-grow-1 p-3 pb-5">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- Login e demais telas sem o menu -->
+  <main *ngIf="isAuthRoute()" class="flex-grow-1">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Rodapé -->
+  <app-footer *ngIf="!isAuthRoute()"></app-footer>
+
+  <!-- Notificações -->
+  <app-toast></app-toast>
+</div>

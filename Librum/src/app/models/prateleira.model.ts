@@ -1,6 +1,7 @@
-import { Exemplar } from './exemplar.model';
+
+import { ExemplarResponse } from './exemplar.model';
 
 export interface Prateleira {
   id: number;
-  listaLivro: Exemplar[];
+  listaLivro: ExemplarResponse[];
 }

@@ -1,6 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { LinkPersonalizado } from '../link-personalizado/link-personalizado';
-import { CommonModule } from '@angular/common';
 
 
 @Component({
