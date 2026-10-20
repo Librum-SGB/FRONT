@@ -90,102 +90,93 @@
           </div>
 
           <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label>ID</label>
-                <input class="form-control" [(ngModel)]="materialEditando.codigo" disabled>
+
+            <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
+            <form [formGroup]="formMaterial" (ngSubmit)="salvarEdicao()">
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">ID</label>
+                  <input class="form-control" formControlName="codigo">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Título *</label>
+                  <input class="form-control" formControlName="titulo" [class.is-invalid]="isInvalido('titulo')">
+                </div>
               </div>
 
-              <div class="col-md-6 mb-3">
-                <label>Título</label>
-                <input class="form-control" [(ngModel)]="materialEditando.titulo">
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label>Subtítulo</label>
-              <input class="form-control" [(ngModel)]="materialEditando.subtitulo">
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label>Autor</label>
-                <input class="form-control" [(ngModel)]="materialEditando.autor">
+              <div class="mb-3">
+                <label class="form-label">Subtítulo</label>
+                <input class="form-control" formControlName="subtitulo">
               </div>
 
-              <div class="col-md-6 mb-3">
-                <label>Editora</label>
-                <input class="form-control" [(ngModel)]="materialEditando.editora">
-              </div>
-            </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Autor *</label>
+                  <input class="form-control" formControlName="autor" [class.is-invalid]="isInvalido('autor')">
+                </div>
 
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label>Ano</label>
-                <input class="form-control" [(ngModel)]="materialEditando.ano">
-              </div>
-
-              <div class="col-md-4 mb-3">
-                <label>ISBN</label>
-                <input class="form-control" [(ngModel)]="materialEditando.isbn">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Editora *</label>
+                  <input class="form-control" formControlName="editora" [class.is-invalid]="isInvalido('editora')">
+                </div>
               </div>
 
-              <div class="col-md-4 mb-3">
-                <label>Edição</label>
-                <input class="form-control" [(ngModel)]="materialEditando.edicao">
-              </div>
-            </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Ano *</label>
+                  <input type="number" class="form-control" formControlName="anoPublicacao"
+                    [class.is-invalid]="isInvalido('anoPublicacao')">
+                </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label>Gênero</label>
-                <select class="form-select" [(ngModel)]="materialEditando.genero">
-                  <option>Romance</option>
-                  <option>Ficção Científica</option>
-                  <option>Fantasia</option>
-                  <option>Terror</option>
-                </select>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">ISBN</label>
+                  <input class="form-control" formControlName="isbn" [class.is-invalid]="isInvalido('isbn')">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Edição</label>
+                  <input class="form-control" formControlName="edicao">
+                </div>
               </div>
 
-              <div class="col-md-6 mb-3">
-                <label>Quantidade</label>
-                <input type="number" class="form-control" [(ngModel)]="materialEditando.qtd">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Gênero *</label>
+                  <select class="form-select" formControlName="genero" [class.is-invalid]="isInvalido('genero')">
+                    <option value="">Selecione...</option>
+                    <option>Romance</option>
+                    <option>Ficção Científica</option>
+                    <option>Fantasia</option>
+                    <option>Terror</option>
+                    <option>Tecnologia</option>
+                    <option>Administração</option>
+                    <option>Engenharia</option>
+                    <option>Revista</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Quantidade *</label>
+                  <input type="number" class="form-control" formControlName="exemplares" min="1"
+                    [class.is-invalid]="isInvalido('exemplares')">
+                </div>
               </div>
-            </div>
+
+            </form>
           </div>
 
           <div class="modal-footer">
-            <button lbrButton variant="cadastrar" (click)="salvarEdicao()">Salvar</button>
-            <button lbrButton variant="cancelar" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" lbrButton variant="cadastrar" (click)="salvarEdicao()">Salvar</button>
+            <button type="button" lbrButton variant="cancelar" data-bs-dismiss="modal">Cancelar</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="confirmarEdicaoMaterialModal" tabindex="-1" data-bs-backdrop="static"
-      data-bs-keyboard="false">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirmar Edição</h5>
-            <button type="button" class="btn-close" (click)="cancelarConfirmacaoEdicao()"></button>
-          </div>
-
-          <div class="modal-body">
-            Tem certeza que deseja salvar as alterações de
-            <strong>{{ materialEditando.titulo }}</strong>?
-          </div>
-
-          <div class="modal-footer">
-            <button lbrButton variant="cancelar" (click)="cancelarConfirmacaoEdicao()">Cancelar</button>
-            <button lbrButton variant="confirmar" (click)="confirmarEdicao()">Salvar Alterações</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static"
-      data-bs-keyboard="false">
+    <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">

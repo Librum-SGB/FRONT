@@ -84,8 +84,7 @@
         <div class="row w-100 g-2">
 
           <div class="col-12 col-md-4">
-            <button lbrButton variant="outros" class="w-100" routerLink="/historicoEmprestimo"
-              data-bs-dismiss="modal">
+            <button lbrButton variant="outros" class="w-100" routerLink="/historicoEmprestimo" data-bs-dismiss="modal">
               Histórico
             </button>
           </div>
@@ -146,89 +145,97 @@
 
       <div class="modal-header">
         <h5>Editar Usuário</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
       <div class="modal-body">
 
+        <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
         <div class="text-center mb-4">
           <img [src]="usuarioEditando.foto" class="rounded-circle mb-3"
             style="width: 100px; height: 100px; object-fit: cover;">
-
           <input type="file" class="form-control" accept="image/*" (change)="alterarFoto($event)">
         </div>
 
-        <div class="mb-3">
-          <label>ID</label>
-          <input type="text" class="form-control" [value]="usuarioEditando.id" disabled>
-        </div>
+        <form [formGroup]="formUsuario" (ngSubmit)="salvarEdicao()">
 
-        <div class="mb-3">
-          <label>Nome</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.nome">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">ID</label>
+            <input type="text" class="form-control" formControlName="id">
+          </div>
 
-        <div class="mb-3">
-          <label>CPF</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.cpf">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Nome *</label>
+            <input type="text" class="form-control" formControlName="nome" [class.is-invalid]="isInvalido('nome')">
+          </div>
 
-        <div class="mb-3">
-          <label>Email</label>
-          <input type="email" class="form-control" [(ngModel)]="usuarioEditando.email">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">CPF *</label>
+            <input type="text" class="form-control" formControlName="cpf" [class.is-invalid]="isInvalido('cpf')">
+          </div>
 
-        <div class="mb-3">
-          <label>Telefone</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.telefone">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-control" formControlName="email" [class.is-invalid]="isInvalido('email')">
+          </div>
 
-        <div class="mb-3">
-          <label>Endereço</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.endereco">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Telefone *</label>
+            <input type="text" class="form-control" formControlName="telefone"
+              [class.is-invalid]="isInvalido('telefone')">
+          </div>
 
-        <div class="mb-3">
-          <label>Bairro</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.bairro">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Endereço *</label>
+            <input type="text" class="form-control" formControlName="endereco"
+              [class.is-invalid]="isInvalido('endereco')">
+          </div>
 
-        <div class="mb-3">
-          <label>Cidade</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.cidade">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Bairro *</label>
+            <input type="text" class="form-control" formControlName="bairro" [class.is-invalid]="isInvalido('bairro')">
+          </div>
 
-        <div class="mb-3">
-          <label>Estado</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.estado">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Cidade *</label>
+            <input type="text" class="form-control" formControlName="cidade" [class.is-invalid]="isInvalido('cidade')">
+          </div>
 
-        <div class="mb-3">
-          <label>CEP</label>
-          <input type="text" class="form-control" [(ngModel)]="usuarioEditando.cep">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Estado *</label>
+            <input type="text" class="form-control" formControlName="estado" maxlength="2"
+              [class.is-invalid]="isInvalido('estado')">
+          </div>
 
-        <div class="mb-3">
-          <label>Limite de Livros</label>
-          <input type="number" class="form-control" [(ngModel)]="usuarioEditando.limiteLivros">
-        </div>
+          <div class="mb-3">
+            <label class="form-label">CEP *</label>
+            <input type="text" class="form-control" formControlName="cep" [class.is-invalid]="isInvalido('cep')">
+          </div>
 
-        <div class="mb-3">
-          <label>Status</label>
-          <select class="form-select" [(ngModel)]="usuarioEditando.estaBloqueado">
-            <option [ngValue]="false">Ativo</option>
-            <option [ngValue]="true">Bloqueado</option>
-          </select>
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Limite de Livros *</label>
+            <input type="number" class="form-control" formControlName="limiteLivros" min="1"
+              [class.is-invalid]="isInvalido('limiteLivros')">
+          </div>
 
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" formControlName="estaBloqueado">
+              <option [ngValue]="false">Ativo</option>
+              <option [ngValue]="true">Bloqueado</option>
+            </select>
+          </div>
+
+        </form>
       </div>
 
       <div class="modal-footer">
-        <button lbrButton variant="cancela/limpa" data-bs-dismiss="modal">
+        <button type="button" lbrButton variant="cancela/limpa" data-bs-dismiss="modal">
           Cancelar
         </button>
 
-        <button lbrButton variant="cadastrar" (click)="salvarEdicao()">
+        <button type="button" lbrButton variant="cadastrar" (click)="salvarEdicao()">
           Salvar Alterações
         </button>
       </div>

@@ -1,20 +1,65 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastService } from '../../shared/services/toast.service';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { FormUtils } from '../../utils/FormUtil';
+import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-editar-excluir-material',
-  imports: [CommonModule, FormsModule, CorpoPadrao, LbrButtom],
+  imports: [CommonModule, FormsModule, CorpoPadrao, LbrButtom, AlertaErros, ReactiveFormsModule],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',
 })
 export class EditarExcluirMaterial {
-  constructor(private toastService: ToastService) {}
+  constructor(
+    private toastService: ToastService,
+    private fb: FormBuilder,
+  ) {
+    const anoAtual = new Date().getFullYear();
+
+    this.formMaterial = this.fb.group({
+      codigo: [{ value: '', disabled: true }],
+      titulo: ['', Validators.required],
+      subtitulo: [''],
+      autor: ['', Validators.required],
+      editora: ['', Validators.required],
+      anoPublicacao: [null, [Validators.required, Validators.min(1000), Validators.max(anoAtual)]],
+      isbn: ['', [Validators.minLength(10), Validators.maxLength(17)]], // opcional
+      edicao: [''],
+      genero: ['', Validators.required],
+      exemplares: [1, [Validators.required, Validators.min(1)]],
+    });
+  }
+  formMaterial: FormGroup;
+  enviado = false;
+  mensagensErro: string[] = [];
+
+  private readonly nomesCampos: Record<string, string> = {
+    titulo: 'Título',
+    subtitulo: 'Subtítulo',
+    autor: 'Autor',
+    editora: 'Editora',
+    anoPublicacao: 'Ano',
+    isbn: 'ISBN',
+    edicao: 'Edição',
+    genero: 'Gênero',
+    exemplares: 'Quantidade',
+  };
+
+  isInvalido(campo: string): boolean {
+    return FormUtils.isInvalido(this.formMaterial, campo, this.enviado);
+  }
 
   materiais = [
     {
@@ -109,10 +154,35 @@ export class EditarExcluirMaterial {
     if (!material) return;
 
     this.materialEditando = { ...material };
+
+    this.formMaterial.reset({
+      codigo: material.codigo,
+      titulo: material.titulo,
+      subtitulo: material.subtitulo ?? '',
+      autor: material.autor,
+      editora: material.editora,
+      anoPublicacao: material.anoPublicacao,
+      isbn: material.isbn ?? '',
+      edicao: material.edicao ?? '',
+      genero: material.genero,
+      exemplares: material.exemplares,
+    });
+
+    this.enviado = false;
+    this.mensagensErro = [];
+
     this.trocarModal('modalMaterial', 'modalEditar');
   }
 
   salvarEdicao() {
+    this.enviado = true;
+    this.mensagensErro = FormUtils.gerarMensagensErro(this.formMaterial, this.nomesCampos);
+
+    if (this.formMaterial.invalid) return; // modal continua aberto, com o alerta
+
+    // sincroniza para o modal de confirmação mostrar o título novo
+    this.materialEditando = { ...this.materialEditando, ...this.formMaterial.getRawValue() };
+
     this.trocarModal('modalEditar', 'confirmarEdicaoMaterialModal');
   }
 
