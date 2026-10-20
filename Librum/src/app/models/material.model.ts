@@ -2,7 +2,7 @@
 export interface MaterialRequest {
   titulo: string;
   editoraId?: number;
-  tipo: 'LIVRO' | 'PERIODICO' | 'OUTROS'; // confirme os valores reais do enum
+  tipo: 'LIVRO' | 'PERIODICO' | 'OUTRO';
   subtitulo?: string;
   autorId?: number;
   sinopse?: string;

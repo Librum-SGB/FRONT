@@ -83,14 +83,13 @@ export class CadastrarMaterial implements OnInit {
 
   ngOnInit(): void {
     const hoje = new Date().toISOString().split('T')[0];
-    const anoAtual = new Date().getFullYear();
 
     this.formLivro = this.fb.group({
       titulo: ['', Validators.required],
       subtitulo: [''],
       autorId: ['', Validators.required],
       editoraId: ['', Validators.required],
-      anoPublicacao: [anoAtual, Validators.required],
+      anoPublicacao: ['', Validators.required],
       isbn: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(17)]],
       edicao: [''],
       quantidadePaginas: [''],
@@ -102,7 +101,7 @@ export class CadastrarMaterial implements OnInit {
       titulo: ['', Validators.required],
       editoraId: ['', Validators.required],
       edicao: ['', Validators.required],
-      anoPublicacao: [anoAtual, Validators.required],
+      anoPublicacao: ['', Validators.required],
       issn: ['', Validators.required],
       tema: [''],
       descricao: [''],
@@ -294,7 +293,7 @@ export class CadastrarMaterial implements OnInit {
     const form = this.formOutros.getRawValue();
 
     const payload: MaterialRequest = {
-      tipo: 'OUTROS',
+      tipo: 'OUTRO',
       titulo: form.titulo,
       editoraId: form.editoraId ? Number(form.editoraId) : undefined,
       autorId: form.autorId ? Number(form.autorId) : undefined,
@@ -320,8 +319,8 @@ export class CadastrarMaterial implements OnInit {
   limpar() {
     this.enviado = false;
     this.mensagensErro = [];
-    this.formLivro?.reset({ anoPublicacao: new Date().getFullYear() });
-    this.formPeriodico?.reset({ anoPublicacao: new Date().getFullYear() });
+    this.formLivro?.reset();
+    this.formPeriodico?.reset();
     this.formOutros?.reset();
     this.generoIdsSelecionados = [];
   }
