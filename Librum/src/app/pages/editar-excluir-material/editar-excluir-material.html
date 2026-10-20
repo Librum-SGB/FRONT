@@ -104,15 +104,15 @@
           </div>
 
           <div class="modal-footer">
-            <button lbrButton variant="editar" (click)="abrirEdicao(materialSelecionado)">
+            <button type="button" lbrButton variant="editar" (click)="abrirEdicao(materialSelecionado)">
               <i class="bi bi-pencil"></i> Editar
             </button>
 
-            <button lbrButton variant="excluir" (click)="abrirModalExcluir(materialSelecionado)">
+            <button type="button" lbrButton variant="excluir" (click)="abrirModalExcluir(materialSelecionado)">
               <i class="bi bi-trash"></i> Excluir
             </button>
 
-            <button lbrButton variant="cancela/limpa" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" lbrButton variant="cancela/limpa" data-bs-dismiss="modal">Fechar</button>
           </div>
         </div>
       </div>
@@ -140,35 +140,38 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Título *</label>
+                  <label class="form-label">{{ materialEditando.tipo === 'OUTROS' ? 'Nome' : 'Título' }} *</label>
                   <input class="form-control" formControlName="titulo" [class.is-invalid]="isInvalido('titulo')">
                 </div>
               </div>
 
-              <div class="mb-3" *ngIf="materialEditando.tipo === 'LIVRO'">
+              @if (materialEditando.tipo === 'LIVRO') {
+              <div class="mb-3">
                 <label class="form-label">Subtítulo</label>
                 <input class="form-control" formControlName="subtitulo">
               </div>
+              }
 
               <div class="row">
-                <div class="col-md-6 mb-3" *ngIf="materialEditando.tipo !== 'PERIODICO'">
-                  <label class="form-label">Autor * {{ materialEditando.tipo === 'LIVRO' ? '' : '(opcional)' }}</label>
-                  <app-select-pesquisavel #autorSelectEdicao [itens]="autores" formControlName="autor"
-                    [class.is-invalid]="isInvalido('autor')Id" [ngModelOptions]="{standalone: true}"
-                    placeholder="Digite para buscar autor...">
+                @if (materialEditando.tipo !== 'PERIODICO') {
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Autor {{ materialEditando.tipo === 'LIVRO' ? '*' : '(opcional)' }}</label>
+                  <app-select-pesquisavel #autorSelectEdicao [itens]="autores" formControlName="autorId"
+                    [invalido]="isInvalido('autorId')" placeholder="Digite para buscar autor...">
                   </app-select-pesquisavel>
                 </div>
+                }
 
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Editora * {{ materialEditando.tipo === 'OUTROS' ? '(opcional)' : ''
+                  <label class="form-label">Editora {{ materialEditando.tipo === 'OUTROS' ? '(opcional)' : '*'
                     }}</label>
-                  <app-select-pesquisavel #editoraSelectEdicao [itens]="editoras" formControlName="editora"
-                    [class.is-invalid]="isInvalido('editora')Id" [ngModelOptions]="{standalone: true}"
-                    placeholder="Digite para buscar editora...">
+                  <app-select-pesquisavel #editoraSelectEdicao [itens]="editoras" formControlName="editoraId"
+                    [invalido]="isInvalido('editoraId')" placeholder="Digite para buscar editora...">
                   </app-select-pesquisavel>
                 </div>
               </div>
 
+              @if (materialEditando.tipo !== 'OUTROS') {
               <div class="row">
                 <div class="col-md-4 mb-3">
                   <label class="form-label">Ano *</label>
@@ -177,38 +180,64 @@
                 </div>
 
                 <div class="col-md-4 mb-3">
-                  <label class="form-label">ISBN</label>
+                  @if (materialEditando.tipo === 'LIVRO') {
+                  <label class="form-label">ISBN *</label>
                   <input class="form-control" formControlName="isbn" [class.is-invalid]="isInvalido('isbn')">
+                  } @else {
+                  <label class="form-label">ISSN *</label>
+                  <input class="form-control" formControlName="issn" [class.is-invalid]="isInvalido('issn')">
+                  }
                 </div>
 
                 <div class="col-md-4 mb-3">
-                  <label class="form-label">Edição</label>
-                  <input class="form-control" formControlName="edicao">
+                  <label class="form-label">Edição{{ materialEditando.tipo === 'PERIODICO' ? ' *' : '' }}</label>
+                  <input type="number" class="form-control" formControlName="edicao"
+                    [class.is-invalid]="isInvalido('edicao')">
                 </div>
               </div>
+              }
 
+              @if (materialEditando.tipo === 'LIVRO') {
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Gênero *</label>
-                  <select class="form-select" formControlName="genero" [class.is-invalid]="isInvalido('genero')">
-                    <option value="">Selecione...</option>
-                    <option>Romance</option>
-                    <option>Ficção Científica</option>
-                    <option>Fantasia</option>
-                    <option>Terror</option>
-                    <option>Tecnologia</option>
-                    <option>Administração</option>
-                    <option>Engenharia</option>
-                    <option>Revista</option>
-                  </select>
+                  <label class="form-label">Gênero</label>
+                  <app-select-pesquisavel #generoSelectEdicao [itens]="generos" [multiplo]="true"
+                    [(ngModel)]="generoIdsEditando" [ngModelOptions]="{standalone: true}"
+                    placeholder="Digite para buscar gênero...">
+                  </app-select-pesquisavel>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Quantidade *</label>
-                  <input type="number" class="form-control" formControlName="exemplares" min="1"
-                    [class.is-invalid]="isInvalido('exemplares')">
+                  <label class="form-label">Quantidade de Páginas</label>
+                  <input type="number" class="form-control" min="1" formControlName="quantidadePaginas"
+                    [class.is-invalid]="isInvalido('quantidadePaginas')">
                 </div>
               </div>
+
+              <div class="mb-3">
+                <label class="form-label">Sinopse</label>
+                <textarea class="form-control" rows="3" formControlName="sinopse"></textarea>
+              </div>
+              }
+
+              @if (materialEditando.tipo !== 'LIVRO') {
+              <div class="mb-3">
+                <label class="form-label">{{ materialEditando.tipo === 'OUTROS' ? 'Tipo *' : 'Tema' }}</label>
+                <input class="form-control" formControlName="tema" [class.is-invalid]="isInvalido('tema')">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Descrição</label>
+                <textarea class="form-control" rows="3" formControlName="descricao"></textarea>
+              </div>
+              }
+
+              @if (materialEditando.tipo === 'OUTROS') {
+              <div class="mb-3">
+                <label class="form-label">Observação</label>
+                <textarea class="form-control" rows="2" formControlName="observacao"></textarea>
+              </div>
+              }
 
             </form>
           </div>
@@ -221,27 +250,50 @@
       </div>
     </div>
 
-    <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-      <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static"
-        data-bs-keyboard="false">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Confirmar Exclusão</h5>
-              <button type="button" class="btn-close" (click)="cancelarExclusao()"></button>
-            </div>
+    <!-- CONFIRMAR EDIÇÃO -->
+    <div class="modal fade" id="confirmarEdicaoMaterialModal" tabindex="-1" data-bs-backdrop="static"
+      data-bs-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar Edição</h5>
+            <button type="button" class="btn-close" (click)="cancelarConfirmacaoEdicao()"></button>
+          </div>
 
-            <div class="modal-body">
-              Tem certeza que deseja excluir
-              <strong>{{ materialSelecionado?.titulo }}</strong>?
-            </div>
+          <div class="modal-body">
+            Tem certeza que deseja salvar as alterações de
+            <strong>{{ materialEditando.titulo }}</strong>?
+          </div>
 
-            <div class="modal-footer">
-              <button lbrButton variant="cancelar" (click)="cancelarExclusao()">Cancelar</button>
-              <button lbrButton variant="excluir" (click)="confirmarExclusao()">Excluir</button>
-            </div>
+          <div class="modal-footer">
+            <button type="button" lbrButton variant="cancelar" (click)="cancelarConfirmacaoEdicao()">Cancelar</button>
+            <button type="button" lbrButton variant="confirmar" (click)="confirmarEdicao()">Salvar Alterações</button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- EXCLUIR -->
+    <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar Exclusão</h5>
+            <button type="button" class="btn-close" (click)="cancelarExclusao()"></button>
+          </div>
+
+          <div class="modal-body">
+            Tem certeza que deseja excluir
+            <strong>{{ materialSelecionado?.titulo }}</strong>?
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" lbrButton variant="cancelar" (click)="cancelarExclusao()">Cancelar</button>
+            <button type="button" lbrButton variant="excluir" (click)="confirmarExclusao()">Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </app-corpo-padrao>

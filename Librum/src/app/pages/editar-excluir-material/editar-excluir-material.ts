@@ -1,19 +1,19 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ToastService } from '../../shared/services/toast.service';
 import {
   FormBuilder,
   FormGroup,
   FormsModule,
-  Validators,
   ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
 } from '@angular/forms';
+import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
-import { FormUtils } from '../../utils/FormUtil';
 import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
+import { FormUtils } from '../../utils/FormUtil';
 
 import { MaterialService } from '../../services/material';
 import { AutorService } from '../../services/autor';
@@ -27,19 +27,13 @@ import { GeneroResponse } from '../../models/genero.model';
 
 declare var bootstrap: any;
 
-const PREFIXOS: Record<string, string> = {
-  LIVRO: 'L',
-  PERIODICO: 'P',
-  OUTROS: 'OM',
-};
-
+const PREFIXOS: Record<string, string> = { LIVRO: 'L', PERIODICO: 'P', OUTROS: 'OM' };
 const LABELS: Record<string, string> = {
   LIVRO: 'Livro',
   PERIODICO: 'Periódico',
   OUTROS: 'Outros Materiais',
 };
 
-// Formato usado só pra exibir na tela (já com os nomes resolvidos, não os IDs)
 interface MaterialExibicao {
   id: number;
   codigo: string;
@@ -66,106 +60,18 @@ interface MaterialExibicao {
 
 @Component({
   selector: 'app-editar-excluir-material',
-  imports: [CommonModule, FormsModule, CorpoPadrao, LbrButtom, AlertaErros, ReactiveFormsModule, SelectPesquisavel],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CorpoPadrao,
+    LbrButtom,
+    AlertaErros,
+    SelectPesquisavel,
+  ],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',
 })
-export class EditarExcluirMaterial {
-  constructor(
-    private toastService: ToastService,
-    private fb: FormBuilder,
-  ) {
-    const anoAtual = new Date().getFullYear();
-
-    this.formMaterial = this.fb.group({
-      codigo: [{ value: '', disabled: true }],
-      titulo: ['', Validators.required],
-      subtitulo: [''],
-      autor: ['', Validators.required],
-      editora: ['', Validators.required],
-      anoPublicacao: [null, [Validators.required, Validators.min(1000), Validators.max(anoAtual)]],
-      isbn: ['', [Validators.minLength(10), Validators.maxLength(17)]], // opcional
-      edicao: [''],
-      genero: ['', Validators.required],
-      exemplares: [1, [Validators.required, Validators.min(1)]],
-    });
-  }
-  formMaterial: FormGroup;
-  enviado = false;
-  mensagensErro: string[] = [];
-
-  private readonly nomesCampos: Record<string, string> = {
-    titulo: 'Título',
-    subtitulo: 'Subtítulo',
-    autor: 'Autor',
-    editora: 'Editora',
-    anoPublicacao: 'Ano',
-    isbn: 'ISBN',
-    edicao: 'Edição',
-    genero: 'Gênero',
-    exemplares: 'Quantidade',
-  };
-
-  isInvalido(campo: string): boolean {
-    return FormUtils.isInvalido(this.formMaterial, campo, this.enviado);
-  }
-
-  materiais = [
-    {
-      codigo: 'L-00001',
-      titulo: 'Programação em Python',
-      tipo: 'Livro',
-      autor: 'João',
-      editora: 'Novatec',
-      anoPublicacao: 2020,
-      genero: 'Tecnologia',
-      localizacao: 'Estante A1',
-      exemplares: 5,
-      unidade: 'Central',
-      disponibilidade: 'Disponível',
-    },
-    {
-      codigo: 'L-00002',
-      titulo: 'Gestão de Projetos Ágeis',
-      tipo: 'Livro',
-      autor: 'Maria',
-      editora: 'Alta Books',
-      anoPublicacao: 2019,
-      genero: 'Administração',
-      localizacao: 'Estante B2',
-      exemplares: 3,
-      unidade: 'Norte',
-      disponibilidade: 'Disponível',
-    },
-    {
-      codigo: 'L-00003',
-      titulo: 'Eletrônica Digital Avançada',
-      tipo: 'Livro',
-      autor: 'Carlos',
-      editora: 'Pearson',
-      anoPublicacao: 2018,
-      genero: 'Engenharia',
-      localizacao: 'Estante C3',
-      exemplares: 2,
-      unidade: 'Sul',
-      disponibilidade: 'Indisponível',
-    },
-    {
-      codigo: 'P-00001',
-      titulo: 'Revista Tecnologia Hoje',
-      tipo: 'Livro',
-      autor: 'Editora X',
-      editora: 'Editora X',
-      anoPublicacao: 2023,
-      genero: 'Revista',
-      localizacao: 'Estante D1',
-      exemplares: 10,
-      unidade: 'Central',
-      disponibilidade: 'Disponível',
-    },
-  ];
-
-  materialSelecionado: any;
 export class EditarExcluirMaterial implements OnInit {
   materiais: MaterialExibicao[] = [];
   materialSelecionado: MaterialExibicao | null = null;
@@ -177,24 +83,105 @@ export class EditarExcluirMaterial implements OnInit {
   generoIdsEditando: number[] = [];
 
   carregando = true;
+  tipoFiltro = 'todos';
+  textoBusca = '';
+
+  formMaterial: FormGroup;
+  enviado = false;
+  mensagensErro: string[] = [];
+
+  private materiaisOriginais: MaterialResponse[] = [];
 
   @ViewChild('autorSelectEdicao') autorSelectEdicao?: SelectPesquisavel;
   @ViewChild('editoraSelectEdicao') editoraSelectEdicao?: SelectPesquisavel;
   @ViewChild('generoSelectEdicao') generoSelectEdicao?: SelectPesquisavel;
 
-  tipoFiltro: string = 'todos';
-  textoBusca: string = '';
+  private readonly nomesBase: Record<string, string> = {
+    titulo: 'Título',
+    autorId: 'Autor',
+    editoraId: 'Editora',
+    anoPublicacao: 'Ano',
+    isbn: 'ISBN',
+    issn: 'ISSN',
+    edicao: 'Edição',
+    quantidadePaginas: 'Páginas',
+    tema: 'Tema',
+  };
+
+  private get nomesCampos(): Record<string, string> {
+    return this.materialEditando?.tipo === 'OUTROS'
+      ? { ...this.nomesBase, titulo: 'Nome', tema: 'Tipo' }
+      : this.nomesBase;
+  }
 
   constructor(
     private toastService: ToastService,
+    private fb: FormBuilder,
     private materialService: MaterialService,
     private autorService: AutorService,
     private editoraService: EditoraService,
     private generoService: GeneroService,
-  ) { }
+  ) {
+    // validadores de cada campo são definidos por tipo em aplicarValidadores()
+    this.formMaterial = this.fb.group({
+      codigo: [{ value: '', disabled: true }],
+      titulo: [''],
+      subtitulo: [''],
+      autorId: [''],
+      editoraId: [''],
+      anoPublicacao: [null],
+      isbn: [''],
+      issn: [''],
+      edicao: [null],
+      quantidadePaginas: [null, Validators.min(1)],
+      sinopse: [''],
+      tema: [''],
+      descricao: [''],
+      observacao: [''],
+    });
+  }
 
   ngOnInit(): void {
     this.carregarDados();
+  }
+
+  isInvalido(campo: string): boolean {
+    return FormUtils.isInvalido(this.formMaterial, campo, this.enviado);
+  }
+
+  private aplicarValidadores(tipo: string): void {
+    const anoMax = new Date().getFullYear();
+    const req = Validators.required;
+    const ano = [req, Validators.min(1000), Validators.max(anoMax)];
+
+    const regras: Record<string, Record<string, ValidatorFn[]>> = {
+      LIVRO: {
+        titulo: [req],
+        autorId: [req],
+        editoraId: [req],
+        anoPublicacao: ano,
+        isbn: [req, Validators.minLength(10), Validators.maxLength(17)],
+      },
+      PERIODICO: {
+        titulo: [req],
+        editoraId: [req],
+        edicao: [req, Validators.min(1)],
+        anoPublicacao: ano,
+        issn: [req],
+      },
+      OUTROS: {
+        titulo: [req],
+        tema: [req],
+      },
+    };
+
+    ['titulo', 'autorId', 'editoraId', 'anoPublicacao', 'isbn', 'issn', 'edicao', 'tema'].forEach(
+      (campo) => {
+        const control = this.formMaterial.get(campo)!;
+        control.setValidators(regras[tipo]?.[campo] ?? []);
+        control.updateValueAndValidity({ emitEvent: false });
+      },
+    );
   }
 
   private carregarDados(): void {
@@ -238,12 +225,8 @@ export class EditarExcluirMaterial implements OnInit {
     });
   }
 
-  private materiaisOriginais: MaterialResponse[] = [];
-
-  // Reprocessa a lista de exibição sempre que autores/editoras/gêneros ou materiais mudarem
-  // (os 4 fetches do ngOnInit rodam em paralelo, sem ordem garantida)
+  // sem o "return" antecipado: ao excluir o último item a lista precisa esvaziar
   private reprocessarNomes(): void {
-    if (this.materiaisOriginais.length === 0) return;
     this.materiais = this.materiaisOriginais.map((m) => this.paraExibicao(m));
   }
 
@@ -315,24 +298,29 @@ export class EditarExcluirMaterial implements OnInit {
     if (!material) return;
 
     this.materialEditando = { ...material };
+    this.aplicarValidadores(material.tipo);
 
     this.formMaterial.reset({
       codigo: material.codigo,
       titulo: material.titulo,
       subtitulo: material.subtitulo ?? '',
-      autor: material.autor,
-      editora: material.editora,
-      anoPublicacao: material.anoPublicacao,
+      autorId: material.autorId ?? '',
+      editoraId: material.editoraId ?? '',
+      anoPublicacao: material.anoPublicacao ?? null,
       isbn: material.isbn ?? '',
-      edicao: material.edicao ?? '',
-      genero: material.genero,
-      exemplares: material.exemplares,
+      issn: material.issn ?? '',
+      edicao: material.edicao ?? null,
+      quantidadePaginas: material.quantidadePaginas ?? null,
+      sinopse: material.sinopse ?? '',
+      tema: material.tema ?? '',
+      descricao: material.descricao ?? '',
+      observacao: material.observacao ?? '',
     });
 
     this.enviado = false;
     this.mensagensErro = [];
-
     this.generoIdsEditando = [...material.generoIds];
+
     this.trocarModal('modalMaterial', 'modalEditar');
   }
 
@@ -342,8 +330,9 @@ export class EditarExcluirMaterial implements OnInit {
 
     if (this.formMaterial.invalid) return; // modal continua aberto, com o alerta
 
-    // sincroniza para o modal de confirmação mostrar o título novo
-    this.materialEditando = { ...this.materialEditando, ...this.formMaterial.getRawValue() };
+    // sincroniza para a confirmação e para o payload usarem os valores novos
+    const { codigo, ...valores } = this.formMaterial.getRawValue();
+    this.materialEditando = { ...this.materialEditando, ...valores };
 
     this.trocarModal('modalEditar', 'confirmarEdicaoMaterialModal');
   }
@@ -381,7 +370,9 @@ export class EditarExcluirMaterial implements OnInit {
           this.reprocessarNomes();
         }
         this.toastService.sucesso('Material editado com sucesso!');
-        bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoMaterialModal'))?.hide();
+        bootstrap.Modal.getInstance(
+          document.getElementById('confirmarEdicaoMaterialModal'),
+        )?.hide();
       },
       error: (err) => {
         console.error('Erro ao editar material:', err);
@@ -408,7 +399,9 @@ export class EditarExcluirMaterial implements OnInit {
 
     this.materialService.delete(materialExcluido.id).subscribe({
       next: () => {
-        this.materiaisOriginais = this.materiaisOriginais.filter((m) => m.id !== materialExcluido.id);
+        this.materiaisOriginais = this.materiaisOriginais.filter(
+          (m) => m.id !== materialExcluido.id,
+        );
         this.reprocessarNomes();
         this.toastService.sucesso(`Material "${materialExcluido.titulo}" excluído com sucesso.`);
         this.materialSelecionado = null;
@@ -436,7 +429,6 @@ export class EditarExcluirMaterial implements OnInit {
           return material.autorNome.toLowerCase().includes(busca);
         case 'genero':
           return material.generoNomes.toLowerCase().includes(busca);
-        case 'todos':
         default:
           return (
             material.codigo.toLowerCase().includes(busca) ||
