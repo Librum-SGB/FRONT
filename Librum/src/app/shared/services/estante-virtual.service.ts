@@ -1,536 +1,131 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EstanteVirtualDto } from '../../dto/estantevirtual.dto';
-import { Observable, of } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { AutorResponse } from '../../models/autor.model';
+import { ExemplarResponse } from '../../models/exemplar.model';
+import { MaterialResponse } from '../../models/material.model';
+import {
+  EstanteRequestDto,
+  EstanteResponseDto,
+  EstanteVirtualDto,
+  ExemplarVirtualDto,
+  MaterialVirtualDto,
+  PrateleiraVirtualDto,
+} from '../../dto/estantevirtual.dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EstanteService {
-  constructor() {}
+  private readonly apiUrl = environment.apiUrl;
 
-  criarEstante(novaEstanteData: Partial<EstanteVirtualDto>): Observable<EstanteVirtualDto> {
-    // Gera o próximo ID incrementando o maior ID existente
-    const novoId =
-      this.ESTANTES_VIRTUAIS.length > 0
-        ? Math.max(...this.ESTANTES_VIRTUAIS.map((e) => e.id)) + 1
-        : 1;
+  constructor(private readonly http: HttpClient) {}
 
-    const novaEstante: EstanteVirtualDto = {
-      id: novoId,
-      localizacao: novaEstanteData.localizacao ?? '',
-      capacidade: novaEstanteData.capacidade,
-      prateleiras: novaEstanteData.prateleiras ?? [],
-    };
-
-    this.ESTANTES_VIRTUAIS.push(novaEstante);
-    return of(novaEstante);
-  }
-
-  // 🔹 GET - todas as estantes
   getEstantes(): Observable<EstanteVirtualDto[]> {
-    return of(this.ESTANTES_VIRTUAIS);
+    return forkJoin({
+      estantes: this.http.get<EstanteResponseDto[]>(`${this.apiUrl}/estantes?ativo=true`),
+      exemplares: this.http.get<ExemplarResponse[] | null>(
+        `${this.apiUrl}/exemplares?ativo=true`,
+      ),
+      materiais: this.http.get<MaterialResponse[] | null>(
+        `${this.apiUrl}/materiais?ativo=true`,
+      ),
+      autores: this.http.get<AutorResponse[] | null>(`${this.apiUrl}/autores?ativo=true`),
+    }).pipe(
+      map(({ estantes, exemplares, materiais, autores }) =>
+        this.montarEstantes(estantes, exemplares ?? [], materiais ?? [], autores ?? []),
+      ),
+    );
   }
 
-  // 🔹 GET por ID
-  getEstanteById(id: number): Observable<EstanteVirtualDto | undefined> {
-    const estante = this.ESTANTES_VIRTUAIS.find((e) => e.id === id);
-    return of(estante);
+  criarEstante(estante: EstanteRequestDto): Observable<EstanteResponseDto> {
+    return this.http.post<EstanteResponseDto>(`${this.apiUrl}/estantes`, estante);
   }
 
-  ESTANTES_VIRTUAIS: EstanteVirtualDto[] = [
-    {
-      id: 1,
-      localizacao: 'Corredor A',
-      capacidade: 150,
-      prateleiras: [
-        {
-          nome: 'A1',
-          exemplares: [
-            {
-              id: 1,
-              codigoBarras: 'A1-001',
-              status: 'DISPONIVEL',
-              posicao: '1',
-              livro: {
-                id: 1,
-                titulo: 'Clean Code',
-                autores: ['Robert C. Martin'],
-                generos: ['Acadêmico / Técnico'],
-                editora: 'Prentice Hall',
-                anoPublicacao: 2008,
-                isbn: '9780132350884',
-              },
-            },
-            {
-              id: 2,
-              codigoBarras: 'A1-002',
-              status: 'EMPRESTADO',
-              posicao: '2',
-              livro: {
-                id: 2,
-                titulo: 'Refactoring',
-                autores: ['Martin Fowler'],
-                generos: ['Acadêmico / Técnico'],
-                editora: 'Addison-Wesley',
-                anoPublicacao: 1999,
-                isbn: '9780201485677',
-              },
-            },
-            {
-              id: 3,
-              codigoBarras: 'A1-003',
-              status: 'DISPONIVEL',
-              posicao: '3',
-              livro: {
-                id: 3,
-                titulo: 'Design Patterns',
-                autores: ['GoF'],
-                generos: ['Acadêmico / Técnico'],
-                editora: 'Addison-Wesley',
-                anoPublicacao: 1994,
-                isbn: '9780201633610',
-              },
-            },
-            {
-              id: 4,
-              codigoBarras: 'A1-004',
-              status: 'RESERVADO',
-              posicao: '4',
-              livro: {
-                id: 4,
-                titulo: 'The Pragmatic Programmer',
-                autores: ['Andrew Hunt', 'David Thomas'],
-                generos: ['Acadêmico / Técnico'],
-                editora: 'Addison-Wesley',
-                anoPublicacao: 1999,
-                isbn: '9780201616224',
-              },
-            },
-            {
-              id: 5,
-              codigoBarras: 'A1-005',
-              status: 'DISPONIVEL',
-              posicao: '5',
-              livro: {
-                id: 5,
-                titulo: 'Domain-Driven Design',
-                autores: ['Eric Evans'],
-                generos: ['Acadêmico / Técnico'],
-                editora: 'Addison-Wesley',
-                anoPublicacao: 2003,
-                isbn: '9780321125217',
-              },
-            },
-          ],
-        },
-        {
-          nome: 'A2',
-          exemplares: [
-            {
-              id: 6,
-              codigoBarras: 'A2-001',
-              status: 'DISPONIVEL',
-              posicao: '1',
-              livro: {
-                id: 6,
-                titulo: '1984',
-                autores: ['George Orwell'],
-                generos: ['Distopia'],
-                editora: 'Secker & Warburg',
-                anoPublicacao: 1949,
-                isbn: '9780451524935',
-              },
-            },
-            {
-              id: 7,
-              codigoBarras: 'A2-002',
-              status: 'DISPONIVEL',
-              posicao: '2',
-              livro: {
-                id: 7,
-                titulo: 'Admirável Mundo Novo',
-                autores: ['Aldous Huxley'],
-                generos: ['Distopia'],
-                editora: 'Chatto & Windus',
-                anoPublicacao: 1932,
-                isbn: '9780060850524',
-              },
-            },
-            {
-              id: 8,
-              codigoBarras: 'A2-003',
-              status: 'EMPRESTADO',
-              posicao: '3',
-              livro: {
-                id: 8,
-                titulo: 'Fahrenheit 451',
-                autores: ['Ray Bradbury'],
-                generos: ['Distopia'],
-                editora: 'Ballantine Books',
-                anoPublicacao: 1953,
-                isbn: '9781451673319',
-              },
-            },
-            {
-              id: 9,
-              codigoBarras: 'A2-004',
-              status: 'DISPONIVEL',
-              posicao: '4',
-              livro: {
-                id: 9,
-                titulo: 'O Conto da Aia',
-                autores: ['Margaret Atwood'],
-                generos: ['Distopia'],
-                editora: 'McClelland & Stewart',
-                anoPublicacao: 1985,
-                isbn: '9780385490818',
-              },
-            },
-            {
-              id: 10,
-              codigoBarras: 'A2-005',
-              status: 'RESERVADO',
-              posicao: '5',
-              livro: {
-                id: 10,
-                titulo: 'Neuromancer',
-                autores: ['William Gibson'],
-                generos: ['Ficção Científica'],
-                editora: 'Ace Books',
-                anoPublicacao: 1984,
-                isbn: '9780441569595',
-              },
-            },
-          ],
-        },
-        {
-          nome: 'A3',
-          exemplares: [
-            {
-              id: 11,
-              codigoBarras: 'A3-001',
-              status: 'DISPONIVEL',
-              posicao: '1',
-              livro: {
-                id: 11,
-                titulo: 'O Hobbit',
-                autores: ['J.R.R. Tolkien'],
-                generos: ['Fantasia'],
-                editora: 'Allen & Unwin',
-                anoPublicacao: 1937,
-                isbn: '9780547928227',
-              },
-            },
-            {
-              id: 12,
-              codigoBarras: 'A3-002',
-              status: 'DISPONIVEL',
-              posicao: '2',
-              livro: {
-                id: 12,
-                titulo: 'O Senhor dos Anéis',
-                autores: ['J.R.R. Tolkien'],
-                generos: ['Fantasia'],
-                editora: 'Allen & Unwin',
-                anoPublicacao: 1954,
-                isbn: '9780618640157',
-              },
-            },
-            {
-              id: 13,
-              codigoBarras: 'A3-003',
-              status: 'MANUTENCAO',
-              posicao: '3',
-              livro: {
-                id: 13,
-                titulo: 'Harry Potter',
-                autores: ['J.K. Rowling'],
-                generos: ['Fantasia'],
-                editora: 'Bloomsbury',
-                anoPublicacao: 1997,
-                isbn: '9780747532743',
-              },
-            },
-            {
-              id: 14,
-              codigoBarras: 'A3-004',
-              status: 'DISPONIVEL',
-              posicao: '4',
-              livro: {
-                id: 14,
-                titulo: 'Eragon',
-                autores: ['Christopher Paolini'],
-                generos: ['Fantasia'],
-                editora: 'Knopf',
-                anoPublicacao: 2002,
-                isbn: '9780375826689',
-              },
-            },
-            {
-              id: 15,
-              codigoBarras: 'A3-005',
-              status: 'RESERVADO',
-              posicao: '5',
-              livro: {
-                id: 15,
-                titulo: 'As Crônicas de Nárnia',
-                autores: ['C.S. Lewis'],
-                generos: ['Fantasia'],
-                editora: 'Geoffrey Bles',
-                anoPublicacao: 1950,
-                isbn: '9780066238500',
-              },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 2,
-      localizacao: 'Corredor B',
-      capacidade: 120,
-      prateleiras: [
-        {
-          nome: 'B1',
-          exemplares: [
-            {
-              id: 16,
-              codigoBarras: 'B1-001',
-              status: 'DISPONIVEL',
-              posicao: '1',
-              livro: {
-                id: 16,
-                titulo: 'Dom Casmurro',
-                autores: ['Machado de Assis'],
-                generos: ['Romance'],
-                editora: 'Garnier',
-                anoPublicacao: 1899,
-                isbn: '9788572326972',
-              },
-            },
-            {
-              id: 17,
-              codigoBarras: 'B1-002',
-              status: 'DISPONIVEL',
-              posicao: '2',
-              livro: {
-                id: 17,
-                titulo: 'Memórias Póstumas',
-                autores: ['Machado de Assis'],
-                generos: ['Romance'],
-                editora: 'Garnier',
-                anoPublicacao: 1881,
-                isbn: '9788572326224',
-              },
-            },
-            {
-              id: 18,
-              codigoBarras: 'B1-003',
-              status: 'EMPRESTADO',
-              posicao: '3',
-              livro: {
-                id: 18,
-                titulo: 'Orgulho e Preconceito',
-                autores: ['Jane Austen'],
-                generos: ['Romance'],
-                editora: 'T. Egerton',
-                anoPublicacao: 1813,
-                isbn: '9780141439518',
-              },
-            },
-            {
-              id: 19,
-              codigoBarras: 'B1-004',
-              status: 'DISPONIVEL',
-              posicao: '4',
-              livro: {
-                id: 19,
-                titulo: 'Jane Eyre',
-                autores: ['Charlotte Brontë'],
-                generos: ['Romance'],
-                editora: 'Smith, Elder & Co.',
-                anoPublicacao: 1847,
-                isbn: '9780141441146',
-              },
-            },
-            {
-              id: 20,
-              codigoBarras: 'B1-005',
-              status: 'RESERVADO',
-              posicao: '5',
-              livro: {
-                id: 20,
-                titulo: 'O Morro dos Ventos Uivantes',
-                autores: ['Emily Brontë'],
-                generos: ['Romance'],
-                editora: 'Thomas Cautley',
-                anoPublicacao: 1847,
-                isbn: '9780141439556',
-              },
-            },
-          ],
-        },
-        {
-          nome: 'B2',
-          exemplares: [
-            {
-              id: 21,
-              codigoBarras: 'B2-001',
-              status: 'DISPONIVEL',
-              posicao: '1',
-              livro: {
-                id: 21,
-                titulo: 'Drácula',
-                autores: ['Bram Stoker'],
-                generos: ['Terror / Horror'],
-                editora: 'Constable',
-                anoPublicacao: 1897,
-                isbn: '9780486411095',
-              },
-            },
-            {
-              id: 22,
-              codigoBarras: 'B2-002',
-              status: 'MANUTENCAO',
-              posicao: '2',
-              livro: {
-                id: 22,
-                titulo: 'Frankenstein',
-                autores: ['Mary Shelley'],
-                generos: ['Terror / Horror'],
-                editora: 'Lackington',
-                anoPublicacao: 1818,
-                isbn: '9780486282114',
-              },
-            },
-            {
-              id: 23,
-              codigoBarras: 'B2-003',
-              status: 'DISPONIVEL',
-              posicao: '3',
-              livro: {
-                id: 23,
-                titulo: 'It',
-                autores: ['Stephen King'],
-                generos: ['Terror / Horror'],
-                editora: 'Viking',
-                anoPublicacao: 1986,
-                isbn: '9781501142970',
-              },
-            },
-            {
-              id: 24,
-              codigoBarras: 'B2-004',
-              status: 'RESERVADO',
-              posicao: '4',
-              livro: {
-                id: 24,
-                titulo: 'O Iluminado',
-                autores: ['Stephen King'],
-                generos: ['Terror / Horror'],
-                editora: 'Doubleday',
-                anoPublicacao: 1977,
-                isbn: '9780307743657',
-              },
-            },
-            {
-              id: 25,
-              codigoBarras: 'B2-005',
-              status: 'DISPONIVEL',
-              posicao: '5',
-              livro: {
-                id: 25,
-                titulo: 'Coraline',
-                autores: ['Neil Gaiman'],
-                generos: ['Terror / Horror'],
-                editora: 'Bloomsbury',
-                anoPublicacao: 2002,
-                isbn: '9780061139376',
-              },
-            },
-          ],
-        },
-        {
-          nome: 'B3',
-          exemplares: [
-            {
-              id: 26,
-              codigoBarras: 'B3-001',
-              status: 'DISPONIVEL',
-              posicao: '1',
-              livro: {
-                id: 26,
-                titulo: 'Sapiens',
-                autores: ['Yuval Noah Harari'],
-                generos: ['História'],
-                editora: 'Harvill Secker',
-                anoPublicacao: 2011,
-                isbn: '9780062316097',
-              },
-            },
-            {
-              id: 27,
-              codigoBarras: 'B3-002',
-              status: 'DISPONIVEL',
-              posicao: '2',
-              livro: {
-                id: 27,
-                titulo: 'Homo Deus',
-                autores: ['Yuval Noah Harari'],
-                generos: ['História'],
-                editora: 'Harvill Secker',
-                anoPublicacao: 2015,
-                isbn: '9780062464316',
-              },
-            },
-            {
-              id: 28,
-              codigoBarras: 'B3-003',
-              status: 'EMPRESTADO',
-              posicao: '3',
-              livro: {
-                id: 28,
-                titulo: '21 Lições para o Século 21',
-                autores: ['Yuval Noah Harari'],
-                generos: ['História'],
-                editora: 'Jonathan Cape',
-                anoPublicacao: 2018,
-                isbn: '9781526602711',
-              },
-            },
-            {
-              id: 29,
-              codigoBarras: 'B3-004',
-              status: 'DISPONIVEL',
-              posicao: '4',
-              livro: {
-                id: 29,
-                titulo: 'Armas, Germes e Aço',
-                autores: ['Jared Diamond'],
-                generos: ['História'],
-                editora: 'W. W. Norton',
-                anoPublicacao: 1997,
-                isbn: '9780393317558',
-              },
-            },
-            {
-              id: 30,
-              codigoBarras: 'B3-005',
-              status: 'RESERVADO',
-              posicao: '5',
-              livro: {
-                id: 30,
-                titulo: 'O Gene',
-                autores: ['Siddhartha Mukherjee'],
-                generos: ['Acadêmico / Técnico'],
-                editora: 'Scribner',
-                anoPublicacao: 2016,
-                isbn: '9781476733500',
-              },
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  private montarEstantes(
+    estantes: EstanteResponseDto[],
+    exemplares: ExemplarResponse[],
+    materiais: MaterialResponse[],
+    autores: AutorResponse[],
+  ): EstanteVirtualDto[] {
+    const materiaisPorId = new Map(materiais.map((material) => [material.id, material]));
+    const autoresPorId = new Map(autores.map((autor) => [autor.id, autor.nome]));
+    const exemplaresPorEstante = new Map<number, ExemplarVirtualDto[]>();
+
+    for (const exemplar of exemplares) {
+      const material = materiaisPorId.get(exemplar.materialId);
+      if (!material) {
+        throw new Error(
+          `O exemplar ${exemplar.id} referencia um material que não foi encontrado.`,
+        );
+      }
+
+      const autorIds = [
+        ...new Set([
+          ...(material.autorIds ?? []),
+          ...(material.autorId ? [material.autorId] : []),
+        ]),
+      ];
+      const materialVirtual: MaterialVirtualDto = {
+        id: material.id,
+        titulo: material.titulo,
+        tipo: material.tipo,
+        autores: autorIds
+          .map((autorId) => autoresPorId.get(autorId))
+          .filter((nome): nome is string => nome !== undefined),
+        anoPublicacao: material.anoPublicacao,
+        isbn: material.isbn,
+        issn: material.issn,
+        descricao: material.descricao,
+        sinopse: material.sinopse,
+      };
+      const exemplarVirtual: ExemplarVirtualDto = {
+        id: exemplar.id,
+        codigoBarras: exemplar.codigoBarras,
+        status: exemplar.status,
+        posicao: exemplar.posicao,
+        prateleira: exemplar.prateleira,
+        material: materialVirtual,
+      };
+      const exemplaresDaEstante = exemplaresPorEstante.get(exemplar.estanteId) ?? [];
+      exemplaresDaEstante.push(exemplarVirtual);
+      exemplaresPorEstante.set(exemplar.estanteId, exemplaresDaEstante);
+    }
+
+    return estantes.map((estante) => {
+      const exemplaresDaEstante = exemplaresPorEstante.get(estante.id) ?? [];
+      const prateleirasPorNome = new Map<string, PrateleiraVirtualDto>();
+
+      for (const exemplar of exemplaresDaEstante) {
+        const nomePrateleira = exemplar.prateleira?.trim() || 'Prateleira 1';
+        const prateleira = prateleirasPorNome.get(nomePrateleira) ?? {
+          nome: nomePrateleira,
+          exemplares: [],
+        };
+        prateleira.exemplares.push(exemplar);
+        prateleirasPorNome.set(nomePrateleira, prateleira);
+      }
+
+      const quantidadePrateleiras = estante.qtdPrateleiras ?? 0;
+      for (let numero = 1; prateleirasPorNome.size < quantidadePrateleiras; numero++) {
+        const nomePrateleira = `Prateleira ${numero}`;
+        if (!prateleirasPorNome.has(nomePrateleira)) {
+          prateleirasPorNome.set(nomePrateleira, {
+            nome: nomePrateleira,
+            exemplares: [],
+          });
+        }
+      }
+
+      return {
+        id: estante.id,
+        nome: estante.nome,
+        filialId: estante.filialId,
+        localizacao: estante.localizacao,
+        capacidade: estante.capacidade,
+        prateleiras: [...prateleirasPorNome.values()],
+      };
+    });
+  }
 }

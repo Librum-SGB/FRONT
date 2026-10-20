@@ -3,30 +3,42 @@
   <div class="corpo">
     <div class="row row-gap-3">
       <div class="col-12 col-md-10">
-        <input type="text" [(ngModel)]="busca" (input)="onBuscar()" class="form-control" placeholder="Buscar livro...">
+        <input type="text" [(ngModel)]="busca" (input)="onBuscar()" class="form-control"
+          placeholder="Buscar material por título ou autor...">
       </div>
       <div class="col-12 col-md-2">
-        <button class="btn btn-success w-100" (click)="modalEstanteAberta = true">Nova estante</button>
+        <button type="button" class="btn btn-success w-100" (click)="abrirModalEstante()">
+          Nova estante
+        </button>
       </div>
     </div>
-    @if(estantesFiltradas.length > 0){
-    @for (estante of estantesFiltradas ; track $index) {
+    @if (erroCarregamento) {
+    <div class="alert alert-danger mt-3" role="alert">
+      {{ erroCarregamento }}
+      <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="carregarEstantes()">
+        Tentar novamente
+      </button>
+    </div>
+    } @else if (carregandoEstantes) {
+    <p class="text-center mt-3">Carregando materiais...</p>
+    } @else if(estantesFiltradas.length > 0){
+    @for (estante of estantesFiltradas; track estante.id) {
     <div class="container-fluid bg-body text-body rounded-3 border border-2 shadow p-4 mt-3">
       <div class="mb-4">
 
         <h5 class="text mb-4">
-          {{estante.localizacao}}
+          {{ estante.nome }} — {{ estante.localizacao }}
         </h5>
 
         <div class="estante-box p-4 rounded">
-          @for (prateleira of estante.prateleiras; track $index){
+          @for (prateleira of estante.prateleiras; track prateleira.nome){
 
           <div class="prateleira-container mb-4 overflow-x-auto">
             <p>{{prateleira.nome}}</p>
             <div class="livros d-flex gap-2">
-              @for (exemplar of prateleira.exemplares; track $index) {
+              @for (exemplar of prateleira.exemplares; track exemplar.id) {
               <button (click)="abrirModal(exemplar)" class=" livro border-0 justify-content-center text-white ">
-                {{ exemplar.livro.titulo }}
+                {{ exemplar.material.titulo }}
               </button>
               }
             </div>
@@ -42,12 +54,14 @@
       </div>
     </div>
     }
-    }@else {
-    <h1 class="text-center mt-3 ">SEM PRATELEIRAS SALVAS <i class="bi bi-exclamation-circle"></i>
-    </h1>
+    } @else {
+    <p class="text-center mt-3">
+      {{ busca.trim() ? 'Nenhum material encontrado.' : 'Nenhuma estante com materiais cadastrados.' }}
+    </p>
     }
     <app-modal-livro [(isOpen)]="modalAberta" [exemplar]="livroEscolhido" />
   </div>
 </app-corpo-padrao>
 <app-modal-nova-estante [(isOpen)]="modalEstanteAberta"
-  (estanteCriada)="onEstanteCriada($event)"></app-modal-nova-estante>
+  [salvando]="salvandoEstante" [erro]="erroEstante" (estanteCriada)="onEstanteCriada($event)">
+</app-modal-nova-estante>

@@ -13,6 +13,19 @@ export class ModalLivro {
   @Input() exemplar?: ExemplarVirtualDto;
   @Output() isOpenChange = new EventEmitter<boolean>();
 
+  get tipoMaterialLabel(): string {
+    switch (this.exemplar?.material.tipo) {
+      case 'LIVRO':
+        return 'Livro';
+      case 'PERIODICO':
+        return 'Periódico';
+      case 'OUTRO':
+        return 'Outros Materiais';
+      default:
+        return this.exemplar?.material.tipo ?? '';
+    }
+  }
+
   close() {
     this.isOpenChange.emit(false);
   }

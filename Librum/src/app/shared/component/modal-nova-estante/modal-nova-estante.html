@@ -3,19 +3,23 @@
 <div class="modal d-block" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content bg-body">
-
       <div class="modal-header border-secondary">
         <h5 class="modal-title">Nova Estante</h5>
-        <button type="button" class="btn-close btn-close-white" (click)="fechar()"></button>
+        <button type="button" class="btn-close btn-close-white" (click)="fechar()" [disabled]="salvando"></button>
       </div>
 
       <form (ngSubmit)="salvar()">
         <div class="modal-body">
           <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-bold">Nome da estante <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" [(ngModel)]="nome" name="nome"
+                placeholder="Ex: Estante de literatura" required />
+            </div>
 
             <div class="col-12">
               <label class="form-label fw-bold">Localização <span class="text-danger">*</span></label>
-              <input type="text" class="form-control " [(ngModel)]="localizacao" name="localizacao"
+              <input type="text" class="form-control" [(ngModel)]="localizacao" name="localizacao"
                 placeholder="Ex: Corredor A, Setor B..." required />
             </div>
 
@@ -30,26 +34,30 @@
               <input type="number" class="form-control" [(ngModel)]="capacidade" name="capacidade"
                 placeholder="Ex: 50" />
             </div>
-
           </div>
+
+          @if (erro) {
+          <div class="alert alert-danger mt-3 mb-0" role="alert">{{ erro }}</div>
+          }
         </div>
 
         <div class="modal-footer border-secondary">
           <div class="row w-100 g-2 justify-content-end">
             <div class="col-12 col-sm-auto">
-              <button type="button" class="btn btn-outline-danger w-100" (click)="fechar()">
+              <button type="button" lbrButton variant="cancela/limpa" class="w-100"
+                (click)="fechar()" [disabled]="salvando">
                 Cancelar
               </button>
             </div>
             <div class="col-12 col-sm-auto">
-              <button type="submit" lbrButton variant="outros" [disabled]="!localizacao.trim()">
-                Salvar Estante
+              <button type="submit" lbrButton variant="cadastrar" [loading]="salvando"
+                [disabled]="!nome.trim() || !localizacao.trim() || !qtdPrateleiras || qtdPrateleiras < 1">
+                {{ salvando ? 'Salvando...' : 'Salvar Estante' }}
               </button>
             </div>
           </div>
         </div>
       </form>
-
     </div>
   </div>
 </div>
