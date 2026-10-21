@@ -1,9 +1,18 @@
 <nav class="navbar navbar-expand-xl bg-body">
   <div class="container-fluid">
+ <button
+      class="btn border-0 px-2 py-1 me-2 text-body d-flex align-items-center d-md-none"
+      (click)="aoAlternarSidebar()"
+      aria-label="Abrir menu lateral"
+      title="Menu"
+    >
+      <i class="bi bi-list fs-3"></i>
+    </button>
     <a class="navbar-logo d-flex align-items-center me-3" routerLink="/dashboard">
       <img src="assets/images/librumLogo.ico" alt="Logo My Librum" />
       <h5 class="ms-1 mb-0">My Librum</h5>
     </a>
+
     <button
       class="navbar-toggler"
       type="button"

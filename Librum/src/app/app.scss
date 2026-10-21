@@ -1,0 +1,16 @@
+/* Configuração para o miolo ocupar o espaço correto sem quebrar rolagem */
+.layout-corpo {
+  min-height: 0; /* Permite que o flex-grow funcione com rolagens internas, se necessário */
+}
+
+/* Fundo escurecido ao abrir o menu lateral em dispositivos móveis */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente escuro */
+  z-index: 1040; /* Fica logo abaixo do menu lateral (que tem z-index: 1050) */
+  backdrop-filter: blur(2px); /* Efeito opcional bonito */
+}

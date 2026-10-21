@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 
@@ -9,9 +9,14 @@ import { ThemeService } from '../../services/theme.service';
   styleUrl: './navbar.scss',
 })
 export class Navbar {
+  @Output() toggleSidebar = new EventEmitter<void>();
   constructor(public tema: ThemeService) {}
 
   toggleTema() {
     this.tema.toggleTheme();
   }
+  aoAlternarSidebar() {
+    this.toggleSidebar.emit();
+  }
+
 }
