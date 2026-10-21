@@ -126,7 +126,7 @@
               </p>
             </ng-container>
 
-            <!-- OUTROS -->
+            <!-- OUTRO -->
             <ng-container *ngIf="materialSelecionado?.tipo === 'OUTRO'">
               <p *ngIf="materialSelecionado?.autorNome && materialSelecionado?.autorNome !== '—'">
                 <strong>Autor:</strong> {{ materialSelecionado?.autorNome }}
@@ -179,7 +179,7 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">{{ materialEditando.tipo === 'OUTROS' ? 'Nome' : 'Título' }} *</label>
+                  <label class="form-label">{{ materialEditando.tipo === 'OUTRO' ? 'Nome' : 'Título' }} *</label>
                   <input class="form-control" formControlName="titulo" [class.is-invalid]="isInvalido('titulo')">
                 </div>
               </div>
@@ -210,7 +210,7 @@
                 </div>
               </div>
 
-              @if (materialEditando.tipo !== 'OUTROS') {
+              @if (materialEditando.tipo !== 'OUTRO') {
               <div class="row">
                 <div class="col-md-4 mb-3">
                   <label class="form-label">Ano *</label>
@@ -260,7 +260,7 @@
 
               @if (materialEditando.tipo !== 'LIVRO') {
               <div class="mb-3">
-                <label class="form-label">{{ materialEditando.tipo === 'OUTROS' ? 'Tipo *' : 'Tema' }}</label>
+                <label class="form-label">{{ materialEditando.tipo === 'OUTRO' ? 'Tipo *' : 'Tema' }}</label>
                 <input class="form-control" formControlName="tema" [class.is-invalid]="isInvalido('tema')">
               </div>
 
@@ -270,7 +270,7 @@
               </div>
               }
 
-              @if (materialEditando.tipo === 'OUTROS') {
+              @if (materialEditando.tipo === 'OUTRO') {
               <div class="mb-3">
                 <label class="form-label">Observação</label>
                 <textarea class="form-control" rows="2" formControlName="observacao"></textarea>

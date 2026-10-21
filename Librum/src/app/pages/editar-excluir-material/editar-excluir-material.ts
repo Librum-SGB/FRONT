@@ -33,7 +33,6 @@ declare var bootstrap: any;
 const ITENS_POR_PAGINA = 20;
 
 // Valor do enum StatusExemplar que significa "pode ser emprestado".
-// Se no backend o nome for outro, é só trocar aqui.
 const STATUS_DISPONIVEL = 'DISPONIVEL';
 
 const PREFIXOS: Record<string, string> = {
@@ -45,7 +44,14 @@ const PREFIXOS: Record<string, string> = {
 const LABELS: Record<string, string> = {
   LIVRO: 'Livro',
   PERIODICO: 'Periódico',
-  OUTROS: 'Outros Materiais',
+  OUTRO: 'Outros Materiais',
+};
+
+// Ajuste os nomes das variantes ao que o seu LbrBadge aceita
+const VARIANTS: Record<string, LbrBadgeVariant> = {
+  LIVRO: 'livro',
+  PERIODICO: 'periodico',
+  OUTRO: 'outros',
 };
 
 // Formato usado só pra exibir na tela (já com os nomes resolvidos, não os IDs)
@@ -86,7 +92,6 @@ interface MaterialExibicao {
     LbrButtom,
     AlertaErros,
     SelectPesquisavel,
-    ,
     LbrBadge,
   ],
   templateUrl: './editar-excluir-material.html',
@@ -95,7 +100,7 @@ interface MaterialExibicao {
 export class EditarExcluirMaterial implements OnInit {
   readonly itensPorPagina = ITENS_POR_PAGINA;
 
-  // Dados que chegam da API (signals: a tela atualiza sozinha quando eles mudam)
+  // ---------- Dados da API (signals) ----------
   private materiaisOriginais = signal<MaterialResponse[]>([]);
   autores = signal<AutorResponse[]>([]);
   editoras = signal<EditoraResponse[]>([]);
@@ -104,7 +109,7 @@ export class EditarExcluirMaterial implements OnInit {
   private exemplaresCarregados = signal(false);
   carregando = signal(true);
 
-  // Busca e paginação
+  // ---------- Busca e paginação ----------
   tipoFiltro = signal('todos');
   textoBusca = signal('');
   paginaAtual = signal(1);
@@ -153,7 +158,7 @@ export class EditarExcluirMaterial implements OnInit {
     Math.max(1, Math.ceil(this.materiaisFiltrados().length / ITENS_POR_PAGINA)),
   );
 
-  // Se a página atual deixar de existir (ex.: excluiu o último item da última página), volta pra última
+  // Se a página atual deixar de existir, volta pra última
   paginaEfetiva = computed(() => Math.min(this.paginaAtual(), this.totalPaginas()));
 
   materiaisPagina = computed(() => {
@@ -182,23 +187,15 @@ export class EditarExcluirMaterial implements OnInit {
     return Array.from({ length: fim - inicio + 1 }, (_, i) => inicio + i);
   });
 
+  // ---------- Modais / edição ----------
   materialSelecionado: MaterialExibicao | null = null;
   materialEditando: any = {};
   generoIdsEditando: number[] = [];
 
-  carregando = true;
-  tipoFiltro = 'todos';
-  textoBusca = '';
-
+  // ---------- Formulário ----------
   formMaterial: FormGroup;
   enviado = false;
   mensagensErro: string[] = [];
-
-  private materiaisOriginais: MaterialResponse[] = [];
-
-  @ViewChild('autorSelectEdicao') autorSelectEdicao?: SelectPesquisavel;
-  @ViewChild('editoraSelectEdicao') editoraSelectEdicao?: SelectPesquisavel;
-  @ViewChild('generoSelectEdicao') generoSelectEdicao?: SelectPesquisavel;
 
   private readonly nomesBase: Record<string, string> = {
     titulo: 'Título',
@@ -213,7 +210,7 @@ export class EditarExcluirMaterial implements OnInit {
   };
 
   private get nomesCampos(): Record<string, string> {
-    return this.materialEditando?.tipo === 'OUTROS'
+    return this.materialEditando?.tipo === 'OUTRO'
       ? { ...this.nomesBase, titulo: 'Nome', tema: 'Tipo' }
       : this.nomesBase;
   }
@@ -274,7 +271,7 @@ export class EditarExcluirMaterial implements OnInit {
         anoPublicacao: ano,
         issn: [req],
       },
-      OUTROS: {
+      OUTRO: {
         titulo: [req],
         tema: [req],
       },
@@ -328,11 +325,6 @@ export class EditarExcluirMaterial implements OnInit {
         this.carregando.set(false);
       },
     });
-  }
-
-  // sem o "return" antecipado: ao excluir o último item a lista precisa esvaziar
-  private reprocessarNomes(): void {
-    this.materiais = this.materiaisOriginais.map((m) => this.paraExibicao(m));
   }
 
   private paraExibicao(m: MaterialResponse): MaterialExibicao {
@@ -468,7 +460,15 @@ export class EditarExcluirMaterial implements OnInit {
     this.enviado = true;
     this.mensagensErro = FormUtils.gerarMensagensErro(this.formMaterial, this.nomesCampos);
 
-    if (this.formMaterial.invalid) return; // modal continua aberto, com o alerta
+    if (this.formMaterial.invalid) {
+      // o alerta fica no topo do modal-body; rola até lá para o usuário ver
+      setTimeout(() =>
+        document
+          .querySelector('#modalEditar .modal-body')
+          ?.scrollTo({ top: 0, behavior: 'smooth' }),
+      );
+      return;
+    }
 
     // sincroniza para a confirmação e para o payload usarem os valores novos
     const { codigo, ...valores } = this.formMaterial.getRawValue();
