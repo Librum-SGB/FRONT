@@ -1,0 +1,57 @@
+:host {
+    display: inline-flex;
+}
+
+.lbr-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4em 0.8em;
+    border-radius: 50rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+// Tipo de material: Livro = azul
+.lbr-badge--livro {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+}
+
+// Tipo de material: Periódico = amarelo
+.lbr-badge--periodico {
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning);
+}
+
+// Tipo de material: Outros Materiais = roxo
+.lbr-badge--outros {
+    background-color: color-mix(in srgb, var(--bs-purple, #6f42c1) 15%, transparent);
+    color: var(--bs-purple, #6f42c1);
+}
+
+:host-context([data-bs-theme='dark']) .lbr-badge--outros {
+    color: #a98eda;
+}
+
+// Disponibilidade: verde / vermelho (com uma bolinha, pra não se confundir com a etiqueta verde do Periódico)
+.lbr-badge--disponivel {
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success);
+}
+
+.lbr-badge--indisponivel {
+    background-color: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger);
+}
+
+.lbr-badge--disponivel::before,
+.lbr-badge--indisponivel::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background-color: currentColor;
+}
