@@ -1,5 +1,11 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Usuario } from '../../models/usuario.model';
 import { RouterLink } from '@angular/router';
@@ -7,12 +13,23 @@ import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { InputBusca } from '../../shared/component/input-busca/input-busca';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { FormUtils } from '../../utils/FormUtil';
+import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
-  imports: [FormsModule, CommonModule, RouterLink, CorpoPadrao, InputBusca, LbrButtom],
+  imports: [
+    FormsModule,
+    CommonModule,
+    RouterLink,
+    CorpoPadrao,
+    InputBusca,
+    LbrButtom,
+    ReactiveFormsModule,
+    AlertaErros,
+  ],
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })
@@ -23,10 +40,47 @@ export class EditarExcluirUsuario {
   usuarioSelecionado: Usuario | null = null;
   usuarioEditando: Usuario = {} as Usuario;
 
+  formUsuario: FormGroup;
+  enviado = false;
+  mensagensErro: string[] = [];
+
+  private readonly nomesCampos: Record<string, string> = {
+    nome: 'Nome',
+    cpf: 'CPF',
+    email: 'E-mail',
+    telefone: 'Telefone',
+    endereco: 'Endereço',
+    bairro: 'Bairro',
+    cidade: 'Cidade',
+    estado: 'Estado',
+    cep: 'CEP',
+    limiteLivros: 'Limite de Livros',
+  };
+
   constructor(
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
-  ) {}
+    private fb: FormBuilder,
+  ) {
+    this.formUsuario = this.fb.group({
+      id: [{ value: null, disabled: true }],
+      nome: ['', [Validators.required, Validators.minLength(3)]],
+      cpf: ['', [Validators.required, FormUtils.cpf]],
+      email: ['', [Validators.required, Validators.email]],
+      telefone: ['', Validators.required],
+      endereco: ['', Validators.required],
+      bairro: ['', Validators.required],
+      cidade: ['', Validators.required],
+      estado: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(2)]],
+      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
+      limiteLivros: [1, [Validators.required, Validators.min(1)]],
+      estaBloqueado: [false],
+    });
+  }
+
+  isInvalido(campo: string): boolean {
+    return FormUtils.isInvalido(this.formUsuario, campo, this.enviado);
+  }
 
   pesquisarUsuario(busca: Busca): void {
     console.log(busca);
@@ -136,10 +190,37 @@ export class EditarExcluirUsuario {
     if (!this.usuarioSelecionado) return;
 
     this.usuarioEditando = { ...this.usuarioSelecionado };
+
+    this.formUsuario.reset({
+      id: this.usuarioSelecionado.id,
+      nome: this.usuarioSelecionado.nome,
+      cpf: this.usuarioSelecionado.cpf,
+      email: this.usuarioSelecionado.email,
+      telefone: this.usuarioSelecionado.telefone,
+      endereco: this.usuarioSelecionado.endereco,
+      bairro: this.usuarioSelecionado.bairro,
+      cidade: this.usuarioSelecionado.cidade,
+      estado: this.usuarioSelecionado.estado,
+      cep: this.usuarioSelecionado.cep,
+      limiteLivros: this.usuarioSelecionado.limiteLivros,
+      estaBloqueado: this.usuarioSelecionado.estaBloqueado,
+    });
+
+    this.enviado = false;
+    this.mensagensErro = [];
+
     this.trocarModal('modalUsuario', 'editarModal');
   }
 
   salvarEdicao(): void {
+    this.enviado = true;
+    this.mensagensErro = FormUtils.gerarMensagensErro(this.formUsuario, this.nomesCampos);
+
+    if (this.formUsuario.invalid) return; // o modal continua aberto, com o alerta
+
+    // sincroniza para o modal de confirmação mostrar o nome novo
+    this.usuarioEditando = { ...this.usuarioEditando, ...this.formUsuario.getRawValue() };
+
     this.trocarModal('editarModal', 'confirmarEdicaoUsuarioModal');
   }
 

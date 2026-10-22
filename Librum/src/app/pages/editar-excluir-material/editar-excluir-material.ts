@@ -1,10 +1,19 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
+import { FormUtils } from '../../utils/FormUtil';
 import { LbrBadge, LbrBadgeVariant } from '../../shared/component/lbr-badge/lbr-badge';
 
 import { MaterialService } from '../../services/material';
@@ -24,7 +33,6 @@ declare var bootstrap: any;
 const ITENS_POR_PAGINA = 20;
 
 // Valor do enum StatusExemplar que significa "pode ser emprestado".
-// Se no backend o nome for outro, é só trocar aqui.
 const STATUS_DISPONIVEL = 'DISPONIVEL';
 
 const PREFIXOS: Record<string, string> = {
@@ -39,6 +47,7 @@ const LABELS: Record<string, string> = {
   OUTRO: 'Outros Materiais',
 };
 
+// Ajuste os nomes das variantes ao que o seu LbrBadge aceita
 const VARIANTS: Record<string, LbrBadgeVariant> = {
   LIVRO: 'livro',
   PERIODICO: 'periodico',
@@ -75,14 +84,23 @@ interface MaterialExibicao {
 
 @Component({
   selector: 'app-editar-excluir-material',
-  imports: [CommonModule, FormsModule, CorpoPadrao, LbrButtom, SelectPesquisavel, LbrBadge],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CorpoPadrao,
+    LbrButtom,
+    AlertaErros,
+    SelectPesquisavel,
+    LbrBadge,
+  ],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',
 })
 export class EditarExcluirMaterial implements OnInit {
   readonly itensPorPagina = ITENS_POR_PAGINA;
 
-  // Dados que chegam da API (signals: a tela atualiza sozinha quando eles mudam)
+  // ---------- Dados da API (signals) ----------
   private materiaisOriginais = signal<MaterialResponse[]>([]);
   autores = signal<AutorResponse[]>([]);
   editoras = signal<EditoraResponse[]>([]);
@@ -91,7 +109,7 @@ export class EditarExcluirMaterial implements OnInit {
   private exemplaresCarregados = signal(false);
   carregando = signal(true);
 
-  // Busca e paginação
+  // ---------- Busca e paginação ----------
   tipoFiltro = signal('todos');
   textoBusca = signal('');
   paginaAtual = signal(1);
@@ -140,7 +158,7 @@ export class EditarExcluirMaterial implements OnInit {
     Math.max(1, Math.ceil(this.materiaisFiltrados().length / ITENS_POR_PAGINA)),
   );
 
-  // Se a página atual deixar de existir (ex.: excluiu o último item da última página), volta pra última
+  // Se a página atual deixar de existir, volta pra última
   paginaEfetiva = computed(() => Math.min(this.paginaAtual(), this.totalPaginas()));
 
   materiaisPagina = computed(() => {
@@ -169,21 +187,103 @@ export class EditarExcluirMaterial implements OnInit {
     return Array.from({ length: fim - inicio + 1 }, (_, i) => inicio + i);
   });
 
+  // ---------- Modais / edição ----------
   materialSelecionado: MaterialExibicao | null = null;
   materialEditando: any = {};
   generoIdsEditando: number[] = [];
 
+  // ---------- Formulário ----------
+  formMaterial: FormGroup;
+  enviado = false;
+  mensagensErro: string[] = [];
+
+  private readonly nomesBase: Record<string, string> = {
+    titulo: 'Título',
+    autorId: 'Autor',
+    editoraId: 'Editora',
+    anoPublicacao: 'Ano',
+    isbn: 'ISBN',
+    issn: 'ISSN',
+    edicao: 'Edição',
+    quantidadePaginas: 'Páginas',
+    tema: 'Tema',
+  };
+
+  private get nomesCampos(): Record<string, string> {
+    return this.materialEditando?.tipo === 'OUTRO'
+      ? { ...this.nomesBase, titulo: 'Nome', tema: 'Tipo' }
+      : this.nomesBase;
+  }
+
   constructor(
     private toastService: ToastService,
+    private fb: FormBuilder,
     private materialService: MaterialService,
     private autorService: AutorService,
     private editoraService: EditoraService,
     private generoService: GeneroService,
     private exemplarService: ExemplarService,
-  ) { }
+  ) {
+    // validadores de cada campo são definidos por tipo em aplicarValidadores()
+    this.formMaterial = this.fb.group({
+      codigo: [{ value: '', disabled: true }],
+      titulo: [''],
+      subtitulo: [''],
+      autorId: [''],
+      editoraId: [''],
+      anoPublicacao: [null],
+      isbn: [''],
+      issn: [''],
+      edicao: [null],
+      quantidadePaginas: [null, Validators.min(1)],
+      sinopse: [''],
+      tema: [''],
+      descricao: [''],
+      observacao: [''],
+    });
+  }
 
   ngOnInit(): void {
     this.carregarDados();
+  }
+
+  isInvalido(campo: string): boolean {
+    return FormUtils.isInvalido(this.formMaterial, campo, this.enviado);
+  }
+
+  private aplicarValidadores(tipo: string): void {
+    const anoMax = new Date().getFullYear();
+    const req = Validators.required;
+    const ano = [req, Validators.min(1000), Validators.max(anoMax)];
+
+    const regras: Record<string, Record<string, ValidatorFn[]>> = {
+      LIVRO: {
+        titulo: [req],
+        autorId: [req],
+        editoraId: [req],
+        anoPublicacao: ano,
+        isbn: [req, Validators.minLength(10), Validators.maxLength(17)],
+      },
+      PERIODICO: {
+        titulo: [req],
+        editoraId: [req],
+        edicao: [req, Validators.min(1)],
+        anoPublicacao: ano,
+        issn: [req],
+      },
+      OUTRO: {
+        titulo: [req],
+        tema: [req],
+      },
+    };
+
+    ['titulo', 'autorId', 'editoraId', 'anoPublicacao', 'isbn', 'issn', 'edicao', 'tema'].forEach(
+      (campo) => {
+        const control = this.formMaterial.get(campo)!;
+        control.setValidators(regras[tipo]?.[campo] ?? []);
+        control.updateValueAndValidity({ emitEvent: false });
+      },
+    );
   }
 
   private carregarDados(): void {
@@ -330,11 +430,50 @@ export class EditarExcluirMaterial implements OnInit {
     if (!material) return;
 
     this.materialEditando = { ...material };
+    this.aplicarValidadores(material.tipo);
+
+    this.formMaterial.reset({
+      codigo: material.codigo,
+      titulo: material.titulo,
+      subtitulo: material.subtitulo ?? '',
+      autorId: material.autorId ?? '',
+      editoraId: material.editoraId ?? '',
+      anoPublicacao: material.anoPublicacao ?? null,
+      isbn: material.isbn ?? '',
+      issn: material.issn ?? '',
+      edicao: material.edicao ?? null,
+      quantidadePaginas: material.quantidadePaginas ?? null,
+      sinopse: material.sinopse ?? '',
+      tema: material.tema ?? '',
+      descricao: material.descricao ?? '',
+      observacao: material.observacao ?? '',
+    });
+
+    this.enviado = false;
+    this.mensagensErro = [];
     this.generoIdsEditando = [...material.generoIds];
+
     this.trocarModal('modalMaterial', 'modalEditar');
   }
 
   salvarEdicao() {
+    this.enviado = true;
+    this.mensagensErro = FormUtils.gerarMensagensErro(this.formMaterial, this.nomesCampos);
+
+    if (this.formMaterial.invalid) {
+      // o alerta fica no topo do modal-body; rola até lá para o usuário ver
+      setTimeout(() =>
+        document
+          .querySelector('#modalEditar .modal-body')
+          ?.scrollTo({ top: 0, behavior: 'smooth' }),
+      );
+      return;
+    }
+
+    // sincroniza para a confirmação e para o payload usarem os valores novos
+    const { codigo, ...valores } = this.formMaterial.getRawValue();
+    this.materialEditando = { ...this.materialEditando, ...valores };
+
     this.trocarModal('modalEditar', 'confirmarEdicaoMaterialModal');
   }
 
@@ -370,7 +509,9 @@ export class EditarExcluirMaterial implements OnInit {
           lista.map((m) => (m.id === atualizado.id ? atualizado : m)),
         );
         this.toastService.sucesso('Material editado com sucesso!');
-        bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoMaterialModal'))?.hide();
+        bootstrap.Modal.getInstance(
+          document.getElementById('confirmarEdicaoMaterialModal'),
+        )?.hide();
       },
       error: (err) => {
         console.error('Erro ao editar material:', err);
@@ -397,7 +538,9 @@ export class EditarExcluirMaterial implements OnInit {
 
     this.materialService.delete(materialExcluido.id).subscribe({
       next: () => {
-        this.materiaisOriginais.update((lista) => lista.filter((m) => m.id !== materialExcluido.id));
+        this.materiaisOriginais.update((lista) =>
+          lista.filter((m) => m.id !== materialExcluido.id),
+        );
         this.toastService.sucesso(`Material "${materialExcluido.titulo}" excluído com sucesso.`);
         this.materialSelecionado = null;
         bootstrap.Modal.getInstance(document.getElementById('excluirMaterialModal'))?.hide();

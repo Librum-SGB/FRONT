@@ -126,7 +126,7 @@
               </p>
             </ng-container>
 
-            <!-- OUTROS -->
+            <!-- OUTRO -->
             <ng-container *ngIf="materialSelecionado?.tipo === 'OUTRO'">
               <p *ngIf="materialSelecionado?.autorNome && materialSelecionado?.autorNome !== '—'">
                 <strong>Autor:</strong> {{ materialSelecionado?.autorNome }}
@@ -143,15 +143,15 @@
           </div>
 
           <div class="modal-footer">
-            <button lbrButton variant="editar" (click)="abrirEdicao(materialSelecionado)">
+            <button type="button" lbrButton variant="editar" (click)="abrirEdicao(materialSelecionado)">
               <i class="bi bi-pencil"></i> Editar
             </button>
 
-            <button lbrButton variant="excluir" (click)="abrirModalExcluir(materialSelecionado)">
+            <button type="button" lbrButton variant="excluir" (click)="abrirModalExcluir(materialSelecionado)">
               <i class="bi bi-trash"></i> Excluir
             </button>
 
-            <button lbrButton variant="cancela/limpa" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" lbrButton variant="cancela/limpa" data-bs-dismiss="modal">Fechar</button>
           </div>
         </div>
       </div>
@@ -167,137 +167,128 @@
           </div>
 
           <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label>ID</label>
-                <input class="form-control" [ngModel]="materialEditando.codigo" disabled>
-              </div>
 
-              <div class="col-md-6 mb-3">
-                <label>Título</label>
-                <input class="form-control" [(ngModel)]="materialEditando.titulo">
-              </div>
-            </div>
+            <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
 
-            <div class="mb-3" *ngIf="materialEditando.tipo === 'LIVRO'">
-              <label>Subtítulo</label>
-              <input class="form-control" [(ngModel)]="materialEditando.subtitulo">
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3" *ngIf="materialEditando.tipo !== 'PERIODICO'">
-                <label>Autor {{ materialEditando.tipo === 'LIVRO' ? '' : '(opcional)' }}</label>
-                <app-select-pesquisavel [itens]="autores()" [(ngModel)]="materialEditando.autorId"
-                  [ngModelOptions]="{standalone: true}" placeholder="Digite para buscar autor...">
-                </app-select-pesquisavel>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label>Editora {{ materialEditando.tipo === 'OUTRO' ? '(opcional)' : '' }}</label>
-                <app-select-pesquisavel [itens]="editoras()" [(ngModel)]="materialEditando.editoraId"
-                  [ngModelOptions]="{standalone: true}" placeholder="Digite para buscar editora...">
-                </app-select-pesquisavel>
-              </div>
-            </div>
-
-            <!-- LIVRO -->
-            <ng-container *ngIf="materialEditando.tipo === 'LIVRO'">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label>Ano</label>
-                  <input type="number" min="1000" max="2100" class="form-control"
-                    [(ngModel)]="materialEditando.anoPublicacao">
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label>ISBN</label>
-                  <input class="form-control" [(ngModel)]="materialEditando.isbn">
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label>Edição</label>
-                  <input class="form-control" [(ngModel)]="materialEditando.edicao">
-                </div>
-              </div>
+            <form [formGroup]="formMaterial" (ngSubmit)="salvarEdicao()">
 
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label>Gênero</label>
+                  <label class="form-label">ID</label>
+                  <input class="form-control" formControlName="codigo">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">{{ materialEditando.tipo === 'OUTRO' ? 'Nome' : 'Título' }} *</label>
+                  <input class="form-control" formControlName="titulo" [class.is-invalid]="isInvalido('titulo')">
+                </div>
+              </div>
+
+              @if (materialEditando.tipo === 'LIVRO') {
+              <div class="mb-3">
+                <label class="form-label">Subtítulo</label>
+                <input class="form-control" formControlName="subtitulo">
+              </div>
+              }
+
+              <div class="row">
+                @if (materialEditando.tipo !== 'PERIODICO') {
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Autor {{ materialEditando.tipo === 'LIVRO' ? '*' : '(opcional)' }}</label>
+                  <app-select-pesquisavel [itens]="autores()" formControlName="autorId"
+                    [invalido]="isInvalido('autorId')" placeholder="Digite para buscar autor...">
+                  </app-select-pesquisavel>
+                </div>
+                }
+
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Editora {{ materialEditando.tipo === 'OUTRO' ? '(opcional)' : '*'
+                    }}</label>
+                  <app-select-pesquisavel [itens]="editoras()" formControlName="editoraId"
+                    [invalido]="isInvalido('editoraId')" placeholder="Digite para buscar editora...">
+                  </app-select-pesquisavel>
+                </div>
+              </div>
+
+              @if (materialEditando.tipo !== 'OUTRO') {
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Ano *</label>
+                  <input type="number" class="form-control" formControlName="anoPublicacao"
+                    [class.is-invalid]="isInvalido('anoPublicacao')">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  @if (materialEditando.tipo === 'LIVRO') {
+                  <label class="form-label">ISBN *</label>
+                  <input class="form-control" formControlName="isbn" [class.is-invalid]="isInvalido('isbn')">
+                  } @else {
+                  <label class="form-label">ISSN *</label>
+                  <input class="form-control" formControlName="issn" [class.is-invalid]="isInvalido('issn')">
+                  }
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Edição{{ materialEditando.tipo === 'PERIODICO' ? ' *' : '' }}</label>
+                  <input type="number" class="form-control" formControlName="edicao"
+                    [class.is-invalid]="isInvalido('edicao')">
+                </div>
+              </div>
+              }
+
+              @if (materialEditando.tipo === 'LIVRO') {
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Gênero</label>
                   <app-select-pesquisavel [itens]="generos()" [multiplo]="true" [(ngModel)]="generoIdsEditando"
                     [ngModelOptions]="{standalone: true}" placeholder="Digite para buscar gênero...">
                   </app-select-pesquisavel>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label>Quantidade de Páginas</label>
-                  <input type="number" min="1" class="form-control" [(ngModel)]="materialEditando.quantidadePaginas">
+                  <label class="form-label">Quantidade de Páginas</label>
+                  <input type="number" class="form-control" min="1" formControlName="quantidadePaginas"
+                    [class.is-invalid]="isInvalido('quantidadePaginas')">
                 </div>
               </div>
 
               <div class="mb-3">
-                <label>Sinopse</label>
-                <textarea class="form-control" rows="3" [(ngModel)]="materialEditando.sinopse"></textarea>
+                <label class="form-label">Sinopse</label>
+                <textarea class="form-control" rows="3" formControlName="sinopse"></textarea>
               </div>
-            </ng-container>
+              }
 
-            <!-- PERIÓDICO -->
-            <ng-container *ngIf="materialEditando.tipo === 'PERIODICO'">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label>Edição/Número</label>
-                  <input type="number" class="form-control" [(ngModel)]="materialEditando.edicao">
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label>Ano de Publicação</label>
-                  <input type="number" min="1000" max="2100" class="form-control"
-                    [(ngModel)]="materialEditando.anoPublicacao">
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label>ISSN</label>
-                  <input class="form-control" [(ngModel)]="materialEditando.issn">
-                </div>
+              @if (materialEditando.tipo !== 'LIVRO') {
+              <div class="mb-3">
+                <label class="form-label">{{ materialEditando.tipo === 'OUTRO' ? 'Tipo *' : 'Tema' }}</label>
+                <input class="form-control" formControlName="tema" [class.is-invalid]="isInvalido('tema')">
               </div>
 
               <div class="mb-3">
-                <label>Tema</label>
-                <input class="form-control" [(ngModel)]="materialEditando.tema">
+                <label class="form-label">Descrição</label>
+                <textarea class="form-control" rows="3" formControlName="descricao"></textarea>
               </div>
+              }
 
+              @if (materialEditando.tipo === 'OUTRO') {
               <div class="mb-3">
-                <label>Descrição</label>
-                <textarea class="form-control" rows="3" [(ngModel)]="materialEditando.descricao"></textarea>
+                <label class="form-label">Observação</label>
+                <textarea class="form-control" rows="2" formControlName="observacao"></textarea>
               </div>
-            </ng-container>
+              }
 
-            <!-- OUTROS -->
-            <ng-container *ngIf="materialEditando.tipo === 'OUTRO'">
-              <div class="mb-3">
-                <label>Tipo (DVD, Mapa, Jogo...)</label>
-                <input class="form-control" [(ngModel)]="materialEditando.tema">
-              </div>
-
-              <div class="mb-3">
-                <label>Descrição</label>
-                <textarea class="form-control" rows="3" [(ngModel)]="materialEditando.descricao"></textarea>
-              </div>
-
-              <div class="mb-3">
-                <label>Observação</label>
-                <textarea class="form-control" rows="2" [(ngModel)]="materialEditando.observacao"></textarea>
-              </div>
-            </ng-container>
+            </form>
           </div>
 
           <div class="modal-footer">
-            <button lbrButton variant="cadastrar" (click)="salvarEdicao()">Salvar</button>
-            <button lbrButton variant="cancelar" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" lbrButton variant="cadastrar" (click)="salvarEdicao()">Salvar</button>
+            <button type="button" lbrButton variant="cancelar" data-bs-dismiss="modal">Cancelar</button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- CONFIRMAR EDIÇÃO -->
     <div class="modal fade" id="confirmarEdicaoMaterialModal" tabindex="-1" data-bs-backdrop="static"
       data-bs-keyboard="false">
       <div class="modal-dialog">
@@ -313,13 +304,14 @@
           </div>
 
           <div class="modal-footer">
-            <button lbrButton variant="cancelar" (click)="cancelarConfirmacaoEdicao()">Cancelar</button>
-            <button lbrButton variant="confirmar" (click)="confirmarEdicao()">Salvar Alterações</button>
+            <button type="button" lbrButton variant="cancelar" (click)="cancelarConfirmacaoEdicao()">Cancelar</button>
+            <button type="button" lbrButton variant="confirmar" (click)="confirmarEdicao()">Salvar Alterações</button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- EXCLUIR -->
     <div class="modal fade" id="excluirMaterialModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -334,11 +326,12 @@
           </div>
 
           <div class="modal-footer">
-            <button lbrButton variant="cancelar" (click)="cancelarExclusao()">Cancelar</button>
-            <button lbrButton variant="excluir" (click)="confirmarExclusao()">Excluir</button>
+            <button type="button" lbrButton variant="cancelar" (click)="cancelarExclusao()">Cancelar</button>
+            <button type="button" lbrButton variant="excluir" (click)="confirmarExclusao()">Excluir</button>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </app-corpo-padrao>

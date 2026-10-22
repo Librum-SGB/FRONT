@@ -4,16 +4,25 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { FormUtils } from '../../utils/FormUtil';
+import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 
 @Component({
   selector: 'app-tela-suporte',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CorpoPadrao],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CorpoPadrao, AlertaErros],
   templateUrl: './tela-suporte.html',
   styleUrls: ['./tela-suporte.scss'],
 })
 export class TelaSuporte implements OnInit {
   supportForm!: FormGroup;
+  enviado = false;
+  mensagensErro: string[] = [];
+
+  private readonly nomesCampos: Record<string, string> = {
+    assunto: 'Assunto',
+    mensagem: 'Mensagem',
+  };
 
   faqs = [
     {
@@ -49,10 +58,19 @@ export class TelaSuporte implements OnInit {
     this.faqs[index].open = !this.faqs[index].open;
   }
 
+  isInvalido(campo: string): boolean {
+    return FormUtils.isInvalido(this.supportForm, campo, this.enviado);
+  }
+
   enviarMensagem() {
-    if (this.supportForm.valid) {
-      this.toastService.sucesso('Mensagem enviada com sucesso!');
-      this.supportForm.reset();
-    }
+    this.enviado = true;
+    this.mensagensErro = FormUtils.gerarMensagensErro(this.supportForm, this.nomesCampos);
+
+    if (this.supportForm.invalid) return;
+
+    this.toastService.sucesso('Mensagem enviada com sucesso!');
+    this.supportForm.reset({ assunto: '', mensagem: '' });
+    this.enviado = false;
+    this.mensagensErro = [];
   }
 }

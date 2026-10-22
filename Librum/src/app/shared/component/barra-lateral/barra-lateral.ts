@@ -6,7 +6,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-barra-lateral',
@@ -21,11 +21,7 @@ export class BarraLateralComponent {
 
   @Output() navegar = new EventEmitter<void>();
   @Output() sair = new EventEmitter<void>();
-  
-  // NOVO: Evento para alternar a barra
-  @Output() toggleSidebar = new EventEmitter<void>(); 
-
-  constructor(private router: Router) {}
+  @Output() toggleSidebar = new EventEmitter<void>();
 
   aoNavegar(): void {
     this.navegar.emit();
@@ -35,7 +31,6 @@ export class BarraLateralComponent {
     this.sair.emit();
   }
 
-  // NOVO: Dispara a ação de abrir/fechar
   alternarMenu(): void {
     this.toggleSidebar.emit();
   }

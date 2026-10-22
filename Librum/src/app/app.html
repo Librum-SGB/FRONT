@@ -1,4 +1,3 @@
-
 <div class="layout d-flex flex-column min-vh-100">
   <!-- Navbar -->
   <app-navbar
@@ -6,20 +5,20 @@
     (toggleSidebar)="alternarSidebar()"
   ></app-navbar>
 
-  <!-- Área principal -->
+  <!-- Corpo do sistema -->
   <div
     *ngIf="!isAuthRoute()"
     class="layout-corpo d-flex flex-grow-1 position-relative"
   >
-    <!-- Fundo escuro ao abrir o menu no celular -->
+    <!-- Fundo escuro do menu mobile -->
     <div
       *ngIf="menuMobileAberto"
-      class="menu-overlay d-lg-none"
+      class="menu-overlay"
       (click)="fecharMenuMobile()"
       aria-label="Fechar menu"
     ></div>
 
- <!-- Menu lateral -->
+    <!-- Menu lateral -->
     <app-barra-lateral
       class="sidebar-container flex-shrink-0"
       [recolhida]="sidebarRecolhida"
@@ -30,13 +29,13 @@
       (toggleSidebar)="alternarSidebar()"
     ></app-barra-lateral>
 
-    <!-- Conteúdo da página -->
-    <main class="conteudo-principal flex-grow-1 p-3 pb-5">
+    <!-- Conteúdo -->
+    <main class="conteudo-principal flex-grow-1 p-3 px-5 pb-5">
       <router-outlet></router-outlet>
     </main>
   </div>
 
-  <!-- Login e demais telas sem o menu -->
+  <!-- Telas de autenticação -->
   <main *ngIf="isAuthRoute()" class="flex-grow-1">
     <router-outlet></router-outlet>
   </main>
@@ -47,11 +46,3 @@
   <!-- Notificações -->
   <app-toast></app-toast>
 </div>
-<app-navbar *ngIf="!isAuthRoute()"></app-navbar>
-<app-barra-lateral *ngIf="!isAuthRoute()"></app-barra-lateral>
-<main [class.container]="!isAuthRoute()" [class.bg-body-secondary]="!isAuthRoute()" [class.py-3]="!isAuthRoute()"
-  style="min-height: 59.3vh;">
-  <router-outlet></router-outlet>
-</main>
-<app-footer *ngIf="!isAuthRoute()"></app-footer>
-<app-toast></app-toast>
