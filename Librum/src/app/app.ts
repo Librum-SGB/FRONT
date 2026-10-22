@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit, signal } from '@angular/core';
-import { Component, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { BarraLateralComponent } from './shared/component/barra-lateral/barra-lateral';
@@ -19,6 +18,7 @@ export class App implements OnInit {
   protected readonly title = signal('Librum');
   currentRoute: string = '';
   
+  // Controle de estado do menu
   sidebarRecolhida = false;
   menuMobileAberto = false;
 
@@ -30,11 +30,12 @@ export class App implements OnInit {
       });
   }
 
+  // Executa assim que o componente carrega na tela
   ngOnInit(): void {
     this.verificarTamanhoTela();
   }
 
-  
+  // Escuta as mudanças de tamanho da janela do navegador
   @HostListener('window:resize')
   verificarTamanhoTela(): void {
     // Se a tela for média (tablet ou janela encolhida: 768px a 1024px), recolhe a barra para mostrar apenas ícones
@@ -43,6 +44,7 @@ export class App implements OnInit {
     }
   }
 
+  // Verifica se é uma tela de login/cadastro (onde o menu e navbar não aparecem)
   isAuthRoute(): boolean {
     return (
       this.currentRoute === '/' ||
@@ -52,11 +54,12 @@ export class App implements OnInit {
     );
   }
 
- 
+  // Alterna o menu dependendo do tamanho da tela atual
   alternarSidebar(): void {
     if (window.innerWidth < 768) {
-      this.menuMobileAberto = !this.menuMobileAberto; 
-      this.sidebarRecolhida = !this.sidebarRecolhida; 
+      this.menuMobileAberto = !this.menuMobileAberto; // Abre/fecha como overlay no celular
+    } else {
+      this.sidebarRecolhida = !this.sidebarRecolhida; // Expande/recolhe no desktop e tablet
     }
   }
 
@@ -65,7 +68,7 @@ export class App implements OnInit {
   }
 
   logout(): void {
-  
+    // Substitua pela lógica de logout que seu projeto utiliza.
     console.log('Realizando logoff...');
   }
 }
