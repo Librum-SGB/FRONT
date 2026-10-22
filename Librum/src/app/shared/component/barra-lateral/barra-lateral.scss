@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  align-self: stretch; 
+  align-self: stretch;
   flex-shrink: 0;
 
   --sidebar-bg: var(--bs-body-bg);
@@ -16,7 +16,7 @@
 
 .barra-lateral {
   width: 240px;
-  flex-grow: 1; 
+  flex-grow: 1;
   min-height: 0;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -78,11 +78,25 @@
     opacity: 1;
   }
 
-  .icon-green { color: var(--bs-success); }
-  .icon-yellow { color: var(--bs-warning); }
-  .icon-blue { color: var(--bs-primary); }
-  .icon-red { color: var(--bs-danger); }
-  .icon-default { color: var(--text-muted); }
+  .icon-green {
+    color: var(--bs-success);
+  }
+
+  .icon-yellow {
+    color: var(--bs-warning);
+  }
+
+  .icon-blue {
+    color: var(--bs-primary);
+  }
+
+  .icon-red {
+    color: var(--bs-danger);
+  }
+
+  .icon-default {
+    color: var(--text-muted);
+  }
 
   .menu-item.text-red {
     color: var(--bs-danger);
@@ -94,11 +108,12 @@
 
   /* Estilos dos Grupos/Acordeão */
   .menu-group {
+
     /* Estilo do botão principal do grupo */
     .group-header {
-      background-color: var(--bs-tertiary-bg); 
+      background-color: var(--bs-tertiary-bg);
       font-weight: 500;
-      
+
       /* Quando o painel está aberto, gira a setinha */
       &[aria-expanded="true"] .chevron-icon {
         transform: rotate(180deg);
@@ -113,8 +128,10 @@
     /* Submenus (itens de dentro) */
     .submenu {
       .menu-item {
-        padding-left: 2.5rem; /* Recuo à direita para parecer "dentro" do grupo */
-        font-size: 13.5px;    /* Texto ligeiramente menor */
+        padding-left: 2.5rem;
+        /* Recuo à direita para parecer "dentro" do grupo */
+        font-size: 13.5px;
+        /* Texto ligeiramente menor */
       }
     }
   }
@@ -135,7 +152,8 @@
 
       i {
         font-size: 19px;
-        margin-left: -3px; /* Centraliza considerando a borda ativa transparente */
+        margin-left: -3px;
+        /* Centraliza considerando a borda ativa transparente */
       }
     }
 
@@ -144,6 +162,7 @@
       .chevron-icon {
         display: none;
       }
+
       .submenu .menu-item {
         padding-left: 0;
       }
@@ -166,7 +185,7 @@
     left: 0;
     z-index: 1050;
     width: 260px;
-    height: 100%; 
+    height: 100%;
   }
 
   :host(.mobile-aberto) {
@@ -179,8 +198,9 @@
   }
 
   .barra-lateral.recolhida {
-    width: 260px; /* Anula o modo recolhido no celular */
-    
+    width: 260px;
+    /* Anula o modo recolhido no celular */
+
     .section-title,
     .menu-label {
       display: block;
@@ -191,7 +211,9 @@
       justify-content: flex-start;
       padding: 10px 20px;
 
-      i { margin-left: 0; }
+      i {
+        margin-left: 0;
+      }
     }
 
     /* Devolve o layout normal do submenu no celular */
@@ -199,6 +221,7 @@
       .chevron-icon {
         display: inline-flex;
       }
+
       .submenu .menu-item {
         padding-left: 2.5rem;
       }
@@ -212,75 +235,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .barra-lateral { transition: none; }
-.barra-lateral {
-  width: 280px;
-  height: 100vh;
-  background-color: #22272e;
-  padding: 24px 0;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  border-right: 1px solid #373e47;
-  overflow-y: auto;
-}
-
-.menu-section {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 24px;
-}
-
-.section-title {
-  font-size: 13px;
-  color: #adbac7;
-  padding: 0 24px;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 24px;
-  color: #cdd9e5;
-  text-decoration: none;
-  font-size: 15px;
-  transition: background-color 0.2s;
-  cursor: pointer;
-
-  &:hover, &.active {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-
-  i {
-    width: 24px;
-    font-size: 16px;
-    margin-right: 12px;
-    text-align: center;
-  }
-}
-
-.divider {
-  border: 0;
-  height: 1px;
-  background-color: #373e47;
-  margin: 0 24px 24px 24px;
-}
-
-.icon-green  { color: #3fb950; }
-.icon-yellow { color: #d29922; }
-.icon-blue   { color: #58a6ff; }
-.icon-red    { color: #f85149; }
-.icon-default { color: #adbac7; }
-
-.text-red {
-  color: #f85149;
-  
-  i { color: #f85149; }
-  
-  &:hover {
-    background-color: rgba(248, 81, 73, 0.1);
+  .barra-lateral {
+    transition: none;
   }
 }
