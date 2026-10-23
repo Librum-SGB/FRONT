@@ -1,11 +1,12 @@
 <aside
   class="barra-lateral d-flex flex-column py-3"
-  [class.recolhida]="recolhida"
+  [class.recolhida]="recolhida && !mobileAberto"
   [class.mobile-aberta]="mobileAberto"
   aria-label="Menu principal"
 >
+  <!-- Área rolável -->
   <div class="menu-scroll flex-grow-1 px-2">
-    
+
     <!-- Dashboard -->
     <a
       routerLink="/dashboard"
@@ -20,28 +21,51 @@
 
     <!-- ACERVO -->
     <div class="menu-group mb-2">
-      <button 
-        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded" 
-        data-bs-toggle="collapse" 
-        data-bs-target="#collapseAcervo" 
+      <button
+        type="button"
+        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseAcervo"
         aria-expanded="false"
+        aria-controls="collapseAcervo"
+        title="Acervo"
       >
         <i class="bi bi-book icon-blue"></i>
         <span class="menu-label ms-2">Acervo</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
       </button>
-      
+
       <div class="collapse" id="collapseAcervo">
         <nav class="nav flex-column gap-1 mt-1 submenu">
-          <a routerLink="/cadastrarMaterial" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Cadastrar material" (click)="aoNavegar()">
+          <a
+            routerLink="/cadastrarMaterial"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Cadastrar material"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-plus-square icon-green"></i>
             <span class="menu-label ms-2">Cadastrar Material</span>
           </a>
-          <a routerLink="/editarExcluirMaterial" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Editar / Excluir material" (click)="aoNavegar()">
+
+          <a
+            routerLink="/editarExcluirMaterial"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Editar / Excluir material"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-pencil-square icon-yellow"></i>
             <span class="menu-label ms-2">Editar / Excluir Material</span>
           </a>
-          <a routerLink="/estanteVirtual" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Encontrar material" (click)="aoNavegar()">
+
+          <a
+            routerLink="/estanteVirtual"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Encontrar material"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-search icon-default"></i>
             <span class="menu-label ms-2">Encontrar Material</span>
           </a>
@@ -51,32 +75,62 @@
 
     <!-- USUÁRIOS -->
     <div class="menu-group mb-2">
-      <button 
-        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded" 
-        data-bs-toggle="collapse" 
-        data-bs-target="#collapseUsuarios" 
+      <button
+        type="button"
+        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseUsuarios"
         aria-expanded="false"
+        aria-controls="collapseUsuarios"
+        title="Usuários"
       >
         <i class="bi bi-people icon-blue"></i>
         <span class="menu-label ms-2">Usuários</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
       </button>
-      
+
       <div class="collapse" id="collapseUsuarios">
         <nav class="nav flex-column gap-1 mt-1 submenu">
-          <a routerLink="/cadastrar-usuario" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Cadastrar usuário" (click)="aoNavegar()">
+          <a
+            routerLink="/cadastrar-usuario"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Cadastrar usuário"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-person-plus icon-green"></i>
-            <span class="menu-label ms-2">Cadastrar Usuário</span>
+            <span class="menu-label ms-2">Cadastrar</span>
           </a>
-          <a routerLink="/editar-excluir-usuario" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Consultar / Editar usuários" (click)="aoNavegar()">
+
+          <a
+            routerLink="/editar-excluir-usuario"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Consultar / Editar usuários"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-person-lines-fill icon-blue"></i>
-            <span class="menu-label ms-2">Consultar / Editar Usuário</span>
+            <span class="menu-label ms-2">Consultar / Editar</span>
           </a>
-          <a routerLink="/historicoEmprestimo" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Histórico de empréstimos" (click)="aoNavegar()">
+
+          <a
+            routerLink="/historicoEmprestimo"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Histórico de empréstimos"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-clock-history icon-blue"></i>
-            <span class="menu-label ms-2">Histórico de Empréstimos</span>
+            <span class="menu-label ms-2">Empréstimos</span>
           </a>
-          <a routerLink="/bloqueios" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Bloqueios" (click)="aoNavegar()">
+
+          <a
+            routerLink="/bloqueios"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Bloqueios"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-slash-circle icon-red"></i>
             <span class="menu-label ms-2">Bloqueios</span>
           </a>
@@ -86,131 +140,113 @@
 
     <!-- EMPRÉSTIMOS -->
     <div class="menu-group mb-2">
-      <button 
-        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded" 
-        data-bs-toggle="collapse" 
-        data-bs-target="#collapseEmprestimos" 
+      <button
+        type="button"
+        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseEmprestimos"
         aria-expanded="false"
+        aria-controls="collapseEmprestimos"
+        title="Empréstimos"
       >
         <i class="bi bi-journal-check icon-green"></i>
         <span class="menu-label ms-2">Empréstimos</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
       </button>
-      
+
       <div class="collapse" id="collapseEmprestimos">
         <nav class="nav flex-column gap-1 mt-1 submenu">
-          <a routerLink="/reservar-material" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Reservar material" (click)="aoNavegar()">
+          <a
+            routerLink="/reservar-material"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Reservar material"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-calendar-plus icon-green"></i>
             <span class="menu-label ms-2">Reservar</span>
           </a>
-          <a routerLink="/renovar-devolver" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Renovar / Devolução" (click)="aoNavegar()">
+
+          <a
+            routerLink="/renovar-devolver"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Renovar / Devolver"
+            (click)="aoNavegar()"
+          >
             <i class="bi bi-arrow-repeat icon-yellow"></i>
             <span class="menu-label ms-2">Renovar / Devolver</span>
           </a>
         </nav>
       </div>
     </div>
-
   </div>
 
-  <!-- Opções inferiores -->
-  <section class="menu-section mt-auto mb-0 px-2">
+  <!-- Área inferior fixa -->
+  <section class="menu-section px-2">
     <hr class="divider mx-2" />
 
     <nav class="nav flex-column gap-1 mb-2">
-      <a routerLink="/relatorio" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Relatórios" (click)="aoNavegar()">
+      <a
+        routerLink="/relatorio"
+        routerLinkActive="active"
+        class="nav-link menu-item d-flex align-items-center rounded"
+        title="Relatórios"
+        (click)="aoNavegar()"
+      >
         <i class="bi bi-file-earmark-text icon-default"></i>
         <span class="menu-label ms-2">Relatórios</span>
       </a>
-      <a routerLink="/configuracoes" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Configurações" (click)="aoNavegar()">
+
+      <a
+        routerLink="/configuracoes"
+        routerLinkActive="active"
+        class="nav-link menu-item d-flex align-items-center rounded"
+        title="Configurações"
+        (click)="aoNavegar()"
+      >
         <i class="bi bi-gear icon-default"></i>
         <span class="menu-label ms-2">Configurações</span>
       </a>
-      <a routerLink="/suporte" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded" title="Suporte" (click)="aoNavegar()">
+
+      <a
+        routerLink="/suporte"
+        routerLinkActive="active"
+        class="nav-link menu-item d-flex align-items-center rounded"
+        title="Suporte"
+        (click)="aoNavegar()"
+      >
         <i class="bi bi-question-circle icon-default"></i>
         <span class="menu-label ms-2">Suporte</span>
       </a>
-      <button type="button" class="nav-link menu-item text-red d-flex align-items-center rounded" title="Sair" (click)="logout()">
+
+      <button
+        type="button"
+        class="nav-link menu-item text-red d-flex align-items-center rounded w-100"
+        title="Sair"
+        (click)="logout()"
+      >
         <i class="bi bi-box-arrow-right"></i>
         <span class="menu-label ms-2">Sair</span>
       </button>
     </nav>
 
-   <!-- Botão de alternar (recolher/expandir) -->
     <hr class="divider m-0 mt-2 mb-2" />
+
     <button
       type="button"
       class="nav-link menu-item d-flex align-items-center w-100 rounded"
       (click)="alternarMenu()"
       [title]="recolhida ? 'Abrir menu' : 'Fechar menu'"
+      [attr.aria-label]="recolhida ? 'Abrir menu' : 'Fechar menu'"
     >
-      <i class="bi" [ngClass]="recolhida ? 'bi-chevron-right' : 'bi-chevron-left'"></i>
-      
-      <!-- O ERRO ESTAVA AQUI: Garanta que tem {{ no começo e }} no final -->
-      <span class="menu-label ms-2">{{ recolhida ? 'Abrir' : 'Fechar' }}</span>
-      
+      <i
+        class="bi"
+        [ngClass]="recolhida ? 'bi-chevron-right' : 'bi-chevron-left'"
+      ></i>
+      <span class="menu-label ms-2">
+        {{ recolhida ? 'Abrir' : 'Fechar' }}
+      </span>
     </button>
   </section>
-<aside class="barra-lateral">
-  
-  <!-- GERENCIAMENTO DE ACERVO -->
-  <div class="menu-section">
-    <span class="section-title">GERENCIAMENTO DE ACERVO</span>
-    <a routerLink="/acervo/cadastrar" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-circle-plus icon-green"></i> Cadastrar
-    </a>
-    <a routerLink="/acervo/editar" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-pen-to-square icon-yellow"></i> Editar / Excluir
-    </a>
-    <a routerLink="/acervo/buscar" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-magnifying-glass icon-default"></i> Encontrar Material
-    </a>
-  </div>
-
-  <!-- USUÁRIOS -->
-  <div class="menu-section">
-    <span class="section-title">USUÁRIOS</span>
-    <a routerLink="/usuarios/cadastrar" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-user-plus icon-green"></i> Cadastrar Usuário
-    </a>
-    <a routerLink="/usuarios/consultar" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-users icon-blue"></i> Consultar / Editar
-    </a>
-    <a routerLink="/usuarios/historico" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-clock icon-blue"></i> Histórico de Empréstimos
-    </a>
-    <a routerLink="/usuarios/bloqueios" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-ban icon-red"></i> Bloqueios
-    </a>
-  </div>
-
-  <!-- EMPRÉSTIMOS -->
-  <div class="menu-section">
-    <span class="section-title">EMPRÉSTIMOS</span>
-    <a routerLink="/emprestimos/reservar" routerLinkActive="active" class="menu-item">
-      <i class="fa-regular fa-calendar-check icon-green"></i> Reservar
-    </a>
-    <a routerLink="/emprestimos/renovar" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-rotate icon-yellow"></i> Renovar / Devolução
-    </a>
-  </div>
-
-  <hr class="divider">
-
-  <!-- RODAPÉ / CONFIGURAÇÕES -->
-  <div class="menu-section bottom-section">
-    <a routerLink="/relatorios" routerLinkActive="active" class="menu-item">
-      <i class="fa-regular fa-file-lines icon-default"></i> Relatórios
-    </a>
-    <a routerLink="/configuracoes" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-gear icon-default"></i> Configurações
-    </a>
-    <a routerLink="/suporte" routerLinkActive="active" class="menu-item">
-      <i class="fa-regular fa-circle-question icon-default"></i> Suporte
-    </a>
-    <a (click)="logout()" class="menu-item text-red">
-      <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
-    </a>
-  </div>
-
 </aside>

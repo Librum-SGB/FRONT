@@ -1,62 +1,56 @@
+
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit, signal } from '@angular/core';
+import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { BarraLateralComponent } from './shared/component/barra-lateral/barra-lateral';
 import { Footer } from './shared/component/footer/footer';
 import { Navbar } from './shared/component/navbar/navbar';
 import { Toast } from './shared/component/toast/toast';
-
+import { ToastService } from './shared/services/toast.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, Toast, CommonModule, Footer, BarraLateralComponent],
+  imports: [RouterOutlet, CommonModule, Navbar, BarraLateralComponent, Footer, Toast],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
   protected readonly title = signal('Librum');
-  currentRoute: string = '';
-  
+  private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
+
+  currentRoute = '';
   sidebarRecolhida = false;
   menuMobileAberto = false;
 
-  constructor(private router: Router) {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: any) => {
-        this.currentRoute = event.urlAfterRedirects;
-      });
+  constructor() {
+    this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe(event => {
+      this.currentRoute = event.urlAfterRedirects;
+    });
   }
 
   ngOnInit(): void {
     this.verificarTamanhoTela();
   }
 
-  
   @HostListener('window:resize')
   verificarTamanhoTela(): void {
-    // Se a tela for média (tablet ou janela encolhida: 768px a 1024px), recolhe a barra para mostrar apenas ícones
-    if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
-      this.sidebarRecolhida = true;
-    }
+    this.sidebarRecolhida = window.innerWidth >= 768 && window.innerWidth < 992;
+    if (window.innerWidth >= 992) this.menuMobileAberto = false;
   }
 
   isAuthRoute(): boolean {
-    return (
-      this.currentRoute === '/' ||
-      this.currentRoute === '/esqueci-senha' ||
-      this.currentRoute === '/cadastro-bibliotecaria' ||
-      this.currentRoute === ''
-    );
+    return ['', '/', '/esqueci-senha', '/cadastro-bibliotecaria'].includes(this.currentRoute);
   }
-
- 
+  
   alternarSidebar(): void {
-    if (window.innerWidth < 768) {
-      this.menuMobileAberto = !this.menuMobileAberto; 
-      this.sidebarRecolhida = !this.sidebarRecolhida; 
+    if (window.innerWidth < 992) {
+      this.menuMobileAberto = !this.menuMobileAberto;
+      return;
     }
+
+    this.sidebarRecolhida = !this.sidebarRecolhida;
   }
 
   fecharMenuMobile(): void {
@@ -64,7 +58,13 @@ export class App implements OnInit {
   }
 
   logout(): void {
-  
-    console.log('Realizando logoff...');
+    localStorage.removeItem('token');
+    sessionStorage.clear();
+    this.menuMobileAberto = false;
+
+    this.router.navigate(['/']).then(navegou => {
+      if (navegou) this.toastService.sucesso('Logout realizado com sucesso!');
+      else this.toastService.erro('Não foi possível voltar para a tela de login.');
+    });
   }
 }

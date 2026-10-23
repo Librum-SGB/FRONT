@@ -21,8 +21,6 @@ export class BarraLateralComponent {
 
   @Output() navegar = new EventEmitter<void>();
   @Output() sair = new EventEmitter<void>();
-
-  // Evento para alternar a barra
   @Output() toggleSidebar = new EventEmitter<void>();
 
   aoNavegar(): void {
@@ -33,7 +31,6 @@ export class BarraLateralComponent {
     this.sair.emit();
   }
 
-  // Dispara a ação de abrir/fechar
   alternarMenu(): void {
     this.toggleSidebar.emit();
   }
