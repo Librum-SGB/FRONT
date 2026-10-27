@@ -30,8 +30,8 @@
             </div>
 
             <div class="col-12 col-md-6">
-              <label class="form-label fw-bold">Capacidade Máxima (Opcional)</label>
-              <input type="number" class="form-control" [(ngModel)]="capacidade" name="capacidade"
+              <label class="form-label fw-bold">Capacidade máxima de livros</label>
+              <input type="number" class="form-control" min="1" max="1000" step="1" [(ngModel)]="capacidade" name="capacidade"
                 placeholder="Ex: 50" />
             </div>
           </div>
@@ -51,7 +51,8 @@
             </div>
             <div class="col-12 col-sm-auto">
               <button type="submit" lbrButton variant="cadastrar" [loading]="salvando"
-                [disabled]="!nome.trim() || !localizacao.trim() || !qtdPrateleiras || qtdPrateleiras < 1">
+                [disabled]="!nome.trim() || !localizacao.trim() || !capacidade || capacidade < 1 ||
+                  capacidade > 1000 || capacidade % 1 !== 0 || !qtdPrateleiras || qtdPrateleiras < 1">
                 {{ salvando ? 'Salvando...' : 'Salvar Estante' }}
               </button>
             </div>

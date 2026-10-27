@@ -7,11 +7,20 @@ export interface EstanteVirtualDto {
   prateleiras: PrateleiraVirtualDto[];
 }
 
+export interface EstantePrateleiraDto {
+  id?: number;
+  nome: string;
+  posicaoInicial: number;
+  posicaoFinal: number;
+  ordem: number;
+}
+
 export interface EstanteRequestDto {
   nome: string;
   localizacao: string;
   capacidade?: number;
   qtdPrateleiras: number;
+  prateleiras?: EstantePrateleiraDto[];
 }
 
 export interface EstanteResponseDto {
@@ -21,12 +30,17 @@ export interface EstanteResponseDto {
   localizacao: string;
   capacidade?: number;
   qtdPrateleiras: number;
+  prateleiras?: EstantePrateleiraDto[];
   dataCriacao: string;
   dataUltimaAtualizacao: string;
 }
 
 export interface PrateleiraVirtualDto {
+  id?: number;
   nome: string;
+  posicaoInicial: number;
+  posicaoFinal: number;
+  ordem: number;
   exemplares: ExemplarVirtualDto[];
 }
 

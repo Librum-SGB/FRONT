@@ -9,7 +9,10 @@ export type ButtonVariant =
   | 'limpar'
   | 'cancela/limpa'
   | 'excluir'
+  | 'excluir-preenchido'
   | 'editar'
+  | 'editar-preenchido'
+  | 'cancelar-preenchido'
   | 'renovar'
   | 'outros';
 
@@ -41,7 +44,10 @@ export class LbrButtom {
     limpar: 'btn-outline-secondary',
     'cancela/limpa': 'btn-outline-secondary',
     excluir: 'btn-outline-danger',
+    'excluir-preenchido': 'btn-danger',
     editar: 'btn-outline-warning',
+    'editar-preenchido': 'btn-warning',
+    'cancelar-preenchido': 'btn-secondary',
     outros: 'btn-primary',
     renovar: 'btn-warning',
   };

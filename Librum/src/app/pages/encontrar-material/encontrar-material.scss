@@ -28,17 +28,25 @@
   }
 }
 
-/* sobrepor livro na prateleira */
-.livros-container {
-  margin-bottom: -30px;
+.livros {
+  min-width: max-content;
 }
 
-/* cor da madeira (Bootstrap não tem marrom padrão) */
-.bg-brown {
-  background-color: #925126;
+.slot-estante {
+  min-width: 40px;
 }
 
-/* linha da prateleira */
-.linha {
-  height: 12px;
+.slot-vazio {
+  width: 35px;
+  height: 90px;
+  border: 1px dashed #9aa0a6;
+  border-radius: 4px;
+}
+
+.cadastro-livro-backdrop {
+  z-index: 1060;
+}
+
+.cadastro-livro-modal {
+  z-index: 1065;
 }

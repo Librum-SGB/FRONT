@@ -19,37 +19,57 @@
         Tentar novamente
       </button>
     </div>
-    } @else if (carregandoEstantes) {
+    } @else if (carregandoEstantes && estantes.length === 0) {
     <p class="text-center mt-3">Carregando materiais...</p>
     } @else if(estantesFiltradas.length > 0){
     @for (estante of estantesFiltradas; track estante.id) {
     <div class="container-fluid bg-body text-body rounded-3 border border-2 shadow p-4 mt-3">
       <div class="mb-4">
 
-        <h5 class="text mb-4">
-          {{ estante.nome }} — {{ estante.localizacao }}
-        </h5>
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+          <h5 class="text mb-0">{{ estante.nome }} — {{ estante.localizacao }}</h5>
+          <button type="button" class="btn btn-primary flex-shrink-0"
+            (click)="abrirModalAdicionarLivro(estante.id)">
+            + Adicionar livro
+          </button>
+        </div>
 
         <div class="estante-box p-4 rounded">
           @for (prateleira of estante.prateleiras; track prateleira.nome){
 
           <div class="prateleira-container mb-4 overflow-x-auto">
-            <p>{{prateleira.nome}}</p>
-            <div class="livros d-flex gap-2">
-              @for (exemplar of prateleira.exemplares; track exemplar.id) {
-              <button (click)="abrirModal(exemplar)" class=" livro border-0 justify-content-center text-white ">
-                {{ exemplar.material.titulo }}
-              </button>
+            <p class="mb-2">{{prateleira.nome}}</p>
+            <div class="livros d-flex gap-2 align-items-end">
+              @for (slot of slotsDaPrateleira(prateleira); track $index) {
+              <div class="slot-estante text-center"
+                (dragover)="slot.permiteDrop && permitirSoltar($event)"
+                (drop)="slot.permiteDrop && soltarExemplar($event, estante, prateleira, slot.posicao)">
+                @if (slot.exemplar; as exemplar) {
+                <button type="button" (click)="abrirModal(exemplar)"
+                  class="livro border-0 justify-content-center text-white"
+                  [draggable]="!busca.trim()"
+                  (dragstart)="iniciarArraste(estante.id, exemplar)">
+                  {{ exemplar.material.titulo }}
+                </button>
+                } @else {
+                <div class="slot-vazio" aria-label="Posição disponível"></div>
+                }
+                <small class="d-block text-muted">{{ slot.exemplar?.posicao || slot.posicao || '—' }}</small>
+              </div>
               }
             </div>
 
-            <!-- LINHA -->
-            <div class="linha bg-brown rounded-1 w-100"></div>
-
           </div>
           }
-
-
+        </div>
+        <div class="d-flex flex-wrap justify-content-end gap-2 mt-3">
+          <button type="button" lbrButton variant="editar-preenchido" (click)="abrirEdicaoEstante(estante)">
+            Editar estante
+          </button>
+          <button type="button" lbrButton variant="cancelar-preenchido"
+            (click)="solicitarAcaoEstante(estante, 'limpar')">Limpar estante</button>
+          <button type="button" lbrButton variant="excluir-preenchido"
+            (click)="solicitarAcaoEstante(estante, 'excluir')">Excluir estante</button>
         </div>
       </div>
     </div>
@@ -59,9 +79,303 @@
       {{ busca.trim() ? 'Nenhum material encontrado.' : 'Nenhuma estante com materiais cadastrados.' }}
     </p>
     }
-    <app-modal-livro [(isOpen)]="modalAberta" [exemplar]="livroEscolhido" />
+    <app-modal-livro [(isOpen)]="modalAberta" [exemplar]="livroEscolhido"
+      (editarMaterial)="editarMaterial($event)" (editarLocalizacao)="editarLocalizacao($event)"
+      (removerDaEstante)="solicitarRemocaoDaEstante($event)" />
   </div>
 </app-corpo-padrao>
 <app-modal-nova-estante [(isOpen)]="modalEstanteAberta"
   [salvando]="salvandoEstante" [erro]="erroEstante" (estanteCriada)="onEstanteCriada($event)">
 </app-modal-nova-estante>
+
+@if (modalAdicionarLivroAberta) {
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modalAdicionarLivroTitulo">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="modalAdicionarLivroTitulo">Adicionar livro à estante</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Fechar"
+          (click)="fecharModalAdicionarLivro()" [disabled]="salvandoLivro"></button>
+      </div>
+
+      <form (ngSubmit)="adicionarLivro()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="buscaLivroEstante" class="form-label">Buscar livro cadastrado</label>
+            <div>
+              <app-select-pesquisavel [itens]="opcoesLivros"
+                [maxResultados]="5" [(ngModel)]="livroSelecionadoId"
+                [permitirCriar]="true" [ngModelOptions]="{standalone: true}"
+                placeholder="Digite para buscar livro..." (criar)="abrirCadastroLivro()">
+              </app-select-pesquisavel>
+            </div>
+          </div>
+
+          @if (carregandoMateriais) {
+          <p class="mb-3">Carregando livros...</p>
+          } @else if (opcoesLivros.length === 0) {
+          <p class="mb-3">Nenhum livro cadastrado. Use o botão + para cadastrar.</p>
+          }
+
+          <div class="mb-3">
+            <label class="form-label">Estante selecionada</label>
+            <p class="form-control-plaintext mb-0">
+              {{ estanteSelecionada?.nome }} — {{ estanteSelecionada?.localizacao }}
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <label for="prateleiraDestino" class="form-label">Prateleira</label>
+            <select id="prateleiraDestino" class="form-select" [(ngModel)]="prateleiraSelecionada"
+              name="prateleira" (ngModelChange)="selecionarPrateleira($event)" required>
+              @for (prateleira of prateleirasDaEstante(estanteSelecionadaId); track prateleira) {
+              <option [ngValue]="prateleira">{{ prateleira }}</option>
+              }
+            </select>
+            @if (prateleirasDaEstante(estanteSelecionadaId).length === 0) {
+            <small class="form-text text-danger">Todas as prateleiras desta estante estão cheias.</small>
+            }
+          </div>
+
+          <div>
+            <label for="posicaoLivro" class="form-label">Posição</label>
+            <select id="posicaoLivro" class="form-select" [(ngModel)]="posicaoLivro" name="posicao" required>
+              <option value="" disabled>Selecione uma posição</option>
+              @for (posicao of posicoesDisponiveis(estanteSelecionadaId, prateleiraSelecionada); track posicao) {
+              <option [value]="posicao">{{ posicao }}</option>
+              }
+            </select>
+            @if (estanteSelecionadaId && posicoesDisponiveis(estanteSelecionadaId, prateleiraSelecionada).length === 0) {
+            <small class="form-text text-danger">Não há posições disponíveis nesta prateleira.</small>
+            } @else if (estanteSelecionadaId) {
+            <small class="form-text">
+              Posições ocupadas não são listadas.
+            </small>
+            }
+          </div>
+
+          @if (erroAdicionarLivro) {
+          <div class="alert alert-danger mt-3 mb-0" role="alert">{{ erroAdicionarLivro }}</div>
+          }
+        </div>
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary" (click)="fecharModalAdicionarLivro()"
+            [disabled]="salvandoLivro">Cancelar</button>
+          <button type="submit" class="btn btn-success" [disabled]="salvandoLivro || carregandoMateriais ||
+              opcoesLivros.length === 0 || livroSelecionadoId === undefined || !prateleiraSelecionada || !posicaoLivro">
+            {{ salvandoLivro ? 'Adicionando...' : 'Adicionar livro' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+}
+
+@if (estanteEmEdicao) {
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modalEditarEstanteTitulo">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="modalEditarEstanteTitulo">Editar estante</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Fechar"
+          (click)="estanteEmEdicao = undefined" [disabled]="salvandoEstante"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="nomeEstanteEdicao" class="form-label">Nome</label>
+          <input id="nomeEstanteEdicao" class="form-control" [(ngModel)]="estanteEmEdicao.nome"
+            [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <div class="mb-3">
+          <label for="localEstanteEdicao" class="form-label">Localização</label>
+          <input id="localEstanteEdicao" class="form-control" [(ngModel)]="estanteEmEdicao.localizacao"
+            [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Prateleiras e posições</h6>
+          <button type="button" class="btn btn-outline-primary btn-sm" (click)="adicionarPrateleiraEditando()">
+            Adicionar prateleira
+          </button>
+        </div>
+        @for (prateleira of prateleirasEditando; track $index) {
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-md-5">
+            <label class="form-label">Nome</label>
+            <input class="form-control" [(ngModel)]="prateleirasEditando[$index].nome"
+              [ngModelOptions]="{standalone: true}" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Posição inicial</label>
+            <input class="form-control" type="number" min="1"
+              [(ngModel)]="prateleirasEditando[$index].posicaoInicial"
+              [ngModelOptions]="{standalone: true}" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Posição final</label>
+            <input class="form-control" type="number" min="1"
+              [(ngModel)]="prateleirasEditando[$index].posicaoFinal"
+              [ngModelOptions]="{standalone: true}" required>
+          </div>
+          <div class="col-md-1">
+            <button type="button" class="btn btn-outline-danger" (click)="removerPrateleiraEditando($index)"
+              aria-label="Remover prateleira">×</button>
+          </div>
+        </div>
+        }
+        @if (erroEdicaoEstante) {
+        <div class="alert alert-danger mt-3 mb-0" role="alert">{{ erroEdicaoEstante }}</div>
+        }
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" lbrButton variant="cancelar" (click)="estanteEmEdicao = undefined"
+          [disabled]="salvandoEstante">Cancelar</button>
+        <button type="button" lbrButton variant="confirmar" (click)="salvarEdicaoEstante()"
+          [loading]="salvandoEstante">Salvar alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+@if (estanteParaConfirmacao && acaoEstanteConfirmada) {
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modalAcaoEstanteTitulo">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="modalAcaoEstanteTitulo">
+          {{ acaoEstanteConfirmada === 'limpar' ? 'Limpar estante?' : 'Excluir estante?' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Fechar"
+          (click)="cancelarAcaoEstante()" [disabled]="salvandoEstante"></button>
+      </div>
+      <div class="modal-body">
+        @if (acaoEstanteConfirmada === 'limpar') {
+        <p>Tem certeza que deseja remover todos os livros de <strong>{{ estanteParaConfirmacao.nome }}</strong>?</p>
+        <p class="mb-0 text-muted">Os exemplares continuarão cadastrados e poderão ser adicionados novamente.</p>
+        } @else {
+        <p>Tem certeza que deseja excluir <strong>{{ estanteParaConfirmacao.nome }}</strong>?</p>
+        <p class="mb-0 text-muted">Os exemplares serão desvinculados e continuarão cadastrados no sistema.</p>
+        }
+        @if (erroAcaoEstante) {
+        <div class="alert alert-danger mt-3 mb-0" role="alert">{{ erroAcaoEstante }}</div>
+        }
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" lbrButton variant="cancelar" (click)="cancelarAcaoEstante()"
+          [disabled]="salvandoEstante">Cancelar</button>
+        <button type="button" lbrButton variant="excluir-preenchido" (click)="executarAcaoEstante()"
+          [loading]="salvandoEstante">
+          {{ acaoEstanteConfirmada === 'limpar' ? 'Limpar estante' : 'Excluir estante' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+@if (modalEditarExemplarAberta && exemplarEmEdicao) {
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modalEditarExemplarTitulo">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="modalEditarExemplarTitulo">Alterar localização do exemplar</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Fechar"
+          (click)="modalEditarExemplarAberta = false" [disabled]="salvandoLivro"></button>
+      </div>
+      <form (ngSubmit)="salvarLocalizacaoExemplar()">
+        <div class="modal-body">
+          <p><strong>Livro:</strong> {{ exemplarEmEdicao.material.titulo }}</p>
+          <div class="mb-3">
+            <label for="prateleiraEdicao" class="form-label">Prateleira</label>
+            <select id="prateleiraEdicao" class="form-select" [(ngModel)]="prateleiraSelecionada"
+              name="prateleiraEdicao" (ngModelChange)="selecionarPrateleira($event)" required>
+              @for (prateleira of prateleirasDaEstante(estanteSelecionadaId); track prateleira) {
+              <option [ngValue]="prateleira">{{ prateleira }}</option>
+              }
+            </select>
+            @if (prateleirasDaEstante(estanteSelecionadaId).length === 0) {
+            <small class="form-text text-danger">Nenhuma prateleira tem posições disponíveis.</small>
+            }
+          </div>
+          <div class="mb-3">
+            <label for="posicaoEdicao" class="form-label">Posição</label>
+            <select id="posicaoEdicao" class="form-select" [(ngModel)]="posicaoLivro"
+              name="posicaoEdicao" required>
+              <option value="" disabled>Selecione uma posição</option>
+              @for (posicao of posicoesDisponiveis(estanteSelecionadaId, prateleiraSelecionada,
+                exemplarEmEdicao.id); track posicao) {
+              <option [value]="posicao">{{ posicao }}</option>
+              }
+            </select>
+          </div>
+          @if (erroAdicionarLivro) {
+          <div class="alert alert-danger mb-0">{{ erroAdicionarLivro }}</div>
+          }
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary" (click)="modalEditarExemplarAberta = false"
+            [disabled]="salvandoLivro">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="salvandoLivro || !prateleiraSelecionada ||
+            !posicaoLivro">{{ salvandoLivro ? 'Salvando...' : 'Salvar localização' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+}
+
+@if (modalConfirmarRemocaoAberta && exemplarParaRemover) {
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true"
+  aria-labelledby="modalConfirmarRemocaoTitulo">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="modalConfirmarRemocaoTitulo">Remover livro da estante?</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Fechar"
+          (click)="cancelarRemocaoDaEstante()" [disabled]="salvandoLivro"></button>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja remover <strong>{{ exemplarParaRemover.material.titulo }}</strong> desta estante?</p>
+        <p class="mb-0 text-muted">O exemplar continuará cadastrado no sistema, mas ficará fora da estante.</p>
+        @if (erroAdicionarLivro) {
+        <div class="alert alert-danger mt-3 mb-0" role="alert">{{ erroAdicionarLivro }}</div>
+        }
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" lbrButton variant="cancelar-preenchido"
+          (click)="cancelarRemocaoDaEstante()" [disabled]="salvandoLivro">Cancelar</button>
+        <button type="button" lbrButton variant="excluir-preenchido"
+          (click)="confirmarRemocaoDaEstante()" [loading]="salvandoLivro">
+          {{ salvandoLivro ? 'Removendo...' : 'Confirmar remoção' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+@if (modalCadastroLivroAberta) {
+<div class="modal-backdrop fade show cadastro-livro-backdrop"></div>
+<div class="modal d-block cadastro-livro-modal" tabindex="-1" role="dialog" aria-modal="true"
+  aria-label="Cadastrar novo livro">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content bg-body">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title">Cadastrar novo livro</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Fechar cadastro"
+          (click)="modalCadastroLivroAberta = false"></button>
+      </div>
+      <div class="modal-body">
+        <app-cadastrar-material (materialCriado)="aoCadastrarLivro($event)"></app-cadastrar-material>
+      </div>
+    </div>
+  </div>
+</div>
+}

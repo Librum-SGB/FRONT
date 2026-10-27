@@ -1,4 +1,5 @@
-<app-modal (isOpenChange)="isOpenChange.emit($event)" [(isOpen)]="isOpen" title="Informações do Material">
+<app-modal (isOpenChange)="isOpenChange.emit($event)" [(isOpen)]="isOpen"
+  title="Informações do Material" size="lg" [showDefaultFooter]="false">
   <div class="modal-body">
     <div class="p-4 rounded-3 bg-verde text-white mb-4" style="position: relative; min-height: 150px;">
       <h6 class="mb-1">{{ exemplar?.material?.titulo }}</h6>
@@ -31,6 +32,20 @@
       </div>
       }
 
+      @if (exemplar?.material?.descricao) {
+      <div class="d-flex justify-content-between border-bottom py-2">
+        <span class="text-muted">Descrição:</span>
+        <strong class="text-end">{{ exemplar?.material?.descricao }}</strong>
+      </div>
+      }
+
+      @if (exemplar?.material?.sinopse) {
+      <div class="border-bottom py-2">
+        <span class="text-muted d-block">Sinopse:</span>
+        <span>{{ exemplar?.material?.sinopse }}</span>
+      </div>
+      }
+
       @if (exemplar?.material?.isbn || exemplar?.material?.issn) {
       <div class="d-flex justify-content-between border-bottom py-2">
         <span class="text-muted">{{ exemplar?.material?.isbn ? 'ISBN:' : 'ISSN:' }}</span>
@@ -47,6 +62,25 @@
         <span class="text-muted">Posição:</span>
         <strong>{{ exemplar?.posicao || 'Não informada' }}</strong>
       </div>
+
+    </div>
+  </div>
+  <div modal-footer class="modal-footer justify-content-between">
+    <button type="button" lbrButton variant="excluir-preenchido"
+      [disabled]="!exemplar" (click)="exemplar && removerDaEstante.emit(exemplar)">
+      Remover da estante
+    </button>
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+      <button type="button" lbrButton variant="editar-preenchido"
+        [disabled]="!exemplar" (click)="exemplar && editarMaterial.emit(exemplar.material.id)">
+        Editar informações do livro
+      </button>
+      <button type="button" lbrButton variant="outros"
+        [disabled]="!exemplar" (click)="exemplar && editarLocalizacao.emit(exemplar)">
+        Alterar prateleira/posição
+      </button>
+      <button type="button" lbrButton variant="cancelar-preenchido"
+        (click)="close()">Cancelar</button>
     </div>
   </div>
 </app-modal>

@@ -38,6 +38,7 @@ export class SelectPesquisavel implements ControlValueAccessor, OnChanges {
   @Input() multiplo = false;
   @Input() permitirCriar = true;
   @Input() invalido = false;
+  @Input() maxResultados?: number;
 
   @Output() criar = new EventEmitter<void>();
 
@@ -106,10 +107,12 @@ export class SelectPesquisavel implements ControlValueAccessor, OnChanges {
 
   filtrar(): void {
     const termo = this.busca.toLowerCase().trim();
-    this.itensFiltrados = this.itens.filter((i) => {
+    const filtrados = this.itens.filter((i) => {
       const bate = i.nome.toLowerCase().includes(termo);
       return this.multiplo ? bate && !this.valoresMultiplos.includes(i.id) : bate;
     });
+    this.itensFiltrados =
+      this.maxResultados == null ? filtrados : filtrados.slice(0, this.maxResultados);
   }
 
   abrirLista(): void {

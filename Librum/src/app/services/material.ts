@@ -16,8 +16,9 @@ export class MaterialService {
     return this.http.post<MaterialResponse>(this.apiUrl, material);
   }
 
-  findAll(): Observable<MaterialResponse[]> {
-    return this.http.get<MaterialResponse[]>(this.apiUrl);
+  findAll(ativo?: boolean): Observable<MaterialResponse[]> {
+    const url = ativo === undefined ? this.apiUrl : `${this.apiUrl}?ativo=${ativo}`;
+    return this.http.get<MaterialResponse[]>(url);
   }
 
   findById(id: number): Observable<MaterialResponse> {

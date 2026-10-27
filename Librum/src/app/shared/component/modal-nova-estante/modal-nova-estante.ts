@@ -18,7 +18,7 @@ export class ModalNovaEstante {
 
   nome: string = '';
   localizacao: string = '';
-  capacidade?: number;
+  capacidade = 100;
   qtdPrateleiras: number = 3;
 
   fechar() {
@@ -32,6 +32,9 @@ export class ModalNovaEstante {
       this.salvando ||
       !this.nome.trim() ||
       !this.localizacao.trim() ||
+      !Number.isInteger(this.capacidade) ||
+      this.capacidade < 1 ||
+      this.capacidade > 1000 ||
       !Number.isInteger(this.qtdPrateleiras) ||
       this.qtdPrateleiras < 1
     ) {
@@ -43,6 +46,12 @@ export class ModalNovaEstante {
       localizacao: this.localizacao.trim(),
       capacidade: this.capacidade,
       qtdPrateleiras: this.qtdPrateleiras,
+      prateleiras: Array.from({ length: this.qtdPrateleiras }, (_, index) => ({
+        nome: `Prateleira ${index + 1}`,
+        posicaoInicial: 1,
+        posicaoFinal: this.capacidade,
+        ordem: index + 1,
+      })),
     };
 
     this.estanteCriada.emit(novaEstante);
@@ -51,7 +60,7 @@ export class ModalNovaEstante {
   private resetForm() {
     this.nome = '';
     this.localizacao = '';
-    this.capacidade = undefined;
+    this.capacidade = 100;
     this.qtdPrateleiras = 3;
   }
 }

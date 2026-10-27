@@ -1,5 +1,5 @@
 <div class="modal fade show" [ngClass]="isOpen ? 'd-block' : 'd-none'" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog" [ngClass]="'modal-' + size">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -11,9 +11,12 @@
         <ng-content></ng-content>
       </div>
 
+      @if (showDefaultFooter) {
       <div class="modal-footer">
-        <button class="btn btn-danger" (click)="close()">Fechar</button>
+        <button type="button" class="btn btn-danger" (click)="close()">Fechar</button>
       </div>
+      }
+      <ng-content select="[modal-footer]"></ng-content>
 
     </div>
   </div>

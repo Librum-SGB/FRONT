@@ -7,6 +7,7 @@ import { ExemplarResponse } from '../../models/exemplar.model';
 import { MaterialResponse } from '../../models/material.model';
 import {
   EstanteRequestDto,
+  EstantePrateleiraDto,
   EstanteResponseDto,
   EstanteVirtualDto,
   ExemplarVirtualDto,
@@ -25,12 +26,8 @@ export class EstanteService {
   getEstantes(): Observable<EstanteVirtualDto[]> {
     return forkJoin({
       estantes: this.http.get<EstanteResponseDto[]>(`${this.apiUrl}/estantes?ativo=true`),
-      exemplares: this.http.get<ExemplarResponse[] | null>(
-        `${this.apiUrl}/exemplares?ativo=true`,
-      ),
-      materiais: this.http.get<MaterialResponse[] | null>(
-        `${this.apiUrl}/materiais?ativo=true`,
-      ),
+      exemplares: this.http.get<ExemplarResponse[] | null>(`${this.apiUrl}/exemplares`),
+      materiais: this.http.get<MaterialResponse[] | null>(`${this.apiUrl}/materiais`),
       autores: this.http.get<AutorResponse[] | null>(`${this.apiUrl}/autores?ativo=true`),
     }).pipe(
       map(({ estantes, exemplares, materiais, autores }) =>
@@ -41,6 +38,18 @@ export class EstanteService {
 
   criarEstante(estante: EstanteRequestDto): Observable<EstanteResponseDto> {
     return this.http.post<EstanteResponseDto>(`${this.apiUrl}/estantes`, estante);
+  }
+
+  atualizarEstante(id: number, estante: EstanteRequestDto): Observable<EstanteResponseDto> {
+    return this.http.put<EstanteResponseDto>(`${this.apiUrl}/estantes/${id}`, estante);
+  }
+
+  limparEstante(id: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/estantes/${id}/limpar`, {});
+  }
+
+  excluirEstante(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/estantes/${id}`);
   }
 
   private montarEstantes(
@@ -54,6 +63,9 @@ export class EstanteService {
     const exemplaresPorEstante = new Map<number, ExemplarVirtualDto[]>();
 
     for (const exemplar of exemplares) {
+      if (exemplar.estanteId == null) {
+        continue;
+      }
       const material = materiaisPorId.get(exemplar.materialId);
       if (!material) {
         throw new Error(
@@ -96,11 +108,15 @@ export class EstanteService {
     return estantes.map((estante) => {
       const exemplaresDaEstante = exemplaresPorEstante.get(estante.id) ?? [];
       const prateleirasPorNome = new Map<string, PrateleiraVirtualDto>();
+      const capacidade = estante.capacidade ?? 100;
 
       for (const exemplar of exemplaresDaEstante) {
         const nomePrateleira = exemplar.prateleira?.trim() || 'Prateleira 1';
         const prateleira = prateleirasPorNome.get(nomePrateleira) ?? {
           nome: nomePrateleira,
+          posicaoInicial: 1,
+          posicaoFinal: capacidade,
+          ordem: prateleirasPorNome.size + 1,
           exemplares: [],
         };
         prateleira.exemplares.push(exemplar);
@@ -108,15 +124,44 @@ export class EstanteService {
       }
 
       const quantidadePrateleiras = estante.qtdPrateleiras ?? 0;
-      for (let numero = 1; prateleirasPorNome.size < quantidadePrateleiras; numero++) {
-        const nomePrateleira = `Prateleira ${numero}`;
-        if (!prateleirasPorNome.has(nomePrateleira)) {
-          prateleirasPorNome.set(nomePrateleira, {
-            nome: nomePrateleira,
-            exemplares: [],
-          });
+      const configuradas = estante.prateleiras ?? [];
+      if (configuradas.length === 0) {
+        for (let numero = 1; prateleirasPorNome.size < quantidadePrateleiras; numero++) {
+          const nomePrateleira = `Prateleira ${numero}`;
+          if (!prateleirasPorNome.has(nomePrateleira)) {
+            prateleirasPorNome.set(nomePrateleira, {
+              nome: nomePrateleira,
+              posicaoInicial: 1,
+              posicaoFinal: capacidade,
+              ordem: numero,
+              exemplares: [],
+            });
+          }
         }
       }
+
+      const nomesConfigurados = new Set(configuradas.map((config) => config.nome));
+      const prateleirasConfiguradas = configuradas.length
+        ? [
+          ...configuradas.map((config: EstantePrateleiraDto) => ({
+            ...config,
+            exemplares: [...(prateleirasPorNome.get(config.nome)?.exemplares ?? [])]
+              .sort((a, b) => Number(a.posicao) - Number(b.posicao)),
+          })),
+          ...[...prateleirasPorNome.values()]
+            .filter((prateleira) => !nomesConfigurados.has(prateleira.nome))
+            .map((prateleira, index) => ({
+              ...prateleira,
+              ordem: configuradas.length + index + 1,
+              exemplares: [...prateleira.exemplares]
+                .sort((a, b) => Number(a.posicao) - Number(b.posicao)),
+            })),
+        ]
+        : [...prateleirasPorNome.values()].map((prateleira) => ({
+            ...prateleira,
+            exemplares: [...prateleira.exemplares]
+              .sort((a, b) => Number(a.posicao) - Number(b.posicao)),
+          }));
 
       return {
         id: estante.id,
@@ -124,7 +169,9 @@ export class EstanteService {
         filialId: estante.filialId,
         localizacao: estante.localizacao,
         capacidade: estante.capacidade,
-        prateleiras: [...prateleirasPorNome.values()],
+        prateleiras: prateleirasConfiguradas.sort(
+          (a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome, 'pt-BR'),
+        ),
       };
     });
   }
