@@ -42,6 +42,17 @@
 
       <div class="row">
         <div class="col-md-6 mb-3">
+          <label class="form-label">ISBN *</label>
+          <input type="text" class="form-control" formControlName="isbn"
+            placeholder="Digite o ISBN e tecle Enter ou Tab para preencher automaticamente"
+            (keydown.enter)="$event.preventDefault(); consultarIsbn()" (blur)="consultarIsbn()"
+            [class.is-invalid]="isInvalido(formLivro, 'isbn')">
+          <div class="form-text" *ngIf="consultandoIsbn">Consultando ISBN...</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
           <label class="form-label">Título *</label>
           <input type="text" class="form-control" formControlName="titulo"
             [class.is-invalid]="isInvalido(formLivro, 'titulo')">
@@ -72,21 +83,14 @@
         </div>
       </div>
 
-      <!-- ANO / ISBN / EDIÇÃO -->
+      <!-- ANO / EDIÇÃO -->
       <div class="row">
-        <div class="col-md-4 mb-3">
+        <div class="col-md-6 mb-3">
           <label class="form-label">Ano de Publicação *</label>
           <input type="number" class="form-control" min="1000" max="2100" formControlName="anoPublicacao"
             [class.is-invalid]="isInvalido(formLivro, 'anoPublicacao')">
         </div>
-
-        <div class="col-md-4 mb-3">
-          <label class="form-label">ISBN *</label>
-          <input type="text" class="form-control" formControlName="isbn"
-            [class.is-invalid]="isInvalido(formLivro, 'isbn')">
-        </div>
-
-        <div class="col-md-4 mb-3">
+        <div class="col-md-6 mb-3">
           <label class="form-label">Edição</label>
           <input type="text" class="form-control" formControlName="edicao"
             [class.is-invalid]="isInvalido(formLivro, 'edicao')">

@@ -15,7 +15,7 @@ import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
 import { GeneroResponse } from '../../models/genero.model';
-import { MaterialService } from '../../services/material';
+import { MaterialService, LivroExterno } from '../../services/material';
 import { AutorService } from '../../services/autor';
 import { EditoraService } from '../../services/editora';
 import { GeneroService } from '../../services/genero';
@@ -266,9 +266,102 @@ export class CadastrarMaterial implements OnInit {
     });
   }
 
+  // ---------- Auto-preenchimento por ISBN ----------
+
+  consultandoIsbn = false;
+  private ultimoIsbnConsultado = '';
+
+  private normalizar(texto: string): string {
+    return (texto ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  private achar<T extends { id: number; nome: string }>(lista: T[], nome?: string): T | undefined {
+    if (!nome) return undefined;
+    const alvo = this.normalizar(nome);
+    return lista.find((i) => this.normalizar(i.nome) === alvo);
+  }
+
+  consultarIsbn(): void {
+    const ctrl = this.formLivro.get('isbn');
+    const isbn = String(ctrl?.value ?? '').replace(/[^0-9Xx]/g, '');
+    if (isbn.length < 10 || isbn === this.ultimoIsbnConsultado) return;
+
+    this.ultimoIsbnConsultado = isbn;
+    this.consultandoIsbn = true;
+
+    this.materialService.consultarIsbn(isbn).subscribe({
+      next: (res) => {
+        this.consultandoIsbn = false;
+        if (res.jaCadastrado) {
+          this.toastService.aviso('Já existe um material cadastrado com este ISBN.');
+          return;
+        }
+        if (!res.encontradoExternamente || !res.livro) {
+          this.toastService.info('ISBN não encontrado nas bases externas. Preencha manualmente.');
+          return;
+        }
+        this.preencherPorLivroExterno(res.livro);
+      },
+      error: (err) => {
+        this.consultandoIsbn = false;
+        this.ultimoIsbnConsultado = '';
+        console.error('Erro ao consultar ISBN:', err);
+        this.toastService.erro('Erro ao consultar ISBN.');
+      },
+    });
+  }
+
+  private preencherPorLivroExterno(livro: LivroExterno): void {
+    const vazio = (campo: string) => {
+      const v = this.formLivro.get(campo)?.value;
+      return v === null || v === undefined || v === '';
+    };
+    const definir = (campo: string, valor: unknown) => {
+      if (valor !== null && valor !== undefined && valor !== '' && vazio(campo)) {
+        this.formLivro.get(campo)?.setValue(valor);
+      }
+    };
+
+    definir('titulo', livro.titulo);
+    definir('subtitulo', livro.subtitulo);
+    definir('anoPublicacao', livro.anoPublicacao);
+    definir('quantidadePaginas', livro.quantidadePaginas);
+    definir('sinopse', livro.sinopse);
+
+    const faltando: string[] = [];
+
+    const autor = this.achar(this.autores, livro.autores?.[0]);
+    if (autor) definir('autorId', autor.id);
+    else if (livro.autores?.length && vazio('autorId')) faltando.push(`autor "${livro.autores[0]}"`);
+
+    const editora = this.achar(this.editoras, livro.editora);
+    if (editora) definir('editoraId', editora.id);
+    else if (livro.editora && vazio('editoraId')) faltando.push(`editora "${livro.editora}"`);
+
+    if (this.generoIdsSelecionados.length === 0 && livro.generos?.length) {
+      const ids: number[] = [];
+      for (const g of livro.generos) {
+        const achado = this.achar(this.generos, g);
+        if (achado && !ids.includes(achado.id)) ids.push(achado.id);
+        else if (!achado) faltando.push(`gênero "${g}"`);
+      }
+      this.generoIdsSelecionados = ids;
+    }
+
+    this.toastService.sucesso('Dados preenchidos a partir do ISBN.');
+    if (faltando.length) {
+      this.toastService.aviso(`Não cadastrados no sistema: ${faltando.join(', ')}. Cadastre-os manualmente.`);
+    }
+  }
+
   // ---------- Limpeza geral ----------
 
   limpar() {
+    this.ultimoIsbnConsultado = '';
     this.enviado = false;
     this.mensagensErro = [];
     this.formLivro?.reset();
