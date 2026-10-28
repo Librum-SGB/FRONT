@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import {
   FormBuilder,
   FormGroup,
@@ -82,6 +83,7 @@ export class CadastrarMaterial implements OnInit {
     private autorService: AutorService,
     private editoraService: EditoraService,
     private generoService: GeneroService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -287,8 +289,18 @@ export class CadastrarMaterial implements OnInit {
 
   consultarIsbn(): void {
     const ctrl = this.formLivro.get('isbn');
-    const isbn = String(ctrl?.value ?? '').replace(/[^0-9Xx]/g, '');
-    if (isbn.length < 10 || isbn === this.ultimoIsbnConsultado) return;
+    const bruto = String(ctrl?.value ?? '').trim();
+    if (!bruto) return;
+    const isbn = bruto.replace(/[\s-]/g, '').toUpperCase();
+    const valido = /^\d{9}[\dX]$/.test(isbn) || /^\d{13}$/.test(isbn);
+    if (!valido) {
+      if (isbn !== this.ultimoIsbnConsultado) {
+        this.ultimoIsbnConsultado = isbn;
+        this.toastService.aviso('ISBN inválido: use 10 ou 13 dígitos (apenas números; o ISBN-10 pode terminar em X).');
+      }
+      return;
+    }
+    if (isbn === this.ultimoIsbnConsultado) return;
 
     this.ultimoIsbnConsultado = isbn;
     this.consultandoIsbn = true;
@@ -315,7 +327,7 @@ export class CadastrarMaterial implements OnInit {
     });
   }
 
-  private preencherPorLivroExterno(livro: LivroExterno): void {
+  private async preencherPorLivroExterno(livro: LivroExterno): Promise<void> {
     const vazio = (campo: string) => {
       const v = this.formLivro.get(campo)?.value;
       return v === null || v === undefined || v === '';
@@ -332,29 +344,72 @@ export class CadastrarMaterial implements OnInit {
     definir('quantidadePaginas', livro.quantidadePaginas);
     definir('sinopse', livro.sinopse);
 
-    const faltando: string[] = [];
+    const criados: string[] = [];
+    const falhas: string[] = [];
 
-    const autor = this.achar(this.autores, livro.autores?.[0]);
-    if (autor) definir('autorId', autor.id);
-    else if (livro.autores?.length && vazio('autorId')) faltando.push(`autor "${livro.autores[0]}"`);
+    const nomeAutor = livro.autores?.[0]?.trim();
+    if (nomeAutor && vazio('autorId')) {
+      let autor = this.achar(this.autores, nomeAutor);
+      if (!autor) {
+        try {
+          autor = await firstValueFrom(this.autorService.create({ nome: nomeAutor }));
+          this.autores = [...this.autores, autor].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+          criados.push(`autor "${autor.nome}"`);
+        } catch {
+          falhas.push(`autor "${nomeAutor}"`);
+        }
+      }
+      if (autor) {
+        this.formLivro.get('autorId')?.setValue(autor.id);
+        this.cdr.detectChanges();
+        this.autorSelectLivro?.selecionarPorId(autor.id);
+      }
+    }
 
-    const editora = this.achar(this.editoras, livro.editora);
-    if (editora) definir('editoraId', editora.id);
-    else if (livro.editora && vazio('editoraId')) faltando.push(`editora "${livro.editora}"`);
+    const nomeEditora = livro.editora?.trim();
+    if (nomeEditora && vazio('editoraId')) {
+      let editora = this.achar(this.editoras, nomeEditora);
+      if (!editora) {
+        try {
+          editora = await firstValueFrom(this.editoraService.create({ nome: nomeEditora }));
+          this.editoras = [...this.editoras, editora].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+          criados.push(`editora "${editora.nome}"`);
+        } catch {
+          falhas.push(`editora "${nomeEditora}"`);
+        }
+      }
+      if (editora) {
+        this.formLivro.get('editoraId')?.setValue(editora.id);
+        this.cdr.detectChanges();
+        this.editoraSelectLivro?.selecionarPorId(editora.id);
+      }
+    }
 
     if (this.generoIdsSelecionados.length === 0 && livro.generos?.length) {
       const ids: number[] = [];
-      for (const g of livro.generos) {
-        const achado = this.achar(this.generos, g);
-        if (achado && !ids.includes(achado.id)) ids.push(achado.id);
-        else if (!achado) faltando.push(`gênero "${g}"`);
+      for (const nome of livro.generos.map((g) => g.trim()).filter(Boolean)) {
+        let genero = this.achar(this.generos, nome);
+        if (!genero) {
+          try {
+            genero = await firstValueFrom(this.generoService.create({ nome }));
+            this.generos = [...this.generos, genero].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+            criados.push(`gênero "${genero.nome}"`);
+          } catch {
+            falhas.push(`gênero "${nome}"`);
+          }
+        }
+        if (genero && !ids.includes(genero.id)) ids.push(genero.id);
       }
       this.generoIdsSelecionados = ids;
     }
+    this.cdr.detectChanges();
 
     this.toastService.sucesso('Dados preenchidos a partir do ISBN.');
-    if (faltando.length) {
-      this.toastService.aviso(`Não cadastrados no sistema: ${faltando.join(', ')}. Cadastre-os manualmente.`);
+    if (criados.length) {
+      this.toastService.info(`Cadastrados automaticamente: ${criados.join(', ')}.`);
+    }
+    if (falhas.length) {
+      this.toastService.aviso(`Não foi possível cadastrar: ${falhas.join(', ')}. Cadastre-os manualmente.`);
     }
   }
 
