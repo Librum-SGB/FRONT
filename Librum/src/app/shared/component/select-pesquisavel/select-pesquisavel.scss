@@ -17,6 +17,16 @@
     max-height: 190px; // ~5 itens de 38px cada, o resto rola
     overflow-y: auto;
     margin-top: 2px;
+    background-color: var(--bs-body-bg);
+}
+
+.select-pesquisavel-lista > .list-group-item {
+    background-color: var(--bs-body-bg);
+}
+
+.item-desabilitado {
+    color: #8a8a8a;
+    cursor: not-allowed !important;
 }
 
 // botão "+" sobreposto no canto direito do input, verticalmente centralizado

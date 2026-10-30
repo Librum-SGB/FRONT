@@ -21,6 +21,7 @@ import { CadastrarMaterial } from '../cadastrar-material/cadastrar-material';
 import { OpcaoSelect, SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
 import { Router } from '@angular/router';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { opcoesMateriaisParaEstante } from './material-estante.util';
 
 @Component({
   selector: 'app-encontrar-material',
@@ -49,10 +50,10 @@ export class EncontrarMaterial implements OnInit {
   acaoEstanteConfirmada?: 'limpar' | 'excluir';
   modalAberta = false;
   modalEstanteAberta = false;
-  modalAdicionarLivroAberta = false;
+  modalAdicionarMaterialAberta = false;
   modalEditarExemplarAberta = false;
   modalConfirmarRemocaoAberta = false;
-  modalCadastroLivroAberta = false;
+  modalCadastroMaterialAberta = false;
   carregandoEstantes = false;
   carregandoMateriais = false;
   salvandoEstante = false;
@@ -62,10 +63,10 @@ export class EncontrarMaterial implements OnInit {
   erroAdicionarLivro?: string;
   erroEdicaoEstante?: string;
   erroAcaoEstante?: string;
-  materiaisDisponiveis: MaterialResponse[] = [];
-  exemplaresDisponiveis: ExemplarResponse[] = [];
-  todosExemplares: ExemplarResponse[] = [];
-  livroSelecionadoId?: number;
+  materiaisCadastrados: MaterialResponse[] = [];
+  exemplaresCadastrados: ExemplarResponse[] = [];
+  opcoesMateriais: OpcaoSelect[] = [];
+  materialSelecionadoId?: number;
   estanteSelecionadaId?: number;
   prateleiraSelecionada = '';
   posicaoLivro = '';
@@ -241,49 +242,44 @@ export class EncontrarMaterial implements OnInit {
     this.modalEstanteAberta = true;
   }
 
-  abrirModalAdicionarLivro(estanteId: number): void {
+  abrirModalAdicionarMaterial(estanteId: number): void {
     this.erroAdicionarLivro = undefined;
-    this.modalAdicionarLivroAberta = true;
+    this.modalAdicionarMaterialAberta = true;
     this.exemplarEmEdicao = undefined;
     this.estanteSelecionadaId = estanteId;
     this.prateleiraSelecionada = this.prateleirasDaEstante(this.estanteSelecionadaId)[0] ?? '';
     this.posicaoLivro = '';
-    this.livroSelecionadoId = undefined;
+    this.materialSelecionadoId = undefined;
+    this.opcoesMateriais = [];
     this.carregandoMateriais = true;
     forkJoin({
-      materiais: this.materialService.findAll(true),
-      exemplares: this.exemplarService.findAll(true),
+      materiais: this.materialService.findAll(),
+      exemplares: this.exemplarService.findAll(),
     }).subscribe({
       next: ({ materiais, exemplares }) => {
-        this.materiaisDisponiveis = materiais ?? [];
-        this.todosExemplares = exemplares ?? [];
-        this.exemplaresDisponiveis = (exemplares ?? []).filter(
-          (exemplar) => exemplar.estanteId == null,
+        this.materiaisCadastrados = materiais ?? [];
+        this.exemplaresCadastrados = exemplares ?? [];
+        this.opcoesMateriais = opcoesMateriaisParaEstante(
+          this.materiaisCadastrados,
+          this.exemplaresCadastrados,
+          new Set(this.estantes.map((estante) => estante.id)),
         );
         this.carregandoMateriais = false;
         this.changeDetectorRef.markForCheck();
       },
       error: (err: unknown) => {
         console.error('Erro ao carregar materiais para a estante', err);
-        this.erroAdicionarLivro = 'Não foi possível carregar os livros. Tente novamente.';
+        this.erroAdicionarLivro = 'Não foi possível carregar os materiais. Tente novamente.';
         this.carregandoMateriais = false;
         this.changeDetectorRef.markForCheck();
       },
     });
   }
 
-  get opcoesLivros(): OpcaoSelect[] {
-    const exemplaresDisponiveis = this.exemplaresDisponiveis.flatMap((exemplar) => {
-      const material = this.materiaisDisponiveis.find((item) => item.id === exemplar.materialId);
-      return material?.tipo === 'LIVRO'
-        ? [{ id: exemplar.id, nome: material.titulo }]
-        : [];
-    });
-    const idsMateriaisComExemplar = new Set(this.todosExemplares.map((exemplar) => exemplar.materialId));
-    const materiaisSemExemplares = this.materiaisDisponiveis
-      .filter((material) => material.tipo === 'LIVRO' && !idsMateriaisComExemplar.has(material.id))
-      .map((material) => ({ id: -material.id, nome: material.titulo }));
-    return [...exemplaresDisponiveis, ...materiaisSemExemplares];
+  private get exemplaresDisponiveis(): ExemplarResponse[] {
+    return this.exemplaresCadastrados.filter(
+      (exemplar) => exemplar.ativo && exemplar.estanteId == null,
+    );
   }
 
   prateleirasDaEstante(estanteId: number | undefined): string[] {
@@ -329,39 +325,44 @@ export class EncontrarMaterial implements OnInit {
       .filter((posicao) => !ocupadas.has(posicao));
   }
 
-  abrirCadastroLivro(): void {
-    this.modalAdicionarLivroAberta = false;
-    this.modalCadastroLivroAberta = true;
+  abrirCadastroMaterial(): void {
+    this.modalAdicionarMaterialAberta = false;
+    this.modalCadastroMaterialAberta = true;
   }
 
-  aoCadastrarLivro(material: MaterialResponse): void {
-    this.modalCadastroLivroAberta = false;
-    this.materiaisDisponiveis = [
-      ...this.materiaisDisponiveis.filter((item) => item.id !== material.id),
+  aoCadastrarMaterial(material: MaterialResponse): void {
+    this.modalCadastroMaterialAberta = false;
+    this.materiaisCadastrados = [
+      ...this.materiaisCadastrados.filter((item) => item.id !== material.id),
       material,
     ];
-    this.livroSelecionadoId = -material.id;
-    this.modalAdicionarLivroAberta = true;
+    this.opcoesMateriais = opcoesMateriaisParaEstante(
+      this.materiaisCadastrados,
+      this.exemplaresCadastrados,
+      new Set(this.estantes.map((estante) => estante.id)),
+    );
+    this.materialSelecionadoId = material.id;
+    this.modalAdicionarMaterialAberta = true;
   }
 
-  fecharModalAdicionarLivro(): void {
+  fecharModalAdicionarMaterial(): void {
     if (this.salvandoLivro) {
       return;
     }
 
-    this.modalAdicionarLivroAberta = false;
+    this.modalAdicionarMaterialAberta = false;
     this.erroAdicionarLivro = undefined;
   }
 
-  adicionarLivro(): void {
+  adicionarMaterial(): void {
     const estante = this.estantes.find((item) => item.id === this.estanteSelecionadaId);
     if (
       !estante ||
-      this.livroSelecionadoId === undefined ||
+      this.materialSelecionadoId === undefined ||
       !this.prateleiraSelecionada.trim() ||
       !this.posicaoLivro
     ) {
-      this.erroAdicionarLivro = 'Selecione um livro, uma estante, uma prateleira e informe a posição.';
+      this.erroAdicionarLivro = 'Selecione um material, uma estante, uma prateleira e informe a posição.';
       return;
     }
     if (
@@ -374,23 +375,22 @@ export class EncontrarMaterial implements OnInit {
 
     this.salvandoLivro = true;
     this.erroAdicionarLivro = undefined;
-    const escolhido = this.livroSelecionadoId;
-    const existente = escolhido > 0
-      ? this.exemplaresDisponiveis.find((exemplar) => exemplar.id === escolhido)
-      : undefined;
-    if (
-      (escolhido > 0 && !existente) ||
-      (escolhido < 0 && !this.materiaisDisponiveis.some((material) =>
-        material.id === -escolhido && material.tipo === 'LIVRO' &&
-        !this.todosExemplares.some((exemplar) => exemplar.materialId === material.id),
-      ))
-    ) {
-      this.erroAdicionarLivro = 'O exemplar selecionado não está mais disponível. Atualize a lista e tente novamente.';
+    const materialId = this.materialSelecionadoId;
+    const material = this.materiaisCadastrados.find((item) => item.id === materialId);
+    const existente = this.exemplaresDisponiveis.find(
+      (exemplar) => exemplar.materialId === materialId,
+    );
+    const materialJaNaEstante =
+      this.opcoesMateriais.find((opcao) => opcao.id === materialId)?.desabilitado ?? false;
+    if (!material || materialJaNaEstante) {
+      this.erroAdicionarLivro = materialJaNaEstante
+        ? 'Este material já está em uma estante e não pode ser adicionado novamente.'
+        : 'O material selecionado não está mais disponível. Atualize a lista e tente novamente.';
       this.salvandoLivro = false;
       return;
     }
     const payload: ExemplarRequest = {
-      materialId: existente?.materialId ?? -escolhido,
+      materialId: material.id,
       filialId: estante.filialId,
       estanteId: estante.id,
       codigoBarras: existente?.codigoBarras ?? this.gerarCodigoBarras(),
@@ -412,12 +412,12 @@ export class EncontrarMaterial implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.modalAdicionarLivroAberta = false;
+          this.modalAdicionarMaterialAberta = false;
           this.carregarEstantes();
           this.changeDetectorRef.markForCheck();
         },
         error: (err: unknown) => {
-          console.error('Erro ao adicionar livro à estante', err);
+          console.error('Erro ao adicionar material à estante', err);
           this.erroAdicionarLivro = this.mensagemErroOperacaoExemplar(err);
           this.changeDetectorRef.markForCheck();
         },

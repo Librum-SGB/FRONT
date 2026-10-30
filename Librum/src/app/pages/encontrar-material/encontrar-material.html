@@ -29,8 +29,8 @@
         <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
           <h5 class="text mb-0">{{ estante.nome }} — {{ estante.localizacao }}</h5>
           <button type="button" class="btn btn-primary flex-shrink-0"
-            (click)="abrirModalAdicionarLivro(estante.id)">
-            + Adicionar livro
+            (click)="abrirModalAdicionarMaterial(estante.id)">
+            + Adicionar material
           </button>
         </div>
 
@@ -88,34 +88,34 @@
   [salvando]="salvandoEstante" [erro]="erroEstante" (estanteCriada)="onEstanteCriada($event)">
 </app-modal-nova-estante>
 
-@if (modalAdicionarLivroAberta) {
+@if (modalAdicionarMaterialAberta) {
 <div class="modal-backdrop fade show"></div>
-<div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modalAdicionarLivroTitulo">
+<div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modalAdicionarMaterialTitulo">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content bg-body">
       <div class="modal-header border-secondary">
-        <h5 class="modal-title" id="modalAdicionarLivroTitulo">Adicionar livro à estante</h5>
+        <h5 class="modal-title" id="modalAdicionarMaterialTitulo">Adicionar material à estante</h5>
         <button type="button" class="btn-close btn-close-white" aria-label="Fechar"
-          (click)="fecharModalAdicionarLivro()" [disabled]="salvandoLivro"></button>
+          (click)="fecharModalAdicionarMaterial()" [disabled]="salvandoLivro"></button>
       </div>
 
-      <form (ngSubmit)="adicionarLivro()">
+      <form (ngSubmit)="adicionarMaterial()">
         <div class="modal-body">
           <div class="mb-3">
-            <label for="buscaLivroEstante" class="form-label">Buscar livro cadastrado</label>
+            <label for="buscaLivroEstante" class="form-label">Buscar material cadastrado</label>
             <div>
-              <app-select-pesquisavel [itens]="opcoesLivros"
-                [maxResultados]="5" [(ngModel)]="livroSelecionadoId"
+              <app-select-pesquisavel [itens]="opcoesMateriais"
+                [(ngModel)]="materialSelecionadoId"
                 [permitirCriar]="true" [ngModelOptions]="{standalone: true}"
-                placeholder="Digite para buscar livro..." (criar)="abrirCadastroLivro()">
+                placeholder="Digite para buscar material..." (criar)="abrirCadastroMaterial()">
               </app-select-pesquisavel>
             </div>
           </div>
 
           @if (carregandoMateriais) {
-          <p class="mb-3">Carregando livros...</p>
-          } @else if (opcoesLivros.length === 0) {
-          <p class="mb-3">Nenhum livro cadastrado. Use o botão + para cadastrar.</p>
+          <p class="mb-3">Carregando materiais...</p>
+          } @else if (opcoesMateriais.length === 0) {
+          <p class="mb-3">Nenhum material disponível para adicionar.</p>
           }
 
           <div class="mb-3">
@@ -161,11 +161,11 @@
         </div>
 
         <div class="modal-footer border-secondary">
-          <button type="button" class="btn btn-outline-secondary" (click)="fecharModalAdicionarLivro()"
+          <button type="button" class="btn btn-outline-secondary" (click)="fecharModalAdicionarMaterial()"
             [disabled]="salvandoLivro">Cancelar</button>
           <button type="submit" class="btn btn-success" [disabled]="salvandoLivro || carregandoMateriais ||
-              opcoesLivros.length === 0 || livroSelecionadoId === undefined || !prateleiraSelecionada || !posicaoLivro">
-            {{ salvandoLivro ? 'Adicionando...' : 'Adicionar livro' }}
+              opcoesMateriais.length === 0 || materialSelecionadoId === undefined || !prateleiraSelecionada || !posicaoLivro">
+            {{ salvandoLivro ? 'Adicionando...' : 'Adicionar material' }}
           </button>
         </div>
       </form>
@@ -361,19 +361,19 @@
 </div>
 }
 
-@if (modalCadastroLivroAberta) {
-<div class="modal-backdrop fade show cadastro-livro-backdrop"></div>
-<div class="modal d-block cadastro-livro-modal" tabindex="-1" role="dialog" aria-modal="true"
-  aria-label="Cadastrar novo livro">
+@if (modalCadastroMaterialAberta) {
+<div class="modal-backdrop fade show cadastro-material-backdrop"></div>
+<div class="modal d-block cadastro-material-modal" tabindex="-1" role="dialog" aria-modal="true"
+  aria-label="Cadastrar novo material">
   <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
     <div class="modal-content bg-body">
       <div class="modal-header border-secondary">
-        <h5 class="modal-title">Cadastrar novo livro</h5>
+        <h5 class="modal-title">Cadastrar novo material</h5>
         <button type="button" class="btn-close btn-close-white" aria-label="Fechar cadastro"
-          (click)="modalCadastroLivroAberta = false"></button>
+          (click)="modalCadastroMaterialAberta = false"></button>
       </div>
       <div class="modal-body">
-        <app-cadastrar-material (materialCriado)="aoCadastrarLivro($event)"></app-cadastrar-material>
+        <app-cadastrar-material (materialCriado)="aoCadastrarMaterial($event)"></app-cadastrar-material>
       </div>
     </div>
   </div>

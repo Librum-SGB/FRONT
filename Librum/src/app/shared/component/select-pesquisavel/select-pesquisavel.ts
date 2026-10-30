@@ -16,6 +16,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
 export interface OpcaoSelect {
   id: number;
   nome: string;
+  desabilitado?: boolean;
 }
 
 @Component({
@@ -38,7 +39,6 @@ export class SelectPesquisavel implements ControlValueAccessor, OnChanges {
   @Input() multiplo = false;
   @Input() permitirCriar = true;
   @Input() invalido = false;
-  @Input() maxResultados?: number;
 
   @Output() criar = new EventEmitter<void>();
 
@@ -111,8 +111,7 @@ export class SelectPesquisavel implements ControlValueAccessor, OnChanges {
       const bate = i.nome.toLowerCase().includes(termo);
       return this.multiplo ? bate && !this.valoresMultiplos.includes(i.id) : bate;
     });
-    this.itensFiltrados =
-      this.maxResultados == null ? filtrados : filtrados.slice(0, this.maxResultados);
+    this.itensFiltrados = filtrados;
   }
 
   abrirLista(): void {
@@ -121,6 +120,10 @@ export class SelectPesquisavel implements ControlValueAccessor, OnChanges {
   }
 
   selecionar(item: OpcaoSelect): void {
+    if (item.desabilitado) {
+      return;
+    }
+
     if (this.multiplo) {
       if (!this.valoresMultiplos.includes(item.id)) {
         this.valoresMultiplos = [...this.valoresMultiplos, item.id];
