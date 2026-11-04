@@ -1,0 +1,71 @@
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.metric,
+.painel,
+.barras {
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid rgba(127, 127, 127, 0.25);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .rotulo {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .valor {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.status.ok { color: #198754; }
+.status.alerta { color: #fd7e14; }
+.status.erro, .valor.erro { color: #dc3545; }
+
+.barras {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.barra-topo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.graficos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+
+  h6 {
+    margin-bottom: 8px;
+  }
+}
+
+.live {
+  margin-left: 12px;
+  color: #198754;
+  font-size: 0.8rem;
+
+  i { font-size: 0.5rem; animation: pulsar 1.5s infinite; }
+  &.off { color: #dc3545; i { animation: none; } }
+}
+
+@keyframes pulsar {
+  50% { opacity: 0.2; }
+}

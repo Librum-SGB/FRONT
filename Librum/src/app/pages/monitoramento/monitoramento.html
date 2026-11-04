@@ -1,0 +1,103 @@
+<app-corpo-padrao>
+  <div class="titulo">Monitoramento do Servidor</div>
+  <div class="subtitulo">
+    Atualização em tempo real (a cada 2s) via Spring Actuator
+    <span class="live" [class.off]="!conectado()">
+      <i class="bi bi-circle-fill"></i> {{ conectado() ? 'ao vivo' : 'sem conexão' }}
+    </span>
+  </div>
+
+  @if (!conectado()) {
+    <div class="alert alert-warning mt-3">
+      Não foi possível ler as métricas. Verifique se o servidor está no ar e se você tem perfil ADMIN.
+    </div>
+  }
+
+  <div class="cards">
+    <div class="metric">
+      <span class="rotulo">Status</span>
+      <span class="valor status" [ngClass]="classeStatus(atual()?.status)">{{ atual()?.status ?? '—' }}</span>
+    </div>
+    <div class="metric">
+      <span class="rotulo">Uptime</span>
+      <span class="valor">{{ formatarUptime(atual()?.uptimeSegundos) }}</span>
+    </div>
+    <div class="metric">
+      <span class="rotulo">Requisições (total)</span>
+      <span class="valor">{{ atual()?.requisicoes ?? '—' | number: '1.0-0' }}</span>
+    </div>
+    <div class="metric">
+      <span class="rotulo">Erros 5xx</span>
+      <span class="valor" [class.erro]="(atual()?.requisicoesErro ?? 0) > 0">
+        {{ atual()?.requisicoesErro ?? 0 | number: '1.0-0' }} ({{ taxaErro() | number: '1.0-2' }}%)
+      </span>
+    </div>
+    <div class="metric">
+      <span class="rotulo">Threads ativas</span>
+      <span class="valor">{{ atual()?.threads ?? '—' }}</span>
+    </div>
+    <div class="metric">
+      <span class="rotulo">Classes carregadas</span>
+      <span class="valor">{{ atual()?.classes ?? '—' | number: '1.0-0' }}</span>
+    </div>
+    <div class="metric">
+      <span class="rotulo">Pausas de GC</span>
+      <span class="valor">{{ atual()?.gcPausas ?? '—' }}</span>
+    </div>
+    <div class="metric">
+      <span class="rotulo">Maior latência HTTP</span>
+      <span class="valor">{{ (atual()?.tempoMaxRequisicoes ?? 0) * 1000 | number: '1.0-0' }} ms</span>
+    </div>
+  </div>
+
+  <div class="barras">
+    <div class="barra-item">
+      <div class="barra-topo">
+        <span>Heap JVM</span>
+        <span>{{ formatarBytes(atual()?.heapUsado) }} / {{ formatarBytes(atual()?.heapMax) }}</span>
+      </div>
+      <div class="progress"><div class="progress-bar" [style.width.%]="heapPercentual() ?? 0"></div></div>
+    </div>
+    <div class="barra-item">
+      <div class="barra-topo">
+        <span>Disco</span>
+        <span>{{ formatarBytes(atual()?.discoLivre) }} livres de {{ formatarBytes(atual()?.discoTotal) }}</span>
+      </div>
+      <div class="progress"><div class="progress-bar bg-warning" [style.width.%]="discoUsadoPercentual() ?? 0"></div></div>
+    </div>
+    <div class="barra-item">
+      <div class="barra-topo">
+        <span>Pool de conexões (Hikari)</span>
+        <span>{{ atual()?.conexoesAtivas ?? '—' }} / {{ atual()?.conexoesMax ?? '—' }}</span>
+      </div>
+      <div class="progress"><div class="progress-bar bg-info" [style.width.%]="poolPercentual() ?? 0"></div></div>
+    </div>
+  </div>
+
+  <div class="graficos">
+    <section class="painel">
+      <h6>CPU do sistema (%)</h6>
+      <app-grafico-linha titulo="CPU do sistema" [valores]="cpuSistema()" [maximoFixo]="100" unidade="%" cor="#dc3545" [capacidade]="janela" />
+    </section>
+    <section class="painel">
+      <h6>CPU do processo (%)</h6>
+      <app-grafico-linha titulo="CPU do processo" [valores]="cpuProcesso()" [maximoFixo]="100" unidade="%" cor="#fd7e14" [capacidade]="janela" />
+    </section>
+    <section class="painel">
+      <h6>Heap usado (MB)</h6>
+      <app-grafico-linha titulo="Heap usado" [valores]="heap()" unidade=" MB" cor="#0d6efd" [capacidade]="janela" />
+    </section>
+    <section class="painel">
+      <h6>Threads</h6>
+      <app-grafico-linha titulo="Threads" [valores]="threads()" cor="#6f42c1" [capacidade]="janela" />
+    </section>
+    <section class="painel">
+      <h6>Requisições por segundo</h6>
+      <app-grafico-linha titulo="Requisições por segundo" [valores]="reqPorSegundo()" unidade=" req/s" cor="#198754" [capacidade]="janela" />
+    </section>
+    <section class="painel">
+      <h6>Latência média (ms)</h6>
+      <app-grafico-linha titulo="Latência média" [valores]="latenciaMedia()" unidade=" ms" cor="#20c997" [capacidade]="janela" />
+    </section>
+  </div>
+</app-corpo-padrao>

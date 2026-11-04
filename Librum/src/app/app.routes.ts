@@ -16,6 +16,7 @@ import { ChatSuporte } from './pages/chat-suporte/chat-suporte';
 import { RenovarDevolverMaterial } from './pages/renovar-devolver-material/renovar-devolver-material';
 import { Bloqueios } from './pages/bloqueios/bloqueios';
 import { ReservarMaterial } from './pages/reservar-material/reservar-material';
+import { Monitoramento } from './pages/monitoramento/monitoramento';
 
 export const routes: Routes = [
   { path: '', component: TelaLoginComponent },
@@ -36,4 +37,5 @@ export const routes: Routes = [
   { path: 'bloqueios', component: Bloqueios },
   { path: 'reservar', component: ReservarMaterial },
   { path: 'reservar-material', component: ReservarMaterial },
+  { path: 'monitoramento', component: Monitoramento },
 ];
