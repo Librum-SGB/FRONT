@@ -7,6 +7,7 @@
     </span>
   </div>
 
+<div class="corpo">
   @if (!conectado()) {
     <div class="alert alert-warning mt-3">
       Não foi possível ler as métricas. Verifique se o servidor está no ar e se você tem perfil ADMIN.
@@ -100,4 +101,5 @@
       <app-grafico-linha titulo="Latência média" [valores]="latenciaMedia()" unidade=" ms" cor="#20c997" [capacidade]="janela" />
     </section>
   </div>
+</div>
 </app-corpo-padrao>
