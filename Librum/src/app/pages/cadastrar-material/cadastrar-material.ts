@@ -1,4 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import {
   FormBuilder,
   FormGroup,
@@ -15,7 +17,7 @@ import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
 import { GeneroResponse } from '../../models/genero.model';
-import { MaterialService } from '../../services/material';
+import { MaterialService, LivroExterno } from '../../services/material';
 import { AutorService } from '../../services/autor';
 import { EditoraService } from '../../services/editora';
 import { GeneroService } from '../../services/genero';
@@ -25,6 +27,8 @@ import { CadastroEditoraModal } from '../../shared/component/cadastro-editora-mo
 import { CadastroGeneroModal } from '../../shared/component/cadastro-genero-modal/cadastro-genero-modal';
 import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { FormUtils } from '../../utils/FormUtil';
+import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 
 @Component({
   selector: 'app-cadastrar-material',
@@ -39,6 +43,7 @@ import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
     CadastroGeneroModal,
     SelectPesquisavel,
     LbrButtom,
+    AlertaErros,
   ],
   templateUrl: './cadastrar-material.html',
   styleUrl: './cadastrar-material.scss',
@@ -81,6 +86,7 @@ export class CadastrarMaterial implements OnInit {
     private autorService: AutorService,
     private editoraService: EditoraService,
     private generoService: GeneroService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -163,63 +169,20 @@ export class CadastrarMaterial implements OnInit {
 
   // ---------- Validação genérica (reaproveitada pelos 3 forms) ----------
 
+  // ---------- usado pelo template ----------
   isInvalido(form: FormGroup, campo: string): boolean {
-    const control = form.get(campo);
-    return (control?.invalid && this.enviado) ?? false;
+    return FormUtils.isInvalido(form, campo, this.enviado);
   }
 
-  private gerarMensagensErro(form: FormGroup, nomesCampos: Record<string, string>): void {
-    this.mensagensErro = [];
-    let possuiRequired = false;
-
-    Object.keys(form.controls).forEach((campo) => {
-      const control = form.get(campo);
-      if (!control?.errors) return;
-
-      if (control.hasError('required')) possuiRequired = true;
-
-      const nome = nomesCampos[campo] ?? campo;
-
-      if (control.hasError('minlength')) {
-        const erro = control.getError('minlength');
-        this.mensagensErro.push(
-          `${nome} deve possuir no mínimo ${erro.requiredLength} caracteres.`,
-        );
-      }
-      if (control.hasError('maxlength')) {
-        const erro = control.getError('maxlength');
-        this.mensagensErro.push(
-          `${nome} deve possuir no máximo ${erro.requiredLength} caracteres.`,
-        );
-      }
-      if (control.hasError('min')) {
-        this.mensagensErro.push(
-          `${nome} deve ser maior ou igual a ${control.getError('min').min}.`,
-        );
-      }
-      if (control.hasError('max')) {
-        this.mensagensErro.push(
-          `${nome} deve ser menor ou igual a ${control.getError('max').max}.`,
-        );
-      }
-      if (control.hasError('pattern')) {
-        this.mensagensErro.push(`${nome} possui um formato inválido.`);
-      }
-    });
-
-    if (possuiRequired) {
-      this.mensagensErro.push('Preencha todos os campos obrigatórios.');
-    }
+  private validar(form: FormGroup, nomes: Record<string, string>): boolean {
+    this.enviado = true;
+    this.mensagensErro = FormUtils.gerarMensagensErro(form, nomes);
+    return form.valid;
   }
-
   // ---------- LIVRO ----------
 
   salvarLivro() {
-    if (!this.formLivro.valid) {
-      this.enviado = true;
-      this.gerarMensagensErro(this.formLivro, this.nomesCamposLivro);
-      return;
-    }
+    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
 
     const form = this.formLivro.getRawValue();
 
@@ -253,11 +216,7 @@ export class CadastrarMaterial implements OnInit {
   // ---------- PERIÓDICO ----------
 
   salvarPeriodico() {
-    if (!this.formPeriodico.valid) {
-      this.enviado = true;
-      this.gerarMensagensErro(this.formPeriodico, this.nomesCamposPeriodico);
-      return;
-    }
+    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
 
     const form = this.formPeriodico.getRawValue();
 
@@ -288,11 +247,7 @@ export class CadastrarMaterial implements OnInit {
   // ---------- OUTROS MATERIAIS ----------
 
   salvarOutro() {
-    if (!this.formOutros.valid) {
-      this.enviado = true;
-      this.gerarMensagensErro(this.formOutros, this.nomesCamposOutros);
-      return;
-    }
+    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
 
     const form = this.formOutros.getRawValue();
 
@@ -319,9 +274,155 @@ export class CadastrarMaterial implements OnInit {
     });
   }
 
+  // ---------- Auto-preenchimento por ISBN ----------
+
+  consultandoIsbn = false;
+  private ultimoIsbnConsultado = '';
+
+  private normalizar(texto: string): string {
+    return (texto ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  private achar<T extends { id: number; nome: string }>(lista: T[], nome?: string): T | undefined {
+    if (!nome) return undefined;
+    const alvo = this.normalizar(nome);
+    return lista.find((i) => this.normalizar(i.nome) === alvo);
+  }
+
+  consultarIsbn(): void {
+    const ctrl = this.formLivro.get('isbn');
+    const bruto = String(ctrl?.value ?? '').trim();
+    if (!bruto) return;
+    const isbn = bruto.replace(/[\s-]/g, '').toUpperCase();
+    const valido = /^\d{9}[\dX]$/.test(isbn) || /^\d{13}$/.test(isbn);
+    if (!valido) {
+      if (isbn !== this.ultimoIsbnConsultado) {
+        this.ultimoIsbnConsultado = isbn;
+        this.toastService.aviso('ISBN inválido: use 10 ou 13 dígitos (apenas números; o ISBN-10 pode terminar em X).');
+      }
+      return;
+    }
+    if (isbn === this.ultimoIsbnConsultado) return;
+
+    this.ultimoIsbnConsultado = isbn;
+    this.consultandoIsbn = true;
+
+    this.materialService.consultarIsbn(isbn).subscribe({
+      next: (res) => {
+        this.consultandoIsbn = false;
+        if (res.jaCadastrado) {
+          this.toastService.aviso('Já existe um material cadastrado com este ISBN.');
+          return;
+        }
+        if (!res.encontradoExternamente || !res.livro) {
+          this.toastService.info('ISBN não encontrado nas bases externas. Preencha manualmente.');
+          return;
+        }
+        this.preencherPorLivroExterno(res.livro);
+      },
+      error: (err) => {
+        this.consultandoIsbn = false;
+        this.ultimoIsbnConsultado = '';
+        console.error('Erro ao consultar ISBN:', err);
+        this.toastService.erro('Erro ao consultar ISBN.');
+      },
+    });
+  }
+
+  private async preencherPorLivroExterno(livro: LivroExterno): Promise<void> {
+    const vazio = (campo: string) => {
+      const v = this.formLivro.get(campo)?.value;
+      return v === null || v === undefined || v === '';
+    };
+    const definir = (campo: string, valor: unknown) => {
+      if (valor !== null && valor !== undefined && valor !== '' && vazio(campo)) {
+        this.formLivro.get(campo)?.setValue(valor);
+      }
+    };
+
+    definir('titulo', livro.titulo);
+    definir('subtitulo', livro.subtitulo);
+    definir('anoPublicacao', livro.anoPublicacao);
+    definir('quantidadePaginas', livro.quantidadePaginas);
+    definir('sinopse', livro.sinopse);
+
+    const criados: string[] = [];
+    const falhas: string[] = [];
+
+    const nomeAutor = livro.autores?.[0]?.trim();
+    if (nomeAutor && vazio('autorId')) {
+      let autor = this.achar(this.autores, nomeAutor);
+      if (!autor) {
+        try {
+          autor = await firstValueFrom(this.autorService.create({ nome: nomeAutor }));
+          this.autores = [...this.autores, autor].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+          criados.push(`autor "${autor.nome}"`);
+        } catch {
+          falhas.push(`autor "${nomeAutor}"`);
+        }
+      }
+      if (autor) {
+        this.formLivro.get('autorId')?.setValue(autor.id);
+        this.cdr.detectChanges();
+        this.autorSelectLivro?.selecionarPorId(autor.id);
+      }
+    }
+
+    const nomeEditora = livro.editora?.trim();
+    if (nomeEditora && vazio('editoraId')) {
+      let editora = this.achar(this.editoras, nomeEditora);
+      if (!editora) {
+        try {
+          editora = await firstValueFrom(this.editoraService.create({ nome: nomeEditora }));
+          this.editoras = [...this.editoras, editora].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+          criados.push(`editora "${editora.nome}"`);
+        } catch {
+          falhas.push(`editora "${nomeEditora}"`);
+        }
+      }
+      if (editora) {
+        this.formLivro.get('editoraId')?.setValue(editora.id);
+        this.cdr.detectChanges();
+        this.editoraSelectLivro?.selecionarPorId(editora.id);
+      }
+    }
+
+    if (this.generoIdsSelecionados.length === 0 && livro.generos?.length) {
+      const ids: number[] = [];
+      for (const nome of livro.generos.map((g) => g.trim()).filter(Boolean)) {
+        let genero = this.achar(this.generos, nome);
+        if (!genero) {
+          try {
+            genero = await firstValueFrom(this.generoService.create({ nome }));
+            this.generos = [...this.generos, genero].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+            criados.push(`gênero "${genero.nome}"`);
+          } catch {
+            falhas.push(`gênero "${nome}"`);
+          }
+        }
+        if (genero && !ids.includes(genero.id)) ids.push(genero.id);
+      }
+      this.generoIdsSelecionados = ids;
+    }
+    this.cdr.detectChanges();
+
+    this.toastService.sucesso('Dados preenchidos a partir do ISBN.');
+    if (criados.length) {
+      this.toastService.info(`Cadastrados automaticamente: ${criados.join(', ')}.`);
+    }
+    if (falhas.length) {
+      this.toastService.aviso(`Não foi possível cadastrar: ${falhas.join(', ')}. Cadastre-os manualmente.`);
+    }
+  }
+
   // ---------- Limpeza geral ----------
 
   limpar() {
+    this.ultimoIsbnConsultado = '';
     this.enviado = false;
     this.mensagensErro = [];
     this.formLivro?.reset();

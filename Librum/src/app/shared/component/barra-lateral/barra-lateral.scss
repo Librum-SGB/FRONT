@@ -1,0 +1,306 @@
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  flex: 0 0 auto;
+  min-height: 0;
+  min-width: 0;
+
+  --sidebar-bg: var(--bs-body-bg);
+  --sidebar-border: var(--bs-border-color);
+  --text-main: var(--bs-body-color);
+  --text-muted: var(--bs-secondary-color);
+  --hover-bg: var(--bs-tertiary-bg);
+  --active-bg: rgba(var(--bs-primary-rgb), 0.1);
+  --active-border: var(--bs-primary);
+  --divider-color: var(--bs-border-color);
+}
+
+.barra-lateral {
+  width: 240px;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  transition: width 0.3s ease;
+
+  // Somente a área superior pode rolar.
+  .menu-scroll {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-secondary-bg) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // Rodapé sempre visível, sem participar da rolagem superior.
+  .menu-section {
+    position: relative;
+    flex: 0 0 auto;
+    margin-top: auto;
+    padding-bottom: 0.5rem;
+    overflow: visible;
+    background-color: var(--sidebar-bg);
+  }
+
+  .section-title {
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+  }
+
+  .menu-item {
+    min-height: 44px;
+    padding: 10px 20px;
+    border: 0;
+    border-left: 3px solid transparent;
+    color: var(--text-main);
+    background-color: transparent;
+    font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      padding 0.3s ease;
+
+    &:hover {
+      background-color: var(--hover-bg);
+      color: var(--bs-body-color);
+    }
+
+    &.active {
+      border-left-color: var(--active-border);
+      background-color: var(--active-bg);
+      font-weight: 500;
+      color: var(--active-border);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--bs-primary);
+      outline-offset: -2px;
+    }
+
+    i {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      min-width: 20px;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .menu-label {
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+  }
+
+  .divider {
+    border-color: var(--divider-color);
+    opacity: 1;
+  }
+
+  .icon-green {
+    color: var(--bs-success);
+  }
+
+  .icon-yellow {
+    color: var(--bs-warning);
+  }
+
+  .icon-blue {
+    color: var(--bs-primary);
+  }
+
+  .icon-red {
+    color: var(--bs-danger);
+  }
+
+  .icon-default {
+    color: var(--text-muted);
+  }
+
+  .menu-item.text-red {
+    color: var(--bs-danger);
+
+    &:hover {
+      background-color: rgba(var(--bs-danger-rgb), 0.1);
+      color: var(--bs-danger);
+    }
+  }
+
+  .menu-group {
+    .group-header {
+      background-color: var(--bs-tertiary-bg);
+      font-weight: 500;
+
+      &[aria-expanded='true'] .chevron-icon {
+        transform: rotate(180deg);
+      }
+    }
+
+    .chevron-icon {
+      font-size: 13px;
+      transition: transform 0.3s ease;
+    }
+
+    .submenu .menu-item {
+      padding-left: 2.5rem;
+      font-size: 13.5px;
+    }
+  }
+
+  // Menu recolhido no desktop.
+  &.recolhida {
+    width: 64px;
+
+    .section-title,
+    .menu-label {
+      display: none;
+      opacity: 0;
+    }
+
+    .menu-item {
+      justify-content: center;
+      padding: 10px 0;
+
+      i {
+        margin-left: 0;
+        font-size: 19px;
+      }
+    }
+
+    .menu-group {
+      .chevron-icon {
+        display: none;
+      }
+
+      .submenu .menu-item {
+        padding-left: 0;
+      }
+    }
+
+    .divider {
+      width: 36px;
+      margin-inline: auto !important;
+    }
+  }
+}
+
+/* Mobile e tablet */
+@media (max-width: 991.98px) {
+  :host {
+    display: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    width: 260px;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  :host(.mobile-aberta) {
+    display: flex;
+  }
+
+  .barra-lateral,
+  .barra-lateral.recolhida {
+    width: 260px;
+    height: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+
+    // A área superior continua sendo a única rolável.
+    .menu-scroll {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    // O rodapé fica fixo dentro da barra.
+    .menu-section {
+      flex: 0 0 auto;
+      margin-top: auto;
+      background-color: var(--sidebar-bg);
+    }
+
+    .section-title,
+    .menu-label {
+      display: inline;
+      opacity: 1;
+    }
+
+    .menu-item {
+      justify-content: flex-start;
+      padding: 10px 20px;
+
+      i {
+        margin-left: 0;
+        font-size: 17px;
+      }
+    }
+
+    .menu-group {
+      .chevron-icon {
+        display: inline-flex;
+      }
+
+      .submenu .menu-item {
+        padding-left: 2.5rem;
+      }
+    }
+
+    .divider {
+      width: auto;
+      margin-inline: 1rem !important;
+    }
+  }
+}
+
+/* Desktop */
+@media (min-width: 992px) {
+  :host {
+    display: flex;
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    z-index: auto;
+    width: auto;
+    height: calc(100dvh - 56px);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .barra-lateral,
+  .barra-lateral.recolhida {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+}

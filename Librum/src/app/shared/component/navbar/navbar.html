@@ -1,9 +1,19 @@
-<nav class="navbar navbar-expand-xl bg-body">
+<nav class="navbar navbar-expand-xl bg-body shadow-sm ">
   <div class="container-fluid">
+ <!-- Botão Mobile - Aparece apenas no celular (d-md-none) -->
+    <button
+      class="btn border-0 px-2 py-1 me-2 text-body d-flex align-items-center d-lg-none"
+      (click)="aoAlternarSidebar()"
+      aria-label="Abrir menu lateral"
+      title="Menu"
+    >
+      <i class="bi bi-list fs-3"></i>
+    </button>
     <a class="navbar-logo d-flex align-items-center me-3" routerLink="/dashboard">
       <img src="assets/images/librumLogo.ico" alt="Logo My Librum" />
       <h5 class="ms-1 mb-0">My Librum</h5>
     </a>
+
     <button
       class="navbar-toggler"
       type="button"
@@ -16,6 +26,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
+  
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-xl-auto mb-3 mb-xl-0">
         <li class="nav-item">
@@ -107,138 +118,7 @@
           </ul>
         </div>
 
-        <div class="dropdown">
-          <button
-            class="btn bg-transparent border-0 dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="bi bi-list fs-3"></i>
-          </button>
-
-          <ul class="dropdown-menu dropdown-menu-end p-2">
-            <li class="px-3 pt-2 pb-1 text-muted small">GERENCIAMENTO DE ACERVO</li>
-
-            <li>
-              <a
-                class="dropdown-item d-flex align-items-center gap-2"
-                routerLink="/cadastrarMaterial"
-              >
-                <i class="bi bi-plus-circle text-success"></i>
-                Cadastrar
-              </a>
-            </li>
-
-            <li>
-              <a
-                class="dropdown-item d-flex align-items-center gap-2"
-                routerLink="/editarExcluirMaterial"
-              >
-                <i class="bi bi-pencil-square text-warning"></i>
-                Editar / Excluir
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 mb-2" href="/estanteVirtual">
-                <i class="bi bi-search text-purple"></i>
-                Encontrar Material
-              </a>
-            </li>
-
-            <!-- USUÁRIOS -->
-            <li class="px-3 pt-3 pb-1 text-muted small">USUÁRIOS</li>
-
-            <li>
-              <a
-                class="dropdown-item d-flex align-items-center gap-2"
-                routerLink="/cadastrar-usuario"
-              >
-                <i class="bi bi-person-plus text-success"></i>
-                Cadastrar Usuário
-              </a>
-            </li>
-
-            <li>
-              <a
-                class="dropdown-item d-flex align-items-center gap-2"
-                routerLink="/editar-excluir-usuario"
-              >
-                <i class="bi bi-people text-primary"></i>
-                Consultar / Editar
-              </a>
-            </li>
-
-            <li>
-              <a
-                class="dropdown-item d-flex align-items-center gap-2"
-                routerLink="/historicoEmprestimo"
-              >
-                <i class="bi bi-clock-history text-primary"></i>
-                Histórico de Empréstimos
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 mb-2" routerLink="/bloqueios">
-                <i class="bi bi-slash-circle text-danger"></i>
-                Bloqueios
-              </a>
-            </li>
-
-            <li class="px-3 pt-3 pb-1 text-muted small">EMPRÉSTIMOS</li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/reservar">
-                <i class="bi bi-calendar-check text-success"></i>
-                Reservar
-              </a>
-            </li>
-
-            <li>
-              <a
-                class="dropdown-item d-flex align-items-center gap-2 mb-2"
-                routerLink="/renovar-devolver"
-              >
-                <i class="bi bi-arrow-repeat text-warning"></i>
-                Renovar / Devolução
-              </a>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider" />
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/relatorio">
-                <i class="bi bi-file-earmark-text"></i>
-                Relatórios
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/configuracoes">
-                <i class="bi bi-gear"></i>
-                Configurações
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/suporte">
-                <i class="bi bi-question-circle"></i>
-                Suporte
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center gap-2 text-danger" routerLink="">
-                <i class="bi bi-box-arrow-right"></i>
-                Sair
-              </a>
-            </li>
-          </ul>
-        </div>
+       
       </div>
     </div>
   </div>

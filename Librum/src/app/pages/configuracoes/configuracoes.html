@@ -32,38 +32,57 @@
     <!-- dados -->
     <h6>Dados do Bibliotecário</h6>
 
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <label>ID</label>
-        <input type="text" class="form-control" [value]="bibliotecario.id" disabled>
+    <form [formGroup]="formBibliotecario" (ngSubmit)="salvarAlteracoes()">
+
+      <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">ID</label>
+          <input type="text" class="form-control" [disabled]="!editando" formControlName="id">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Matrícula *</label>
+          <input type="text" class="form-control" [disabled]="!editando" formControlName="matricula"
+            [class.is-invalid]="isInvalido('matricula')">
+        </div>
       </div>
 
-      <div class="col-md-6">
-        <label>Matrícula</label>
-        <input type="text" class="form-control" [(ngModel)]="bibliotecario.matricula">
+      <div class="mb-3">
+        <label class="form-label">Nome Completo *</label>
+        <input type="text" class="form-control" [disabled]="!editando" formControlName="nome"
+          [class.is-invalid]="isInvalido('nome')">
       </div>
-    </div>
 
-    <div class="mb-3">
-      <label>Nome Completo</label>
-      <input type="text" class="form-control" [(ngModel)]="bibliotecario.nome">
-    </div>
+      <div class="mb-3">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-control" [disabled]="!editando" formControlName="email"
+          [class.is-invalid]="isInvalido('email')">
+      </div>
 
-    <div class="mb-3">
-      <label>Email</label>
-      <input type="email" class="form-control" [(ngModel)]="bibliotecario.email">
-    </div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Nova Senha</label>
+          <input type="password" class="form-control" formControlName="senha"
+            placeholder="Deixe em branco para manter a atual" [disabled]="!editando" autocomplete="new-password"
+            [class.is-invalid]="isInvalido('senha')">
+        </div>
 
-    <div class="mb-3">
-      <label>Senha</label>
-      <input type="password" class="form-control" [(ngModel)]="bibliotecario.senha">
-    </div>
+        <div class="col-md-6">
+          <label class="form-label">Confirmar Nova Senha</label>
+          <input type="password" [disabled]="!editando" class="form-control" formControlName="confirmarSenha"
+            autocomplete="new-password" [class.is-invalid]="isInvalido('confirmarSenha')">
+        </div>
+      </div>
 
-    <div class="d-flex justify-content-end mb-3">
-      <button class="btn btn-primary" (click)="salvarAlteracoes()">
-        Salvar Alterações
-      </button>
-    </div>
+      <div class="d-flex justify-content-end gap-3 mb-3">
+        <button lbrButton [variant]="!editando ? 'editar' : 'excluir'  " type="button" (click)="toggleEditar()">
+          {{ editando ? 'Cancelar' : 'Editar' }}
+        </button>
+        <button type="submit" lbrButton variant="cadastrar">Salvar Alterações</button>
+      </div>
+    </form>
 
     <hr>
 

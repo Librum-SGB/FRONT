@@ -26,9 +26,13 @@
 
     <div class="card p-4 border-1 shadow-sm  mb-4 bg-body text-body">
       <h6 class="mb-3 text-body"><i class="bi bi-pencil-square me-2"></i>Enviar Mensagem</h6>
+
+      <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
+
       <form [formGroup]="supportForm" (ngSubmit)="enviarMensagem()">
         <div class="mb-3">
-          <label class="form-label small text-secondary">Assunto</label>
+          <label class="form-label small text-secondary">Assunto *</label>
           <select class="form-select bg-body text-body" formControlName="assunto">
             <option value="">Selecione um assunto...</option>
             <option value="duvida">Dúvida</option>
@@ -37,11 +41,11 @@
           </select>
         </div>
         <div class="mb-3">
-          <label class="form-label small text-secondary">Mensagem</label>
+          <label class="form-label small text-secondary">Mensagem *</label>
           <textarea class="form-control bg-body text-body" [maxLength]="255" rows="3" formControlName="mensagem"
             placeholder="Como podemos ajudar?"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary w-100" [disabled]="supportForm.invalid">
+        <button type="submit" class="btn btn-primary w-100">
           Enviar Mensagem
         </button>
       </form>

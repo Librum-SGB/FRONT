@@ -1,0 +1,10 @@
+@if (mensagens.length > 0) {
+<div class="alert alert-danger" role="alert">
+  <strong>{{ titulo }}</strong>
+  <ul class="mb-0 mt-2">
+    @for (erro of mensagens; track $index) {
+    <li>{{ erro }}</li>
+    }
+  </ul>
+</div>
+}

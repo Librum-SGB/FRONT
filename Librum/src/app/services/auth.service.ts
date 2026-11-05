@@ -34,6 +34,25 @@ export class AuthService {
     return sessionStorage.getItem(AUTH_TOKEN_KEY);
   }
 
+  isAdmin(): boolean {
+    const token = this.getToken();
+    const payload = token?.split('.')[1];
+
+    if (!payload) {
+      return false;
+    }
+
+    try {
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const claims: { funcao?: string } = JSON.parse(
+        atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')),
+      );
+      return claims.funcao === 'ADMIN';
+    } catch {
+      return false;
+    }
+  }
+
   logout(): void {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
   }
