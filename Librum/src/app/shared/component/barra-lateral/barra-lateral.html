@@ -199,6 +199,7 @@
       </a>
 
       <a
+        *ngIf="isAdmin()"
         routerLink="/monitoramento"
         routerLinkActive="active"
         class="nav-link menu-item d-flex align-items-center rounded"
