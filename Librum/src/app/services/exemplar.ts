@@ -14,8 +14,9 @@ export class ExemplarService {
     return this.http.post<ExemplarResponse>(this.apiUrl, exemplar);
   }
 
-  findAll(): Observable<ExemplarResponse[]> {
-    return this.http.get<ExemplarResponse[]>(this.apiUrl);
+  findAll(ativo?: boolean): Observable<ExemplarResponse[]> {
+    const url = ativo === undefined ? this.apiUrl : `${this.apiUrl}?ativo=${ativo}`;
+    return this.http.get<ExemplarResponse[]>(url);
   }
 
   findById(id: number): Observable<ExemplarResponse> {
@@ -28,5 +29,9 @@ export class ExemplarService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  detachFromEstante(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}/estante`);
   }
 }

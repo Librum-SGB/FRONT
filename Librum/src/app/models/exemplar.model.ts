@@ -19,7 +19,8 @@ export interface ExemplarResponse {
 
   materialId: number;
   filialId: number;
-  estanteId: number;
+  estanteId?: number | null;
+  ativo: boolean;
 
   codigoBarras: string;
 

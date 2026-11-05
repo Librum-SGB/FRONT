@@ -19,6 +19,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class Modal {
   @Input() title: string = '';
   @Input() isOpen: boolean = false;
+  @Input() size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
+  @Input() showDefaultFooter = true;
 
   @Output() isOpenChange = new EventEmitter<boolean>();
 

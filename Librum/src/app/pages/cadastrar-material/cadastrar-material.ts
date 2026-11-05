@@ -1,3 +1,4 @@
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -20,7 +21,7 @@ import { MaterialService, LivroExterno } from '../../services/material';
 import { AutorService } from '../../services/autor';
 import { EditoraService } from '../../services/editora';
 import { GeneroService } from '../../services/genero';
-import { MaterialRequest } from '../../models/material.model';
+import { MaterialRequest, MaterialResponse } from '../../models/material.model';
 import { CadastroAutorModal } from '../../shared/component/cadastro-autor-modal/cadastro-autor-modal';
 import { CadastroEditoraModal } from '../../shared/component/cadastro-editora-modal/cadastro-editora-modal';
 import { CadastroGeneroModal } from '../../shared/component/cadastro-genero-modal/cadastro-genero-modal';
@@ -48,6 +49,8 @@ import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
   styleUrl: './cadastrar-material.scss',
 })
 export class CadastrarMaterial implements OnInit {
+  @Output() materialCriado = new EventEmitter<MaterialResponse>();
+
   enviado: boolean = false;
 
   tipoMaterial: string = 'livro';
@@ -198,9 +201,10 @@ export class CadastrarMaterial implements OnInit {
     };
 
     this.materialService.create(payload).subscribe({
-      next: () => {
+      next: (material) => {
         this.limpar();
         this.toastService.sucesso('Livro salvo');
+        this.materialCriado.emit(material);
       },
       error: (err) => {
         console.error('Erro ao salvar livro:', err);
@@ -228,9 +232,10 @@ export class CadastrarMaterial implements OnInit {
     };
 
     this.materialService.create(payload).subscribe({
-      next: () => {
+      next: (material) => {
         this.limpar();
         this.toastService.sucesso('Periódico salvo');
+        this.materialCriado.emit(material);
       },
       error: (err) => {
         console.error('Erro ao salvar periódico:', err);
@@ -257,9 +262,10 @@ export class CadastrarMaterial implements OnInit {
     };
 
     this.materialService.create(payload).subscribe({
-      next: () => {
+      next: (material) => {
         this.limpar();
         this.toastService.sucesso('Material salvo');
+        this.materialCriado.emit(material);
       },
       error: (err) => {
         console.error('Erro ao salvar material:', err);

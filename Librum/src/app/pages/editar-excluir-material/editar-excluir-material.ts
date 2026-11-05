@@ -27,6 +27,7 @@ import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
 import { GeneroResponse } from '../../models/genero.model';
 import { ExemplarResponse } from '../../models/exemplar.model';
+import { ActivatedRoute, Router } from '@angular/router';
 
 declare var bootstrap: any;
 
@@ -191,6 +192,8 @@ export class EditarExcluirMaterial implements OnInit {
   materialSelecionado: MaterialExibicao | null = null;
   materialEditando: any = {};
   generoIdsEditando: number[] = [];
+  private materialIdDaRota?: number;
+  private materialDaRotaAberto?: number;
 
   // ---------- Formulário ----------
   formMaterial: FormGroup;
@@ -216,6 +219,8 @@ export class EditarExcluirMaterial implements OnInit {
   }
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private toastService: ToastService,
     private fb: FormBuilder,
     private materialService: MaterialService,
@@ -244,6 +249,13 @@ export class EditarExcluirMaterial implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const id = Number(params.get('materialId'));
+      this.materialIdDaRota = Number.isInteger(id) && id > 0 ? id : undefined;
+      if (params.get('editar') === 'true') {
+        this.abrirEdicaoSolicitada();
+      }
+    });
     this.carregarDados();
   }
 
@@ -318,12 +330,35 @@ export class EditarExcluirMaterial implements OnInit {
         // ordena por ID pra a lista não "embaralhar" depois de uma edição
         this.materiaisOriginais.set([...data].sort((a, b) => a.id - b.id));
         this.carregando.set(false);
+        this.abrirEdicaoSolicitada();
       },
       error: (err) => {
         console.error('Erro ao carregar materiais:', err);
         this.toastService.erro('Erro ao carregar os materiais cadastrados.');
         this.carregando.set(false);
       },
+    });
+  }
+
+  private abrirEdicaoSolicitada(): void {
+    const id = this.materialIdDaRota;
+    if (!id || id === this.materialDaRotaAberto || this.carregando()) {
+      return;
+    }
+
+    const material = this.materiais().find((item) => item.id === id);
+    if (!material) {
+      return;
+    }
+
+    this.materialDaRotaAberto = id;
+    this.materialEditando = { ...material };
+    this.generoIdsEditando = [...material.generoIds];
+    setTimeout(() => {
+      const modal = document.getElementById('modalEditar');
+      if (modal) {
+        bootstrap.Modal.getOrCreateInstance(modal).show();
+      }
     });
   }
 
@@ -509,6 +544,16 @@ export class EditarExcluirMaterial implements OnInit {
           lista.map((m) => (m.id === atualizado.id ? atualizado : m)),
         );
         this.toastService.sucesso('Material editado com sucesso!');
+        bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoMaterialModal'))?.hide();
+        if (this.materialIdDaRota === atualizado.id) {
+          this.materialIdDaRota = undefined;
+          this.materialDaRotaAberto = undefined;
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { materialId: null, editar: null },
+            replaceUrl: true,
+          });
+        }
         bootstrap.Modal.getInstance(
           document.getElementById('confirmarEdicaoMaterialModal'),
         )?.hide();

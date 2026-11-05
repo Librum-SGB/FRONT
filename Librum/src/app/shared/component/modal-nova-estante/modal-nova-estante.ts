@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EstanteVirtualDto, PrateleiraVirtualDto } from '../../../dto/estantevirtual.dto';
+import { EstanteRequestDto } from '../../../dto/estantevirtual.dto';
 import { FormsModule } from '@angular/forms';
 import { LbrButtom } from '../lbr-buttom/lbr-buttom';
 
@@ -11,11 +11,14 @@ import { LbrButtom } from '../lbr-buttom/lbr-buttom';
 })
 export class ModalNovaEstante {
   @Input() isOpen = false;
+  @Input() salvando = false;
+  @Input() erro?: string;
   @Output() isOpenChange = new EventEmitter<boolean>();
-  @Output() estanteCriada = new EventEmitter<Partial<EstanteVirtualDto>>();
+  @Output() estanteCriada = new EventEmitter<EstanteRequestDto>();
 
+  nome: string = '';
   localizacao: string = '';
-  capacidade?: number;
+  capacidade = 100;
   qtdPrateleiras: number = 3;
 
   fechar() {
@@ -25,30 +28,39 @@ export class ModalNovaEstante {
   }
 
   salvar() {
-    if (!this.localizacao.trim()) return;
+    if (
+      this.salvando ||
+      !this.nome.trim() ||
+      !this.localizacao.trim() ||
+      !Number.isInteger(this.capacidade) ||
+      this.capacidade < 1 ||
+      this.capacidade > 1000 ||
+      !Number.isInteger(this.qtdPrateleiras) ||
+      this.qtdPrateleiras < 1
+    ) {
+      return;
+    }
 
-    // Gera o array inicial de prateleiras (ex: A1, A2, A3 ou P1, P2...)
-    const prateleiras: PrateleiraVirtualDto[] = Array.from(
-      { length: this.qtdPrateleiras },
-      (_, index) => ({
-        nome: `Prateleira ${index + 1}`,
-        exemplares: [],
-      }),
-    );
-
-    const novaEstante: Partial<EstanteVirtualDto> = {
-      localizacao: this.localizacao,
+    const novaEstante: EstanteRequestDto = {
+      nome: this.nome.trim(),
+      localizacao: this.localizacao.trim(),
       capacidade: this.capacidade,
-      prateleiras,
+      qtdPrateleiras: this.qtdPrateleiras,
+      prateleiras: Array.from({ length: this.qtdPrateleiras }, (_, index) => ({
+        nome: `Prateleira ${index + 1}`,
+        posicaoInicial: 1,
+        posicaoFinal: this.capacidade,
+        ordem: index + 1,
+      })),
     };
 
     this.estanteCriada.emit(novaEstante);
-    this.fechar();
   }
 
   private resetForm() {
+    this.nome = '';
     this.localizacao = '';
-    this.capacidade = undefined;
+    this.capacidade = 100;
     this.qtdPrateleiras = 3;
   }
 }

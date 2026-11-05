@@ -33,6 +33,7 @@ export interface MaterialResponse {
   edicao?: number;
   anoPublicacao?: number;
   quantidadePaginas?: number;
+  quantidadeExemplares?: number;
   editoraId?: number;
   autorIds?: number[];
   generoIds?: number[];
