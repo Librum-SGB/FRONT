@@ -1,8 +1,15 @@
 export enum StatusEmprestimo {
   ANDAMENTO = 'ANDAMENTO',
+  ATIVO = 'ATIVO',
   DEVOLVIDO = 'DEVOLVIDO',
   ATRASADO = 'ATRASADO',
   BLOQUEADO = 'BLOQUEADO',
+}
+
+export enum StatusTarefa {
+  PENDENTE = 'PENDENTE',
+  EM_ANDAMENTO = 'EM_ANDAMENTO',
+  CONCLUIDA = 'CONCLUIDA',
 }
 
 export enum StatusExemplar {

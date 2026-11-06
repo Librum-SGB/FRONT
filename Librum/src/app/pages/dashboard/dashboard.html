@@ -1,110 +1,133 @@
 <app-corpo-padrao>
   <main class="corpo">
+    @if (exibeIndicadores) {
     <section class="row mt-3 row-gap-2">
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Alunos Cadastrados" valor="1203" classe="bg-verde">
+        <app-card-informativo titulo="Alunos cadastrados"
+          valor="{{ carregandoIndicadores ? '...' : metricas?.usuariosCadastrados ?? 0 }}" classe="bg-verde">
           <i class="bi bi-people-fill fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Livros nos acrevos" valor="1203" classe="bg-azul-escuro">
+        <app-card-informativo titulo="Exemplares no acervo"
+          valor="{{ carregandoIndicadores ? '...' : metricas?.exemplaresNoAcervo ?? 0 }}" classe="bg-azul-escuro">
           <i class="bi bi-book fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Emprestimos ativos" valor="1203" classe="bg-azul-claro">
+        <app-card-informativo titulo="Empréstimos em aberto"
+          valor="{{ carregandoIndicadores ? '...' : metricas?.emprestimosAtivos ?? 0 }}" classe="bg-azul-claro">
           <i class="bi bi-arrow-clockwise fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="A vencer" valor="1203" classe="bg-laranja">
+        <app-card-informativo titulo="A vencer em 7 dias"
+          valor="{{ carregandoIndicadores ? '...' : metricas?.emprestimosAVencer ?? 0 }}" classe="bg-laranja">
           <i class="bi bi-exclamation-circle fs-1"></i>
         </app-card-informativo>
       </div>
     </section>
+    @if (erroIndicadores) {
+    <div class="alert alert-danger mt-3" role="alert">{{ erroIndicadores }}</div>
+    }
+    }
 
     <section class="row mt-3 row-gap-2 justify-content-evenly">
       <div class="dashboard bg-body rounded-3 py-3 px-2">
         <div class="row">
           <div class="col-sm-12">
-            <h4>Lista Tarefa</h4>
+            <h4>Checklist</h4>
             <p>Rotina diária da Biblioteca</p>
           </div>
         </div>
         <div class="row">
           <div class="col-10">
             <input type="text" class="form-control" id="novaTarefa" [(ngModel)]="descNovaTarefa"
-              placeholder="Nova Tarefa">
+              placeholder="Nova tarefa" [disabled]="salvandoNovaTarefa"
+              (keydown.enter)="adicionarTarefa()">
           </div>
           <div class="col-2">
-            <button class="btn btn-primary w-100" (click)="adicionarTarefa()">
+            <button class="btn btn-primary w-100" (click)="adicionarTarefa()"
+              [disabled]="salvandoNovaTarefa || !descNovaTarefa.trim()" aria-label="Adicionar tarefa">
               <i class="bi bi-plus"></i>
             </button>
           </div>
         </div>
+        @if (erroTarefas) {
+        <div class="alert alert-danger mt-2 mb-0" role="alert">{{ erroTarefas }}</div>
+        }
         <div class="row mt-3">
           <ul class="list-unstyled flex gap-5 overflow-auto" style="max-height: 250px;">
-            @for(t of listaTarefa; track t.id) {
+            @if (carregandoTarefas) {
+            <li class="text-secondary">Carregando checklist...</li>
+            } @else if (listaTarefa.length === 0) {
+            <li class="text-secondary">Nenhuma tarefa cadastrada.</li>
+            } @else {
+            @for (t of listaTarefa; track t.id) {
             <li>
-              <app-item-lista-tarefa [tarefa]="t" (mudarEstado)="toggleTarefa($event)"
-                (deletar)="abrirConfirmacaoExclusaoTarefa($event)">
+              <app-item-lista-tarefa [tarefa]="t" [disabled]="salvandoTarefaId !== null"
+                (mudarEstado)="toggleTarefa($event)" (deletar)="abrirConfirmacaoExclusaoTarefa($event)">
               </app-item-lista-tarefa>
             </li>
+            }
             }
           </ul>
         </div>
       </div>
 
+      @if (exibeIndicadores) {
       <div class="bg-body rounded-3 dashboard py-3">
         <div class="row">
           <div class="col-12">
-            <h4>Status de Empréstimo</h4>
+            <h4>Status de empréstimos</h4>
           </div>
         </div>
         <div class="row">
           <div class="col-12 col-md-4">
-            <app-card-status titulo="em andamento" conteudo="2" />
+            <app-card-status titulo="em andamento"
+              conteudo="{{ carregandoIndicadores ? '...' : metricas?.emprestimosEmAndamento ?? 0 }}" />
           </div>
           <div class="col-12 col-md-4">
-            <app-card-status titulo="a vencer" conteudo="2" cor="warning" />
+            <app-card-status titulo="a vencer"
+              conteudo="{{ carregandoIndicadores ? '...' : metricas?.emprestimosAVencer ?? 0 }}" cor="warning" />
           </div>
           <div class="col-12 col-md-4">
-            <app-card-status titulo="vencidos" conteudo="2" cor="danger" />
+            <app-card-status titulo="vencidos"
+              conteudo="{{ carregandoIndicadores ? '...' : metricas?.emprestimosAtrasados ?? 0 }}" cor="danger" />
           </div>
         </div>
         <div class="row">
-          <table class="table mt-3">
-            <thead>
-              <tr>
-                <th scope="col">Aluno</th>
-                <th scope="col">Livro</th>
-                <th scope="col">Devolução</th>
-                <th scope="col">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">Ttw</th>
-                <td>juanito</td>
-                <td>há 2 dias</td>
-                <td><app-badge status="success">Em andamento</app-badge></td>
-              </tr>
-              <tr>
-                <th scope="row">Ttw</th>
-                <td>juanito</td>
-                <td>há 2 dias</td>
-                <td><app-badge status="warning">A vencer</app-badge></td>
-              </tr>
-              <tr>
-                <th scope="row">Ttw</th>
-                <td>juanito</td>
-                <td>há 2 dias</td>
-                <td><app-badge status="danger">Vencido</app-badge></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="col-12 table-responsive">
+            <table class="table mt-3">
+              <thead>
+                <tr>
+                  <th scope="col">Aluno</th>
+                  <th scope="col">Livro</th>
+                  <th scope="col">Devolução</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (carregandoIndicadores) {
+                <tr><td colspan="4" class="text-secondary">Carregando empréstimos...</td></tr>
+                } @else if (metricas?.atrasos?.length === 0) {
+                <tr><td colspan="4" class="text-secondary">Nenhum empréstimo atrasado.</td></tr>
+                } @else {
+                @for (atraso of metricas?.atrasos ?? []; track atraso.id) {
+                <tr>
+                  <td>{{ atraso.nomeUsuario }}</td>
+                  <td>{{ atraso.tituloMaterial }}</td>
+                  <td>há {{ atraso.diasAtraso }} {{ atraso.diasAtraso === 1 ? 'dia' : 'dias' }}</td>
+                  <td><app-badge status="danger">Vencido</app-badge></td>
+                </tr>
+                }
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+      }
     </section>
   </main>
 </app-corpo-padrao>
@@ -157,16 +180,20 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Confirmar Exclusão</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title">Confirmar exclusão</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
       <div class="modal-body">
         Tem certeza que deseja excluir a tarefa
         <strong>{{ tarefaSelecionada?.descricao }}</strong>?
+        @if (erroTarefas) {
+        <div class="alert alert-danger mt-3 mb-0" role="alert">{{ erroTarefas }}</div>
+        }
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-danger" (click)="confirmarExclusaoTarefa()">Excluir</button>
+        <button class="btn btn-danger" (click)="confirmarExclusaoTarefa()"
+          [disabled]="salvandoTarefaId !== null">Excluir</button>
       </div>
     </div>
   </div>

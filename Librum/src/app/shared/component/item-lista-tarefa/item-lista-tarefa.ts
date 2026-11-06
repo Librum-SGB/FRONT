@@ -2,6 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Tarefa } from '../../../models/tarefa.model';
 import { prioridade } from '../../../enum/prioridade.enum';
+import { StatusTarefa } from '../../../enum/status.enum';
 @Component({
   selector: 'app-item-lista-tarefa',
   imports: [NgClass],
@@ -10,16 +11,21 @@ import { prioridade } from '../../../enum/prioridade.enum';
 })
 export class ItemListaTarefa {
   @Input({ required: true }) tarefa!: Tarefa;
+  @Input() disabled = false;
 
   @Output() mudarEstado = new EventEmitter<number>();
   @Output() deletar = new EventEmitter<number>();
 
   onCheckEvent() {
-    this.mudarEstado.emit(this.tarefa.id!);
+    this.mudarEstado.emit(this.tarefa.id);
   }
 
   onDelete() {
-    this.deletar.emit(this.tarefa.id!);
+    this.deletar.emit(this.tarefa.id);
+  }
+
+  isConcluida(): boolean {
+    return this.tarefa.status === StatusTarefa.CONCLUIDA;
   }
 
   getBadgeColor(p?: prioridade): string {

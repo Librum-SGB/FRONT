@@ -34,22 +34,34 @@ export class AuthService {
     return sessionStorage.getItem(AUTH_TOKEN_KEY);
   }
 
+  getRole(): string | null {
+    const claims = this.getClaims();
+    return claims?.funcao ?? null;
+  }
+
   isAdmin(): boolean {
+    return this.getRole() === 'ADMIN';
+  }
+
+  isTeamMember(): boolean {
+    return ['ADMIN', 'BIBLIOTECARIA', 'ASSISTENTE'].includes(this.getRole() ?? '');
+  }
+
+  private getClaims(): { funcao?: string } | null {
     const token = this.getToken();
     const payload = token?.split('.')[1];
 
     if (!payload) {
-      return false;
+      return null;
     }
 
     try {
       const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-      const claims: { funcao?: string } = JSON.parse(
+      return JSON.parse(
         atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')),
       );
-      return claims.funcao === 'ADMIN';
     } catch {
-      return false;
+      return null;
     }
   }
 

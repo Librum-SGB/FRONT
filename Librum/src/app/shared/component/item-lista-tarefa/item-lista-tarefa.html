@@ -1,17 +1,18 @@
 <div class="card border rounded shadow-sm mt-1" [ngClass]="{
-    'opacity-25': tarefa.concluida,
-    'text-decoration-line-through': tarefa.concluida
+    'opacity-25': isConcluida(),
+    'text-decoration-line-through': isConcluida()
   }">
   <div class="row g-0 align-items-center px-2 py-2">
     <div class="col-2 col-md-1 d-flex align-items-center justify-content-start">
-      <input type="checkbox" class="form-check-input fs-4 " [checked]="tarefa.concluida" (change)="onCheckEvent()">
+      <input type="checkbox" class="form-check-input fs-4 " [checked]="isConcluida()" [disabled]="disabled"
+        (change)="onCheckEvent()">
     </div>
     <div class="col-8 col-md-10 d-flex align-items-center justify-content-start">
       <p class="mb-0 overflow-hidden">{{tarefa.descricao}}</p>
     </div>
     <div class="col-2 col-md-1 d-flex align-items-center justify-content-end">
       <span class="badge" [ngClass]="getBadgeColor(tarefa.prioridade)">{{tarefa.prioridade}}</span>
-      <button class="btn text-danger py-0" (click)="onDelete()">
+      <button class="btn text-danger py-0" [disabled]="disabled" (click)="onDelete()">
         <i class="bi bi-trash-fill"></i>
       </button>
     </div>
