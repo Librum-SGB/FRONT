@@ -1,36 +1,20 @@
-
-<aside
-  class="barra-lateral d-flex flex-column py-3"
-  [class.recolhida]="recolhida && !mobileAberto"
-  [class.mobile-aberta]="mobileAberto"
-  aria-label="Menu principal"
->
+<aside class="barra-lateral d-flex flex-column py-3" [class.recolhida]="recolhida && !mobileAberto"
+  [class.mobile-aberta]="mobileAberto" aria-label="Menu principal">
   <!-- Área rolável -->
   <div class="menu-scroll flex-grow-1 px-2">
 
     <!-- DASHBOARD -->
-    <a
-      routerLink="/dashboard"
-      routerLinkActive="active"
-      class="nav-link menu-item d-flex align-items-center rounded mb-3"
-      title="Dashboard"
-      (click)="aoNavegar()"
-    >
+    <a routerLink="/dashboard" routerLinkActive="active"
+      class="nav-link menu-item d-flex align-items-center rounded mb-3" title="Dashboard" (click)="aoNavegar()">
       <i class="bi bi-house-door text-success"></i>
       <span class="menu-label ms-2">Dashboard</span>
     </a>
 
     <!-- CADASTROS -->
     <div class="menu-group mb-2">
-      <button
-        type="button"
-        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseCadastros"
-        aria-expanded="false"
-        aria-controls="collapseCadastros"
-        title="Cadastros"
-      >
+      <button type="button" class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
+        data-bs-toggle="collapse" data-bs-target="#collapseCadastros" aria-expanded="false"
+        aria-controls="collapseCadastros" title="Cadastros">
         <i class="bi bi-clipboard-plus icon-blue"></i>
         <span class="menu-label ms-2">Cadastros</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
@@ -40,70 +24,45 @@
         <nav class="nav flex-column gap-1 mt-1 submenu">
 
           <!-- MATERIAL -->
-          <a
-            routerLink="/editarExcluirMaterial"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Material"
-            (click)="aoNavegar()"
-          >
+          <a routerLink="/editarExcluirMaterial" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Material" (click)="aoNavegar()">
             <i class="bi bi-book icon-green"></i>
             <span class="menu-label ms-2">Material</span>
           </a>
 
           <!-- EXEMPLAR -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Exemplar"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Exemplar">
             <i class="bi bi-journal-bookmark icon-exemplar"></i>
             <span class="menu-label ms-2">Exemplar</span>
           </div>
 
           <!-- USUÁRIO -->
-          <a
-            routerLink="/editar-excluir-usuario"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Usuário"
-            (click)="aoNavegar()"
-          >
+          <a routerLink="/editar-excluir-usuario" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Usuário" (click)="aoNavegar()">
             <i class="bi bi-people icon-blue"></i>
             <span class="menu-label ms-2">Usuário</span>
           </a>
 
           <!-- FUNCIONÁRIO -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Funcionário"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Funcionário">
             <i class="bi bi-person-badge icon-funcionario"></i>
             <span class="menu-label ms-2">Funcionário</span>
           </div>
 
           <!-- AUTOR -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Autor"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Autor">
             <i class="bi bi-person-lines-fill icon-autor"></i>
             <span class="menu-label ms-2">Autor</span>
           </div>
 
           <!-- EDITORA -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Editora"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Editora">
             <i class="bi bi-building icon-editora"></i>
             <span class="menu-label ms-2">Editora</span>
           </div>
 
           <!-- GÊNERO -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Gênero"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Gênero">
             <i class="bi bi-tags icon-genero"></i>
             <span class="menu-label ms-2">Gênero</span>
           </div>
@@ -113,28 +72,17 @@
     </div>
 
     <!-- ESTANTE VIRTUAL -->
-    <a
-      routerLink="/estanteVirtual"
-      routerLinkActive="active"
-      class="nav-link menu-item d-flex align-items-center rounded mb-2"
-      title="Estante Virtual"
-      (click)="aoNavegar()"
-    >
+    <a routerLink="/estanteVirtual" routerLinkActive="active"
+      class="nav-link menu-item d-flex align-items-center rounded mb-2" title="Estante Virtual" (click)="aoNavegar()">
       <i class="bi bi-bookshelf icon-blue"></i>
       <span class="menu-label ms-2">Estante Virtual</span>
     </a>
 
     <!-- MOVIMENTAÇÃO -->
     <div class="menu-group mb-2">
-      <button
-        type="button"
-        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseMovimentacao"
-        aria-expanded="false"
-        aria-controls="collapseMovimentacao"
-        title="Movimentação"
-      >
+      <button type="button" class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
+        data-bs-toggle="collapse" data-bs-target="#collapseMovimentacao" aria-expanded="false"
+        aria-controls="collapseMovimentacao" title="Movimentação">
         <i class="bi bi-arrow-left-right icon-green"></i>
         <span class="menu-label ms-2">Movimentação</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
@@ -144,46 +92,30 @@
         <nav class="nav flex-column gap-1 mt-1 submenu">
 
           <!-- EMPRÉSTIMOS -->
-          <a
-            routerLink="/reservar-material"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Empréstimos"
-            (click)="aoNavegar()"
-          >
+          <a routerLink="/reservar-material" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Empréstimos" (click)="aoNavegar()">
             <i class="bi bi-journal-check icon-green"></i>
             <span class="menu-label ms-2">Empréstimos</span>
           </a>
 
           <!-- RENOVAÇÕES / DEVOLUÇÕES -->
-          <a
-            routerLink="/renovar-devolver"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Renovações / Devoluções"
-            (click)="aoNavegar()"
-          >
+          <a routerLink="/renovar-devolver" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Renovações / Devoluções"
+            (click)="aoNavegar()">
             <i class="bi bi-arrow-repeat icon-yellow"></i>
             <span class="menu-label ms-2">Renovações / Devoluções</span>
           </a>
 
           <!-- HISTÓRICO USUÁRIO -->
-          <a
-            routerLink="/historicoEmprestimo"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Histórico Usuário"
-            (click)="aoNavegar()"
-          >
+          <a routerLink="/historicoEmprestimo" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Histórico Usuário"
+            (click)="aoNavegar()">
             <i class="bi bi-clock-history icon-blue"></i>
             <span class="menu-label ms-2">Histórico Usuário</span>
           </a>
 
           <!-- ATRASOS USUÁRIOS -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Atrasos Usuários"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Atrasos Usuários">
             <i class="bi bi-exclamation-triangle icon-atrasos"></i>
             <span class="menu-label ms-2">Atrasos Usuários</span>
           </div>
@@ -194,15 +126,9 @@
 
     <!-- ADMINISTRAÇÃO -->
     <div class="menu-group mb-2">
-      <button
-        type="button"
-        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseAdministracao"
-        aria-expanded="false"
-        aria-controls="collapseAdministracao"
-        title="Administração"
-      >
+      <button type="button" class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
+        data-bs-toggle="collapse" data-bs-target="#collapseAdministracao" aria-expanded="false"
+        aria-controls="collapseAdministracao" title="Administração">
         <i class="bi bi-shield-lock icon-blue"></i>
         <span class="menu-label ms-2">Administração</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
@@ -212,31 +138,20 @@
         <nav class="nav flex-column gap-1 mt-1 submenu">
 
           <!-- PERMISSÕES -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Permissões"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Permissões">
             <i class="bi bi-shield-check icon-permissoes"></i>
             <span class="menu-label ms-2">Permissões</span>
           </div>
 
           <!-- UNIDADES -->
-          <div
-            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
-            title="Unidades"
-          >
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Unidades">
             <i class="bi bi-buildings icon-unidades"></i>
             <span class="menu-label ms-2">Unidades</span>
           </div>
 
           <!-- RELATÓRIOS -->
-          <a
-            routerLink="/relatorio"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Relatórios"
-            (click)="aoNavegar()"
-          >
+          <a routerLink="/relatorio" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Relatórios" (click)="aoNavegar()">
             <i class="bi bi-file-earmark-text icon-default"></i>
             <span class="menu-label ms-2">Relatórios</span>
           </a>
@@ -254,36 +169,30 @@
     <nav class="nav flex-column gap-1 mb-2">
 
       <!-- CONFIGURAÇÕES -->
-      <a
-        routerLink="/configuracoes"
-        routerLinkActive="active"
-        class="nav-link menu-item d-flex align-items-center rounded"
-        title="Configurações"
-        (click)="aoNavegar()"
-      >
+      <a routerLink="/configuracoes" routerLinkActive="active"
+        class="nav-link menu-item d-flex align-items-center rounded" title="Configurações" (click)="aoNavegar()">
         <i class="bi bi-gear icon-default"></i>
         <span class="menu-label ms-2">Configurações</span>
       </a>
+      <!-- MONITORAMENTO -->
+      <a routerLink="/monitoramento" routerLinkActive="active"
+        class="nav-link menu-item d-flex align-items-center rounded" title="Monitoramento" (click)="aoNavegar()">
+        <i class="bi bi-activity"></i>
+        <span class="menu-label ms-2">Monitoramento</span>
+      </a>
+
 
       <!-- SUPORTE -->
-      <a
-        routerLink="/suporte"
-        routerLinkActive="active"
-        class="nav-link menu-item d-flex align-items-center rounded"
-        title="Suporte"
-        (click)="aoNavegar()"
-      >
+      <a routerLink="/suporte" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded"
+        title="Suporte" (click)="aoNavegar()">
         <i class="bi bi-question-circle icon-default"></i>
         <span class="menu-label ms-2">Suporte</span>
       </a>
 
+      
       <!-- SAIR -->
-      <button
-        type="button"
-        class="nav-link menu-item text-red d-flex align-items-center rounded w-100"
-        title="Sair"
-        (click)="logout()"
-      >
+      <button type="button" class="nav-link menu-item text-red d-flex align-items-center rounded w-100" title="Sair"
+        (click)="logout()">
         <i class="bi bi-box-arrow-right"></i>
         <span class="menu-label ms-2">Sair</span>
       </button>
@@ -293,17 +202,9 @@
     <hr class="divider m-0 mt-2 mb-2" />
 
     <!-- RECOLHER / EXPANDIR -->
-    <button
-      type="button"
-      class="nav-link menu-item d-flex align-items-center w-100 rounded"
-      (click)="alternarMenu()"
-      [title]="recolhida ? 'Abrir menu' : 'Fechar menu'"
-      [attr.aria-label]="recolhida ? 'Abrir menu' : 'Fechar menu'"
-    >
-      <i
-        class="bi"
-        [ngClass]="recolhida ? 'bi-chevron-right' : 'bi-chevron-left'"
-      ></i>
+    <button type="button" class="nav-link menu-item d-flex align-items-center w-100 rounded" (click)="alternarMenu()"
+      [title]="recolhida ? 'Abrir menu' : 'Fechar menu'" [attr.aria-label]="recolhida ? 'Abrir menu' : 'Fechar menu'">
+      <i class="bi" [ngClass]="recolhida ? 'bi-chevron-right' : 'bi-chevron-left'"></i>
       <span class="menu-label ms-2">
         {{ recolhida ? 'Abrir' : 'Fechar' }}
       </span>
