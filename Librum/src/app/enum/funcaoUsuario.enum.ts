@@ -1,0 +1,6 @@
+export enum FuncaoUsuario {
+  ADMIN = 'ADMIN',
+  BIBLIOTECARIA = 'BIBLIOTECARIA',
+  ASSISTENTE = 'ASSISTENTE',
+  USUARIO = 'USUARIO',
+}

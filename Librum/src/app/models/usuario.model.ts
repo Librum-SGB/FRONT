@@ -1,16 +1,17 @@
+import { FuncaoUsuario } from '../enum/funcaoUsuario.enum';
+
 export interface Usuario {
   id?: number;
 
   nome: string;
   cpf: string;
   email: string;
-  telefone: string;
+  telefone?: string;
+  senha?: string;
 
-  dataNascimento: Date;
+  dataNascimento?: Date;
 
   filialId: number;
-
-  foto?: string;
 
   endereco?: string;
   numero?: string;
@@ -21,6 +22,13 @@ export interface Usuario {
 
   limiteLivros?: number;
   estaBloqueado?: boolean;
+
+  funcao?: FuncaoUsuario;
+  matriculaFuncionario?: string;
+
+  ultimoAcesso?: Date;
+
+  foto?: string;
 
   dataCriacao?: Date;
   dataUltimaAtualizacao?: Date;
