@@ -1,3 +1,4 @@
+
 <aside
   class="barra-lateral d-flex flex-column py-3"
   [class.recolhida]="recolhida && !mobileAberto"
@@ -7,7 +8,7 @@
   <!-- Área rolável -->
   <div class="menu-scroll flex-grow-1 px-2">
 
-    <!-- Dashboard -->
+    <!-- DASHBOARD -->
     <a
       routerLink="/dashboard"
       routerLinkActive="active"
@@ -19,197 +20,240 @@
       <span class="menu-label ms-2">Dashboard</span>
     </a>
 
-    <!-- ACERVO -->
+    <!-- CADASTROS -->
     <div class="menu-group mb-2">
       <button
         type="button"
         class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
         data-bs-toggle="collapse"
-        data-bs-target="#collapseAcervo"
+        data-bs-target="#collapseCadastros"
         aria-expanded="false"
-        aria-controls="collapseAcervo"
-        title="Acervo"
+        aria-controls="collapseCadastros"
+        title="Cadastros"
       >
-        <i class="bi bi-book icon-blue"></i>
-        <span class="menu-label ms-2">Acervo</span>
+        <i class="bi bi-clipboard-plus icon-blue"></i>
+        <span class="menu-label ms-2">Cadastros</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
       </button>
 
-      <div class="collapse" id="collapseAcervo">
+      <div class="collapse" id="collapseCadastros">
         <nav class="nav flex-column gap-1 mt-1 submenu">
-          <a
-            routerLink="/cadastrarMaterial"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Cadastrar material"
-            (click)="aoNavegar()"
-          >
-            <i class="bi bi-plus-square icon-green"></i>
-            <span class="menu-label ms-2">Cadastrar Material</span>
-          </a>
 
+          <!-- MATERIAL -->
           <a
             routerLink="/editarExcluirMaterial"
             routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded"
-            title="Editar / Excluir material"
+            title="Material"
             (click)="aoNavegar()"
           >
-            <i class="bi bi-pencil-square icon-yellow"></i>
-            <span class="menu-label ms-2">Editar / Excluir Material</span>
+            <i class="bi bi-book icon-green"></i>
+            <span class="menu-label ms-2">Material</span>
           </a>
 
-          <a
-            routerLink="/estanteVirtual"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Encontrar material"
-            (click)="aoNavegar()"
+          <!-- EXEMPLAR -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Exemplar"
           >
-            <i class="bi bi-search icon-default"></i>
-            <span class="menu-label ms-2">Encontrar Material</span>
-          </a>
-        </nav>
-      </div>
-    </div>
+            <i class="bi bi-journal-bookmark icon-exemplar"></i>
+            <span class="menu-label ms-2">Exemplar</span>
+          </div>
 
-    <!-- USUÁRIOS -->
-    <div class="menu-group mb-2">
-      <button
-        type="button"
-        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseUsuarios"
-        aria-expanded="false"
-        aria-controls="collapseUsuarios"
-        title="Usuários"
-      >
-        <i class="bi bi-people icon-blue"></i>
-        <span class="menu-label ms-2">Usuários</span>
-        <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
-      </button>
-
-      <div class="collapse" id="collapseUsuarios">
-        <nav class="nav flex-column gap-1 mt-1 submenu">
-          <a
-            routerLink="/cadastrar-usuario"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Cadastrar usuário"
-            (click)="aoNavegar()"
-          >
-            <i class="bi bi-person-plus icon-green"></i>
-            <span class="menu-label ms-2">Cadastrar</span>
-          </a>
-
+          <!-- USUÁRIO -->
           <a
             routerLink="/editar-excluir-usuario"
             routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded"
-            title="Consultar / Editar usuários"
+            title="Usuário"
             (click)="aoNavegar()"
           >
-            <i class="bi bi-person-lines-fill icon-blue"></i>
-            <span class="menu-label ms-2">Consultar / Editar</span>
+            <i class="bi bi-people icon-blue"></i>
+            <span class="menu-label ms-2">Usuário</span>
           </a>
 
-          <a
-            routerLink="/historicoEmprestimo"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Histórico de empréstimos"
-            (click)="aoNavegar()"
+          <!-- FUNCIONÁRIO -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Funcionário"
           >
-            <i class="bi bi-clock-history icon-blue"></i>
-            <span class="menu-label ms-2">Empréstimos</span>
-          </a>
+            <i class="bi bi-person-badge icon-funcionario"></i>
+            <span class="menu-label ms-2">Funcionário</span>
+          </div>
 
-          <a
-            routerLink="/bloqueios"
-            routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded"
-            title="Bloqueios"
-            (click)="aoNavegar()"
+          <!-- AUTOR -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Autor"
           >
-            <i class="bi bi-slash-circle icon-red"></i>
-            <span class="menu-label ms-2">Bloqueios</span>
-          </a>
+            <i class="bi bi-person-lines-fill icon-autor"></i>
+            <span class="menu-label ms-2">Autor</span>
+          </div>
+
+          <!-- EDITORA -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Editora"
+          >
+            <i class="bi bi-building icon-editora"></i>
+            <span class="menu-label ms-2">Editora</span>
+          </div>
+
+          <!-- GÊNERO -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Gênero"
+          >
+            <i class="bi bi-tags icon-genero"></i>
+            <span class="menu-label ms-2">Gênero</span>
+          </div>
+
         </nav>
       </div>
     </div>
 
-    <!-- EMPRÉSTIMOS -->
+    <!-- ESTANTE VIRTUAL -->
+    <a
+      routerLink="/estanteVirtual"
+      routerLinkActive="active"
+      class="nav-link menu-item d-flex align-items-center rounded mb-2"
+      title="Estante Virtual"
+      (click)="aoNavegar()"
+    >
+      <i class="bi bi-bookshelf icon-blue"></i>
+      <span class="menu-label ms-2">Estante Virtual</span>
+    </a>
+
+    <!-- MOVIMENTAÇÃO -->
     <div class="menu-group mb-2">
       <button
         type="button"
         class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
         data-bs-toggle="collapse"
-        data-bs-target="#collapseEmprestimos"
+        data-bs-target="#collapseMovimentacao"
         aria-expanded="false"
-        aria-controls="collapseEmprestimos"
-        title="Empréstimos"
+        aria-controls="collapseMovimentacao"
+        title="Movimentação"
       >
-        <i class="bi bi-journal-check icon-green"></i>
-        <span class="menu-label ms-2">Empréstimos</span>
+        <i class="bi bi-arrow-left-right icon-green"></i>
+        <span class="menu-label ms-2">Movimentação</span>
         <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
       </button>
 
-      <div class="collapse" id="collapseEmprestimos">
+      <div class="collapse" id="collapseMovimentacao">
         <nav class="nav flex-column gap-1 mt-1 submenu">
+
+          <!-- EMPRÉSTIMOS -->
           <a
             routerLink="/reservar-material"
             routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded"
-            title="Reservar material"
+            title="Empréstimos"
             (click)="aoNavegar()"
           >
-            <i class="bi bi-calendar-plus icon-green"></i>
-            <span class="menu-label ms-2">Reservar</span>
+            <i class="bi bi-journal-check icon-green"></i>
+            <span class="menu-label ms-2">Empréstimos</span>
           </a>
 
+          <!-- RENOVAÇÕES / DEVOLUÇÕES -->
           <a
             routerLink="/renovar-devolver"
             routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded"
-            title="Renovar / Devolver"
+            title="Renovações / Devoluções"
             (click)="aoNavegar()"
           >
             <i class="bi bi-arrow-repeat icon-yellow"></i>
-            <span class="menu-label ms-2">Renovar / Devolver</span>
+            <span class="menu-label ms-2">Renovações / Devoluções</span>
           </a>
+
+          <!-- HISTÓRICO USUÁRIO -->
+          <a
+            routerLink="/historicoEmprestimo"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Histórico Usuário"
+            (click)="aoNavegar()"
+          >
+            <i class="bi bi-clock-history icon-blue"></i>
+            <span class="menu-label ms-2">Histórico Usuário</span>
+          </a>
+
+          <!-- ATRASOS USUÁRIOS -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Atrasos Usuários"
+          >
+            <i class="bi bi-exclamation-triangle icon-atrasos"></i>
+            <span class="menu-label ms-2">Atrasos Usuários</span>
+          </div>
+
         </nav>
       </div>
     </div>
+
+    <!-- ADMINISTRAÇÃO -->
+    <div class="menu-group mb-2">
+      <button
+        type="button"
+        class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseAdministracao"
+        aria-expanded="false"
+        aria-controls="collapseAdministracao"
+        title="Administração"
+      >
+        <i class="bi bi-shield-lock icon-blue"></i>
+        <span class="menu-label ms-2">Administração</span>
+        <i class="bi bi-chevron-down ms-auto menu-label chevron-icon"></i>
+      </button>
+
+      <div class="collapse" id="collapseAdministracao">
+        <nav class="nav flex-column gap-1 mt-1 submenu">
+
+          <!-- PERMISSÕES -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Permissões"
+          >
+            <i class="bi bi-shield-check icon-permissoes"></i>
+            <span class="menu-label ms-2">Permissões</span>
+          </div>
+
+          <!-- UNIDADES -->
+          <div
+            class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded"
+            title="Unidades"
+          >
+            <i class="bi bi-buildings icon-unidades"></i>
+            <span class="menu-label ms-2">Unidades</span>
+          </div>
+
+          <!-- RELATÓRIOS -->
+          <a
+            routerLink="/relatorio"
+            routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded"
+            title="Relatórios"
+            (click)="aoNavegar()"
+          >
+            <i class="bi bi-file-earmark-text icon-default"></i>
+            <span class="menu-label ms-2">Relatórios</span>
+          </a>
+
+        </nav>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Área inferior fixa -->
+  <!-- ÁREA INFERIOR FIXA -->
   <section class="menu-section px-2">
     <hr class="divider mx-2" />
 
     <nav class="nav flex-column gap-1 mb-2">
-      <a
-        routerLink="/relatorio"
-        routerLinkActive="active"
-        class="nav-link menu-item d-flex align-items-center rounded"
-        title="Relatórios"
-        (click)="aoNavegar()"
-      >
-        <i class="bi bi-file-earmark-text icon-default"></i>
-        <span class="menu-label ms-2">Relatórios</span>
-      </a>
 
-      <a
-        *ngIf="isAdmin()"
-        routerLink="/monitoramento"
-        routerLinkActive="active"
-        class="nav-link menu-item d-flex align-items-center rounded"
-        title="Monitoramento"
-        (click)="aoNavegar()"
-      >
-        <i class="bi bi-activity icon-default"></i>
-        <span class="menu-label ms-2">Monitoramento</span>
-      </a>
-
+      <!-- CONFIGURAÇÕES -->
       <a
         routerLink="/configuracoes"
         routerLinkActive="active"
@@ -221,6 +265,7 @@
         <span class="menu-label ms-2">Configurações</span>
       </a>
 
+      <!-- SUPORTE -->
       <a
         routerLink="/suporte"
         routerLinkActive="active"
@@ -232,6 +277,7 @@
         <span class="menu-label ms-2">Suporte</span>
       </a>
 
+      <!-- SAIR -->
       <button
         type="button"
         class="nav-link menu-item text-red d-flex align-items-center rounded w-100"
@@ -241,10 +287,12 @@
         <i class="bi bi-box-arrow-right"></i>
         <span class="menu-label ms-2">Sair</span>
       </button>
+
     </nav>
 
     <hr class="divider m-0 mt-2 mb-2" />
 
+    <!-- RECOLHER / EXPANDIR -->
     <button
       type="button"
       class="nav-link menu-item d-flex align-items-center w-100 rounded"
@@ -260,5 +308,6 @@
         {{ recolhida ? 'Abrir' : 'Fechar' }}
       </span>
     </button>
+
   </section>
 </aside>
