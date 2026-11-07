@@ -2,6 +2,12 @@
   <div class="titulo">Consultar / Editar Usuários</div>
 
   <div class="corpo">
+    <div class="d-flex justify-content-end mb-4">
+      <a lbrButton variant="cadastrar" routerLink="/cadastrar-usuario">
+        <i class="bi bi-person-plus" aria-hidden="true"></i>
+        Cadastrar Usuário
+      </a>
+    </div>
 
     <div class="row mb-4">
       <app-input-busca TipoInput="USUARIO" [showSelect]="true" (buscar)="pesquisarUsuario($event)"></app-input-busca>
