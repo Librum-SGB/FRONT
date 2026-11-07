@@ -27,7 +27,7 @@ import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
 import { GeneroResponse } from '../../models/genero.model';
 import { ExemplarResponse } from '../../models/exemplar.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 declare var bootstrap: any;
 
@@ -94,6 +94,7 @@ interface MaterialExibicao {
     AlertaErros,
     SelectPesquisavel,
     LbrBadge,
+    RouterLink,
   ],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',

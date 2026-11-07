@@ -27,7 +27,7 @@ export class TelaSuporte implements OnInit {
   faqs = [
     {
       question: 'Como cadastrar um novo livro?',
-      answer: 'Vá no menu Cadastrar Material e preencha os dados.',
+      answer: 'Acesse Acervo > Editar / Excluir Material, clique em Cadastrar Material e preencha os dados.',
       open: false,
     },
     {
