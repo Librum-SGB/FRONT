@@ -1,5 +1,5 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import {
   FormBuilder,
   FormGroup,
@@ -7,27 +7,27 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 
-import { ToastService } from '../../shared/services/toast.service';
 import { IMaskDirective } from 'angular-imask';
 import { MaskConstants } from '../../enum/const';
-import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
 import { GeneroResponse } from '../../models/genero.model';
-import { MaterialService, LivroExterno } from '../../services/material';
+import { MaterialRequest, MaterialResponse } from '../../models/material.model';
 import { AutorService } from '../../services/autor';
 import { EditoraService } from '../../services/editora';
 import { GeneroService } from '../../services/genero';
-import { MaterialRequest, MaterialResponse } from '../../models/material.model';
+import { LivroExterno, MaterialService } from '../../services/material';
+import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 import { CadastroAutorModal } from '../../shared/component/cadastro-autor-modal/cadastro-autor-modal';
 import { CadastroEditoraModal } from '../../shared/component/cadastro-editora-modal/cadastro-editora-modal';
 import { CadastroGeneroModal } from '../../shared/component/cadastro-genero-modal/cadastro-genero-modal';
-import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
+import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
+import { ToastService } from '../../shared/services/toast.service';
 import { FormUtils } from '../../utils/FormUtil';
-import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 
 @Component({
   selector: 'app-cadastrar-material',
