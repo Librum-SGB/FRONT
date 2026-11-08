@@ -1,4 +1,3 @@
-
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
@@ -25,9 +24,11 @@ export class App implements OnInit {
   menuMobileAberto = false;
 
   constructor() {
-    this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe(event => {
-      this.currentRoute = event.urlAfterRedirects;
-    });
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.currentRoute = event.urlAfterRedirects;
+      });
   }
 
   ngOnInit(): void {
@@ -41,9 +42,11 @@ export class App implements OnInit {
   }
 
   isAuthRoute(): boolean {
-    return ['', '/', '/esqueci-senha', '/cadastro-bibliotecaria'].includes(this.currentRoute);
+    return ['', '/', '/esqueci-senha', '/cadastro-bibliotecaria', '/acesso-negado'].includes(
+      this.currentRoute,
+    );
   }
-  
+
   alternarSidebar(): void {
     if (window.innerWidth < 992) {
       this.menuMobileAberto = !this.menuMobileAberto;
@@ -62,7 +65,7 @@ export class App implements OnInit {
     sessionStorage.clear();
     this.menuMobileAberto = false;
 
-    this.router.navigate(['/']).then(navegou => {
+    this.router.navigate(['/']).then((navegou) => {
       if (navegou) this.toastService.sucesso('Logout realizado com sucesso!');
       else this.toastService.erro('Não foi possível voltar para a tela de login.');
     });
