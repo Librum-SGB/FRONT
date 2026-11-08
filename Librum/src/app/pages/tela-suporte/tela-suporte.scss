@@ -8,26 +8,13 @@ h4 {
   font-weight: 600;
 }
 
-.card-contato-azul, .card-contato-verde, .card-contato-roxo { 
+.card-contato-azul, .card-contato-verde {
   color: white !important;
   h6, i, p, span, small { color: white !important; }
 }
 
 .card-contato-azul { background-color: var(--cor-azul-escuro); }
 .card-contato-verde { background-color: var(--cor-verde); }
-.card-contato-roxo { background-color: var(--cor-roxo); }
-
-.btn-chat-suporte {
-  background-color: white;
-  color: var(--cor-roxo);
-  border: none;
-  width: 100%;
-  font-size: 0.8rem;
-  padding: 5px;
-  border-radius: 5px;
-  margin-top: 5px;
-  font-weight: bold;
-}
 
 .btn-enviar-suporte {
   background-color: var(--cor-azul-escuro);
