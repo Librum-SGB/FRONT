@@ -3,7 +3,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { FuncaoUsuario } from '../enum/funcaoUsuario.enum';
-import { Permissao, PERMISSOES_POR_FUNCAO } from '../enum/permissoes.enum';
+import { FUNCOES_GERENCIAVEIS, Permissao, PERMISSOES_POR_FUNCAO } from '../enum/permissoes.enum';
 
 export const AUTH_TOKEN_KEY = 'mylibrum.auth.token';
 
@@ -120,5 +120,11 @@ export class AuthService {
   temAlgumaPermissao(...necessarias: Permissao[]): boolean {
     const atuais = this.permissoes();
     return necessarias.some((p) => atuais.includes(p));
+  }
+
+  /** Ex.: bibliotecária só gerencia ASSISTENTE e USUARIO */
+  podeGerenciarFuncao(alvo: FuncaoUsuario): boolean {
+    const atual = this.funcao();
+    return !!atual && FUNCOES_GERENCIAVEIS[atual].includes(alvo);
   }
 }
