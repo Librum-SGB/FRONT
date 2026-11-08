@@ -1,6 +1,5 @@
-import { computed, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { FuncaoUsuario } from '../enum/funcaoUsuario.enum';
@@ -49,8 +48,6 @@ export interface LoginResponse {
 export class AuthService {
   private readonly loginUrl = `${environment.apiBaseUrl}/auth/login`;
 
-  constructor(private readonly http: HttpClient) {}
-
   private readonly _token = signal<string | null>(sessionStorage.getItem(AUTH_TOKEN_KEY));
 
   readonly payload = computed(() => decodificarJwt(this._token()));
@@ -76,12 +73,36 @@ export class AuthService {
     return f ? PERMISSOES_POR_FUNCAO[f] : [];
   });
 
+  constructor(private readonly http: HttpClient) {}
+
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.loginUrl, credentials);
+  }
+
+  saveToken(token: string): void {
+    sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+    this._token.set(token);
+  }
+
+  getToken(): string | null {
+    return this._token();
+  }
+
+  logout(): void {
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    this._token.set(null);
+  }
+
   /** Token existe e não expirou */
   estaLogado(): boolean {
     const token = this._token();
     if (!token) return false;
     const exp = this.payload()?.exp;
     return !exp || exp * 1000 > Date.now();
+  }
+
+  isAdmin(): boolean {
+    return this.funcao() === FuncaoUsuario.ADMIN;
   }
 
   temFuncao(...funcoes: FuncaoUsuario[]): boolean {
@@ -99,42 +120,5 @@ export class AuthService {
   temAlgumaPermissao(...necessarias: Permissao[]): boolean {
     const atuais = this.permissoes();
     return necessarias.some((p) => atuais.includes(p));
-  }
-
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(this.loginUrl, credentials);
-  }
-
-  saveToken(token: string): void {
-    sessionStorage.setItem(AUTH_TOKEN_KEY, token);
-    this._token.set(token);
-  }
-
-  getToken(): string | null {
-    return this._token();
-  }
-
-  isAdmin(): boolean {
-    const token = this.getToken();
-    const payload = token?.split('.')[1];
-
-    if (!payload) {
-      return false;
-    }
-
-    try {
-      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-      const claims: { funcao?: string } = JSON.parse(
-        atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')),
-      );
-      return claims.funcao === 'ADMIN';
-    } catch {
-      return false;
-    }
-  }
-
-  logout(): void {
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    this._token.set(null);
   }
 }
