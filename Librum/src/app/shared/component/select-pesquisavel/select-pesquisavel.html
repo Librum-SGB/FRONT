@@ -8,9 +8,12 @@
         </button>
 
         <ul class="list-group select-pesquisavel-lista" *ngIf="mostrarLista">
-            <li class="list-group-item list-group-item-action" style="cursor: pointer;"
-                *ngFor="let item of itensFiltrados" (click)="selecionar(item)">
-                {{ item.nome }}
+            <li class="list-group-item"
+                *ngFor="let item of itensFiltrados" (click)="selecionar(item)"
+                [class.list-group-item-action]="!item.desabilitado"
+                [class.item-desabilitado]="item.desabilitado"
+                [attr.aria-disabled]="item.desabilitado">
+                {{ item.nome }} <span *ngIf="item.desabilitado" class="text-muted">(já está em uma estante)</span>
             </li>
             <li class="list-group-item text-muted" *ngIf="itensFiltrados.length === 0">
                 Nenhum resultado encontrado

@@ -5,6 +5,25 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MaterialRequest, MaterialResponse } from '../models/material.model';
 
+export interface LivroExterno {
+  isbn?: string;
+  titulo?: string;
+  subtitulo?: string;
+  autores?: string[];
+  editora?: string;
+  anoPublicacao?: number;
+  quantidadePaginas?: number;
+  sinopse?: string;
+  generos?: string[];
+}
+
+export interface ConsultaIsbnResponse {
+  isbn: string;
+  jaCadastrado: boolean;
+  encontradoExternamente: boolean;
+  livro?: LivroExterno;
+}
+
 
 @Injectable({ providedIn: 'root' })
 export class MaterialService {
@@ -16,8 +35,9 @@ export class MaterialService {
     return this.http.post<MaterialResponse>(this.apiUrl, material);
   }
 
-  findAll(): Observable<MaterialResponse[]> {
-    return this.http.get<MaterialResponse[]>(this.apiUrl);
+  findAll(ativo?: boolean): Observable<MaterialResponse[]> {
+    const url = ativo === undefined ? this.apiUrl : `${this.apiUrl}?ativo=${ativo}`;
+    return this.http.get<MaterialResponse[]>(url);
   }
 
   findById(id: number): Observable<MaterialResponse> {
@@ -26,6 +46,10 @@ export class MaterialService {
 
   update(id: number, material: MaterialRequest): Observable<MaterialResponse> {
     return this.http.put<MaterialResponse>(`${this.apiUrl}/${id}`, material);
+  }
+
+  consultarIsbn(isbn: string): Observable<ConsultaIsbnResponse> {
+    return this.http.get<ConsultaIsbnResponse>(`${this.apiUrl}/isbn/consulta`, { params: { isbn } });
   }
 
   delete(id: number): Observable<void> {

@@ -26,14 +26,13 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-
   overflow: hidden;
 
   background-color: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border);
   transition: width 0.3s ease;
 
-  // Somente a área superior pode rolar.
+  // Área superior rolável
   .menu-scroll {
     flex: 1 1 0;
     min-height: 0;
@@ -45,7 +44,7 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  // Rodapé sempre visível, sem participar da rolagem superior.
+  // Rodapé fixo
   .menu-section {
     position: relative;
     flex: 0 0 auto;
@@ -63,6 +62,7 @@
     transition: opacity 0.2s ease;
   }
 
+  // Itens do menu
   .menu-item {
     min-height: 44px;
     padding: 10px 20px;
@@ -74,6 +74,7 @@
     text-decoration: none;
     white-space: nowrap;
     cursor: pointer;
+
     transition:
       background-color 0.2s ease,
       color 0.2s ease,
@@ -112,11 +113,23 @@
     }
   }
 
+  // Itens sem funcionalidade implementada
+  .menu-item-pendente {
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+      color: var(--text-main);
+    }
+  }
+
+  // Divisórias
   .divider {
     border-color: var(--divider-color);
     opacity: 1;
   }
 
+  // Ícones existentes
   .icon-green {
     color: var(--bs-success);
   }
@@ -137,6 +150,40 @@
     color: var(--text-muted);
   }
 
+  // Ícones das novas funcionalidades
+  .icon-exemplar {
+    color: #3B82F6;
+  }
+
+  .icon-funcionario {
+    color: #06B6D4;
+  }
+
+  .icon-autor {
+    color: #8B5CF6;
+  }
+
+  .icon-editora {
+    color: #F59E0B;
+  }
+
+  .icon-genero {
+    color: #EC4899;
+  }
+
+  .icon-atrasos {
+    color: #EF4444;
+  }
+
+  .icon-permissoes {
+    color: #A855F7;
+  }
+
+  .icon-unidades {
+    color: #22C55E;
+  }
+
+  // Botão sair
   .menu-item.text-red {
     color: var(--bs-danger);
 
@@ -146,13 +193,16 @@
     }
   }
 
+  // Grupos expansíveis
   .menu-group {
     .group-header {
       background-color: var(--bs-tertiary-bg);
       font-weight: 500;
 
-      &[aria-expanded='true'] .chevron-icon {
-        transform: rotate(180deg);
+      &[aria-expanded='true'] {
+        .chevron-icon {
+          transform: rotate(180deg);
+        }
       }
     }
 
@@ -161,13 +211,15 @@
       transition: transform 0.3s ease;
     }
 
-    .submenu .menu-item {
-      padding-left: 2.5rem;
-      font-size: 13.5px;
+    .submenu {
+      .menu-item {
+        padding-left: 2.5rem;
+        font-size: 13.5px;
+      }
     }
   }
 
-  // Menu recolhido no desktop.
+  // Menu recolhido no desktop
   &.recolhida {
     width: 64px;
 
@@ -232,7 +284,7 @@
     flex: 1 1 auto;
     overflow: hidden;
 
-    // A área superior continua sendo a única rolável.
+    // Área rolável
     .menu-scroll {
       flex: 1 1 0;
       min-height: 0;
@@ -242,13 +294,14 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    // O rodapé fica fixo dentro da barra.
+    // Rodapé fixo
     .menu-section {
       flex: 0 0 auto;
       margin-top: auto;
       background-color: var(--sidebar-bg);
     }
 
+    // Restaurar textos no mobile
     .section-title,
     .menu-label {
       display: inline;

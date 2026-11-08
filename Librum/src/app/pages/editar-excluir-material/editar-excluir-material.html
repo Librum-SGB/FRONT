@@ -2,6 +2,12 @@
   <div class="titulo">Editar / Excluir Material</div>
 
   <div class="corpo">
+    <div class="d-flex justify-content-end mb-4">
+      <a lbrButton variant="cadastrar" routerLink="/cadastrarMaterial">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        Cadastrar Material
+      </a>
+    </div>
 
     <div *ngIf="carregando()" class="text-center text-muted py-5">
       Carregando materiais...

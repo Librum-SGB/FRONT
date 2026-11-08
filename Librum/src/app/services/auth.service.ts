@@ -1,5 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { FuncaoUsuario } from '../enum/funcaoUsuario.enum';
@@ -111,6 +112,25 @@ export class AuthService {
 
   getToken(): string | null {
     return this._token();
+  }
+
+  isAdmin(): boolean {
+    const token = this.getToken();
+    const payload = token?.split('.')[1];
+
+    if (!payload) {
+      return false;
+    }
+
+    try {
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const claims: { funcao?: string } = JSON.parse(
+        atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')),
+      );
+      return claims.funcao === 'ADMIN';
+    } catch {
+      return false;
+    }
   }
 
   logout(): void {
