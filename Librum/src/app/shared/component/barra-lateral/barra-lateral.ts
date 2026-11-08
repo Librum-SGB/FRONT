@@ -1,14 +1,8 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  inject,
-  Input,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, HostListener, inject, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { Permissao } from '../../../enum/permissoes.enum';
 
 @Component({
   selector: 'app-barra-lateral',
@@ -18,7 +12,8 @@ import { AuthService } from '../../../services/auth.service';
   styleUrl: './barra-lateral.scss',
 })
 export class BarraLateralComponent {
-  private readonly authService = inject(AuthService);
+  protected readonly authService = inject(AuthService);
+  protected readonly Permissao = Permissao;
 
   @Input() recolhida = false;
   @Input() mobileAberto = false;

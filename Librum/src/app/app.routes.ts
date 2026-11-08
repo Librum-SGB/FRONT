@@ -55,7 +55,12 @@ export const routes: Routes = [
     canActivate: [permissaoGuard],
     data: { permissoes: [P.VER_RELATORIOS] },
   },
-
+  {
+    path: 'monitoramento',
+    component: Monitoramento,
+    canActivate: [permissaoGuard],
+    data: { permissoes: [P.CONFIGURAR_SISTEMA] }, // só admin
+  },
   // ── Acervo (admin, bibliotecária) ─────────────────────────
   {
     path: 'cadastrarMaterial',
@@ -104,7 +109,6 @@ export const routes: Routes = [
     data: { permissoes: [P.CADASTRAR_BIBLIOTECARIA] }, // só admin
   },
 
-  // ── Rota inexistente (sempre por último) ──────────────────
+  // ── Rota inexistente  ──────────────────
   { path: '**', redirectTo: '' },
-  { path: 'monitoramento', component: Monitoramento, canActivate: [adminGuard] },
 ];

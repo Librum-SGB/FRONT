@@ -1,54 +1,47 @@
 <nav class="navbar navbar-expand-xl bg-body shadow-sm ">
   <div class="container-fluid">
- <!-- Botão Mobile - Aparece apenas no celular (d-md-none) -->
-    <button
-      class="btn border-0 px-2 py-1 me-2 text-body d-flex align-items-center d-lg-none"
-      (click)="aoAlternarSidebar()"
-      aria-label="Abrir menu lateral"
-      title="Menu"
-    >
+    <!-- Botão Mobile - Aparece apenas no celular (d-md-none) -->
+    <button class="btn border-0 px-2 py-1 me-2 text-body d-flex align-items-center d-lg-none"
+      (click)="aoAlternarSidebar()" aria-label="Abrir menu lateral" title="Menu">
       <i class="bi bi-list fs-3"></i>
     </button>
-    <a class="navbar-logo d-flex align-items-center me-3" routerLink="/dashboard">
+
+    <!-- Logo leva à página inicial do perfil -->
+    <a class="navbar-logo d-flex align-items-center me-3" [routerLink]="paginaInicial()">
       <img src="assets/images/librumLogo.ico" alt="Logo My Librum" />
       <h5 class="ms-1 mb-0">My Librum</h5>
     </a>
 
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarText"
-      aria-controls="navbarText"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+      aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-  
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-xl-auto mb-3 mb-xl-0">
+
+        @if (auth.temPermissao(Permissao.VER_DASHBOARD)) {
         <li class="nav-item">
           <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         </li>
+        }
+
         <li class="nav-item">
-          <a class="nav-link" routerLink="/historicoEmprestimo" routerLinkActive="active"
-            >Empréstimos</a
-          >
+          <a class="nav-link" routerLink="/historicoEmprestimo" routerLinkActive="active">Empréstimos</a>
         </li>
+
+        @if (auth.temPermissao(Permissao.VER_RELATORIOS)) {
         <li class="nav-item">
-          <a class="nav-link" routerLink="/relatorio/" routerLinkActive="active">Relatórios</a>
+          <a class="nav-link" routerLink="/relatorio" routerLinkActive="active">Relatórios</a>
         </li>
+        }
+
         <li class="nav-item">
-          <a class="nav-link" routerLink="/estanteVirtual" routerLinkActive="active"
-            >Estante Virtual</a
-          >
+          <a class="nav-link" routerLink="/estanteVirtual" routerLinkActive="active">Estante Virtual</a>
         </li>
+
         <li class="nav-item">
-          <a class="nav-link" routerLink="/configuracoes" routerLinkActive="active"
-            >Configurações</a
-          >
+          <a class="nav-link" routerLink="/configuracoes" routerLinkActive="active">Configurações</a>
         </li>
       </ul>
 
@@ -62,33 +55,24 @@
           </select>
         </div>
 
-        <button
-          class="btn navbar-action-button"
-          type="button"
-          (click)="toggleTema()"
-          aria-label="Alternar tema"
-          title="Alternar tema"
-        >
+        <button class="btn navbar-action-button" type="button" (click)="toggleTema()" aria-label="Alternar tema"
+          title="Alternar tema">
           @if (tema.getCurrentTheme() == 'dark') {
-            <i class="bi bi-moon-fill"></i>
+          <i class="bi bi-moon-fill"></i>
           } @else {
-            <i class="bi bi-brightness-high-fill"></i>
+          <i class="bi bi-brightness-high-fill"></i>
           }
         </button>
 
         <div class="dropdown">
-          <button
-            class="btn dropdown-toggle d-flex align-items-center"
-            type="button"
-            data-bs-toggle="dropdown"
-          >
+          <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
             <i class="bi bi-person-circle fs-3"></i>
           </button>
 
           <ul class="dropdown-menu dropdown-menu-end shadow">
             <li class="px-3 py-2">
-              <strong>Maria Silva</strong><br />
-              <small class="text-muted">Bibliotecária</small>
+              <strong>{{ nomeUsuario() }}</strong><br />
+              <small class="text-muted">{{ nomeFuncao() }}</small>
             </li>
 
             <li>
@@ -96,11 +80,11 @@
             </li>
 
             <li>
-              <a class="dropdown-item" routerLink="/configuracoes"> Configurações </a>
+              <a class="dropdown-item" routerLink="/configuracoes">Configurações</a>
             </li>
 
             <li>
-              <a class="dropdown-item" routerLink="/suporte"> Suporte </a>
+              <a class="dropdown-item" routerLink="/suporte">Suporte</a>
             </li>
 
             <li>
@@ -108,12 +92,10 @@
             </li>
 
             <li>
-              <a class="dropdown-item text-danger" routerLink=""> Sair </a>
+              <button type="button" class="dropdown-item text-danger" (click)="sair()">Sair</button>
             </li>
           </ul>
         </div>
-
-       
       </div>
     </div>
   </div>

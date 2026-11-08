@@ -4,13 +4,16 @@
   <div class="menu-scroll flex-grow-1 px-2">
 
     <!-- DASHBOARD -->
+    @if (authService.temPermissao(Permissao.VER_DASHBOARD)) {
     <a routerLink="/dashboard" routerLinkActive="active"
       class="nav-link menu-item d-flex align-items-center rounded mb-3" title="Dashboard" (click)="aoNavegar()">
       <i class="bi bi-house-door text-success"></i>
       <span class="menu-label ms-2">Dashboard</span>
     </a>
+    }
 
-    <!-- CADASTROS -->
+    <!-- CADASTROS: o grupo só aparece se houver algum item liberado -->
+    @if (authService.temAlgumaPermissao(Permissao.EDITAR_MATERIAL, Permissao.VER_USUARIOS, Permissao.EDITAR_USUARIO)) {
     <div class="menu-group mb-2">
       <button type="button" class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
         data-bs-toggle="collapse" data-bs-target="#collapseCadastros" aria-expanded="false"
@@ -23,6 +26,7 @@
       <div class="collapse" id="collapseCadastros">
         <nav class="nav flex-column gap-1 mt-1 submenu">
 
+          @if (authService.temPermissao(Permissao.EDITAR_MATERIAL)) {
           <!-- MATERIAL -->
           <a routerLink="/editarExcluirMaterial" routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded" title="Material" (click)="aoNavegar()">
@@ -35,20 +39,26 @@
             <i class="bi bi-journal-bookmark icon-exemplar"></i>
             <span class="menu-label ms-2">Exemplar</span>
           </div>
+          }
 
-          <!-- USUÁRIO -->
+          <!-- USUÁRIO (assistente só consulta) -->
+          @if (authService.temPermissao(Permissao.VER_USUARIOS)) {
           <a routerLink="/editar-excluir-usuario" routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded" title="Usuário" (click)="aoNavegar()">
             <i class="bi bi-people icon-blue"></i>
             <span class="menu-label ms-2">Usuário</span>
           </a>
+          }
 
           <!-- FUNCIONÁRIO -->
+          @if (authService.temPermissao(Permissao.EDITAR_USUARIO)) {
           <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Funcionário">
             <i class="bi bi-person-badge icon-funcionario"></i>
             <span class="menu-label ms-2">Funcionário</span>
           </div>
+          }
 
+          @if (authService.temPermissao(Permissao.EDITAR_MATERIAL)) {
           <!-- AUTOR -->
           <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Autor">
             <i class="bi bi-person-lines-fill icon-autor"></i>
@@ -66,19 +76,21 @@
             <i class="bi bi-tags icon-genero"></i>
             <span class="menu-label ms-2">Gênero</span>
           </div>
+          }
 
         </nav>
       </div>
     </div>
+    }
 
-    <!-- ESTANTE VIRTUAL -->
+    <!-- ESTANTE VIRTUAL (todos) -->
     <a routerLink="/estanteVirtual" routerLinkActive="active"
       class="nav-link menu-item d-flex align-items-center rounded mb-2" title="Estante Virtual" (click)="aoNavegar()">
       <i class="bi bi-bookshelf icon-blue"></i>
       <span class="menu-label ms-2">Estante Virtual</span>
     </a>
 
-    <!-- MOVIMENTAÇÃO -->
+    <!-- MOVIMENTAÇÃO (todos veem o grupo; alguns itens variam) -->
     <div class="menu-group mb-2">
       <button type="button" class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
         data-bs-toggle="collapse" data-bs-target="#collapseMovimentacao" aria-expanded="false"
@@ -91,22 +103,24 @@
       <div class="collapse" id="collapseMovimentacao">
         <nav class="nav flex-column gap-1 mt-1 submenu">
 
-          <!-- EMPRÉSTIMOS -->
+          <!-- EMPRÉSTIMOS (todos) -->
           <a routerLink="/reservar-material" routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded" title="Empréstimos" (click)="aoNavegar()">
             <i class="bi bi-journal-check icon-green"></i>
             <span class="menu-label ms-2">Empréstimos</span>
           </a>
 
-          <!-- RENOVAÇÕES / DEVOLUÇÕES -->
+          <!-- RENOVAÇÕES / DEVOLUÇÕES (funcionários) -->
+          @if (authService.temPermissao(Permissao.GERENCIAR_EMPRESTIMOS)) {
           <a routerLink="/renovar-devolver" routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded" title="Renovações / Devoluções"
             (click)="aoNavegar()">
             <i class="bi bi-arrow-repeat icon-yellow"></i>
             <span class="menu-label ms-2">Renovações / Devoluções</span>
           </a>
+          }
 
-          <!-- HISTÓRICO USUÁRIO -->
+          <!-- HISTÓRICO (todos; usuário vê só o dele) -->
           <a routerLink="/historicoEmprestimo" routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded" title="Histórico Usuário"
             (click)="aoNavegar()">
@@ -114,17 +128,20 @@
             <span class="menu-label ms-2">Histórico Usuário</span>
           </a>
 
-          <!-- ATRASOS USUÁRIOS -->
+          <!-- ATRASOS USUÁRIOS (admin, bibliotecária) -->
+          @if (authService.temPermissao(Permissao.GERENCIAR_MULTAS)) {
           <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Atrasos Usuários">
             <i class="bi bi-exclamation-triangle icon-atrasos"></i>
             <span class="menu-label ms-2">Atrasos Usuários</span>
           </div>
+          }
 
         </nav>
       </div>
     </div>
 
     <!-- ADMINISTRAÇÃO -->
+    @if (authService.temAlgumaPermissao(Permissao.VER_RELATORIOS, Permissao.CONFIGURAR_SISTEMA)) {
     <div class="menu-group mb-2">
       <button type="button" class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
         data-bs-toggle="collapse" data-bs-target="#collapseAdministracao" aria-expanded="false"
@@ -137,6 +154,7 @@
       <div class="collapse" id="collapseAdministracao">
         <nav class="nav flex-column gap-1 mt-1 submenu">
 
+          @if (authService.temPermissao(Permissao.CONFIGURAR_SISTEMA)) {
           <!-- PERMISSÕES -->
           <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Permissões">
             <i class="bi bi-shield-check icon-permissoes"></i>
@@ -148,17 +166,21 @@
             <i class="bi bi-buildings icon-unidades"></i>
             <span class="menu-label ms-2">Unidades</span>
           </div>
+          }
 
           <!-- RELATÓRIOS -->
+          @if (authService.temPermissao(Permissao.VER_RELATORIOS)) {
           <a routerLink="/relatorio" routerLinkActive="active"
             class="nav-link menu-item d-flex align-items-center rounded" title="Relatórios" (click)="aoNavegar()">
             <i class="bi bi-file-earmark-text icon-default"></i>
             <span class="menu-label ms-2">Relatórios</span>
           </a>
+          }
 
         </nav>
       </div>
     </div>
+    }
 
   </div>
 
@@ -168,28 +190,29 @@
 
     <nav class="nav flex-column gap-1 mb-2">
 
-      <!-- CONFIGURAÇÕES -->
+      <!-- CONFIGURAÇÕES (todos) -->
       <a routerLink="/configuracoes" routerLinkActive="active"
         class="nav-link menu-item d-flex align-items-center rounded" title="Configurações" (click)="aoNavegar()">
         <i class="bi bi-gear icon-default"></i>
         <span class="menu-label ms-2">Configurações</span>
       </a>
-      <!-- MONITORAMENTO -->
+
+      <!-- MONITORAMENTO (só admin) -->
+      @if (authService.temPermissao(Permissao.CONFIGURAR_SISTEMA)) {
       <a routerLink="/monitoramento" routerLinkActive="active"
         class="nav-link menu-item d-flex align-items-center rounded" title="Monitoramento" (click)="aoNavegar()">
         <i class="bi bi-activity"></i>
         <span class="menu-label ms-2">Monitoramento</span>
       </a>
+      }
 
-
-      <!-- SUPORTE -->
+      <!-- SUPORTE (todos) -->
       <a routerLink="/suporte" routerLinkActive="active" class="nav-link menu-item d-flex align-items-center rounded"
         title="Suporte" (click)="aoNavegar()">
         <i class="bi bi-question-circle icon-default"></i>
         <span class="menu-label ms-2">Suporte</span>
       </a>
 
-      
       <!-- SAIR -->
       <button type="button" class="nav-link menu-item text-red d-flex align-items-center rounded w-100" title="Sair"
         (click)="logout()">
