@@ -14,6 +14,7 @@ import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 import { HistorioEmprestimo } from './pages/historico-emprestimo/historico-emprestimo';
 import { Monitoramento } from './pages/monitoramento/monitoramento';
 import { Relatorio } from './pages/relatorio/relatorio';
+import { Configuracoes } from './pages/configuracoes/configuracoes';
 import { RenovarDevolverMaterial } from './pages/renovar-devolver-material/renovar-devolver-material';
 import { ReservarMaterial } from './pages/reservar-material/reservar-material';
 import { AcessoNegado } from './pages/acesso-negado/acesso-negado';

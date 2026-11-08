@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { FormUtils } from '../../utils/FormUtil';
@@ -10,7 +9,7 @@ import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 @Component({
   selector: 'app-tela-suporte',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CorpoPadrao, AlertaErros],
+  imports: [CommonModule, ReactiveFormsModule, CorpoPadrao, AlertaErros],
   templateUrl: './tela-suporte.html',
   styleUrls: ['./tela-suporte.scss'],
 })
