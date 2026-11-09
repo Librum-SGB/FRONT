@@ -2,14 +2,12 @@ import { prioridade } from '../enum/prioridade.enum';
 
 export interface Tarefa {
   id?: number;
-
-  gestorId: number;
-
+  usuarioId?: number;
   descricao: string;
   prioridade?: prioridade;
-
   concluida?: boolean;
-
-  dataCriacao?: Date;
-  dataUltimaAtualizacao?: Date;
+  status?: 'PENDENTE' | 'EM_ANDAMENTO' | 'CONCLUIDA';
+  prazo?: string;
+  dataCriacao?: string;
+  dataUltimaAtualizacao?: string;
 }

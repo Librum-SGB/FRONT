@@ -1,60 +1,140 @@
 <app-corpo-padrao>
+  <div class="titulo">Histórico de Empréstimos</div>
 
-  <div class="titulo">Histórico de Empréstimo</div>
-  <div class="subtitulo">Unidade São Paulo - Centro</div>
   <div class="corpo">
+    @if (erroCarregamento) {
+      <div class="alert alert-danger" role="alert">
+        {{ erroCarregamento }}
+        <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="carregarEmprestimos()">
+          Tentar novamente
+        </button>
+      </div>
+    }
 
-    <div class="row px-3 mt-3">
-      <div class="col-sm-12 col-md-6">
-        <label for="dataInicial" class="form-label">Data Inicial</label>
-        <input type="date" id="dataInicial" class="form-control" [(ngModel)]="dataInicial" (change)="filtarLista()">
-      </div>
-      <div class="col-sm-12 col-md-6">
-        <label for="dataFinal" class="form-label">Data Final</label>
-        <input type="date" id="dataFinal" class="form-control" [(ngModel)]="dataFinal" (change)="filtarLista()">
-      </div>
-    </div>
-    <div class="row row-gap-3 mt-3">
+    <div class="row g-3 mt-2 mb-4">
       <div class="col-sm-12 col-md-4">
         <app-card-status titulo="Em andamento"
-          [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ANDAMENTO).length.toString()"
+          [conteudo]="quantidadePorStatus(statusEmprestimo.ATIVO).toString()"
           cor="primary" />
       </div>
       <div class="col-sm-12 col-md-4">
-        <app-card-status titulo="Desenvolvidos"
-          [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.DEVOLVIDO).length.toString()"
+        <app-card-status titulo="Devolvidos"
+          [conteudo]="quantidadePorStatus(statusEmprestimo.DEVOLVIDO).toString()"
           cor="success" />
       </div>
       <div class="col-sm-12 col-md-4">
         <app-card-status titulo="Atrasados"
-          [conteudo]="listaFiltrada.filter((emp)=> emp.status == statusEmprestimo.ATRASADO).length.toString()"
+          [conteudo]="quantidadePorStatus(statusEmprestimo.ATRASADO).toString()"
           cor="danger" />
       </div>
     </div>
-    <div class="row px-3">
-      <table class="table table-responsive mt-3">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Usuário</th>
-            <th>Livro</th>
-            <th>Situação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of listaFiltrada">
-            <td>{{ item.data }}</td>
-            <td>{{ item.usuario }}</td>
-            <td>{{ item.livro }}</td>
-            <td>
-              <span class="badge" [ngClass]="getBadge(item.status)">
-                {{ item.status }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label for="dataInicial" class="form-label">Data inicial</label>
+        <input type="date" id="dataInicial" class="form-control"
+          [(ngModel)]="dataInicial" (ngModelChange)="filtrarLista()">
+      </div>
+      <div class="col-md-6">
+        <label for="dataFinal" class="form-label">Data final</label>
+        <input type="date" id="dataFinal" class="form-control"
+          [(ngModel)]="dataFinal" (ngModelChange)="filtrarLista()">
+      </div>
+      <div class="col-md-4">
+        <label for="filtroStatus" class="form-label">Status</label>
+        <select id="filtroStatus" class="form-select"
+          [(ngModel)]="statusSelecionado" (ngModelChange)="filtrarLista()">
+          <option value="TODOS">Todos os status</option>
+          <option [value]="statusEmprestimo.ATIVO">Em andamento</option>
+          <option [value]="statusEmprestimo.DEVOLVIDO">Devolvido</option>
+          <option [value]="statusEmprestimo.ATRASADO">Atrasado</option>
+          <option [value]="statusEmprestimo.BLOQUEADO">Bloqueado</option>
+        </select>
+      </div>
+      <div class="col-md-8">
+        <label class="form-label">Buscar no histórico</label>
+        <app-input-busca
+          [showSelect]="false"
+          [buscarAoDigitar]="true"
+          placeholder="Buscar por ID, usuário ou material..."
+          (buscar)="aplicarBusca($event)">
+        </app-input-busca>
+      </div>
+    </div>
+
+    @if (dataInicial && dataFinal && dataInicial > dataFinal) {
+      <div class="alert alert-warning" role="alert">
+        A data inicial não pode ser posterior à data final.
+      </div>
+    }
+
+    @if (carregando) {
+      <p class="text-center text-secondary py-4">Carregando histórico de empréstimos...</p>
+    } @else if (listaFiltrada.length === 0) {
+      <div class="text-center py-5 border border-secondary border-opacity-25 rounded">
+        <i class="bi bi-journal-check fs-1 text-secondary opacity-50" aria-hidden="true"></i>
+        <p class="text-secondary mt-2 mb-0">
+          {{ busca.trim() || dataInicial || dataFinal || statusSelecionado !== 'TODOS'
+            ? 'Nenhum empréstimo encontrado para os filtros selecionados.'
+            : 'Ainda não há empréstimos no histórico.' }}
+        </p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Data do empréstimo</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Material</th>
+              <th scope="col">Devolução prevista</th>
+              <th scope="col">Devolução realizada</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (emprestimo of listaPagina; track emprestimo.id) {
+              <tr>
+                <th scope="row">#{{ emprestimo.id }}</th>
+                <td>{{ formatarDataEmprestimo(emprestimo.dataSaida) }}</td>
+                <td>{{ emprestimo.usuarioNome || 'Usuário' }}</td>
+                <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
+                <td>{{ formatarDataEmprestimo(emprestimo.dataDevolucaoPrevista) }}</td>
+                <td>{{ formatarDataEmprestimo(emprestimo.dataDevolucaoEfetivada) }}</td>
+                <td>
+                  <span class="badge rounded-pill" [ngClass]="getBadge(getStatus(emprestimo))">
+                    {{ rotuloStatus(getStatus(emprestimo)) }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+        <small class="text-muted">
+          Exibindo {{ inicioExibicao }}–{{ fimExibicao }} de {{ listaFiltrada.length }}
+        </small>
+        @if (totalPaginas > 1) {
+          <nav aria-label="Paginação do histórico de empréstimos">
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item" [class.disabled]="paginaEfetiva === 1">
+                <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva - 1)">Anterior</button>
+              </li>
+              @for (pagina of paginasVisiveis; track pagina) {
+                <li class="page-item" [class.active]="pagina === paginaEfetiva">
+                  <button type="button" class="page-link" (click)="irParaPagina(pagina)">{{ pagina }}</button>
+                </li>
+              }
+              <li class="page-item" [class.disabled]="paginaEfetiva === totalPaginas">
+                <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva + 1)">Próxima</button>
+              </li>
+            </ul>
+          </nav>
+        }
+      </div>
+    }
+  </div>
 </app-corpo-padrao>

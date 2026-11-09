@@ -35,8 +35,18 @@ export const routes: Routes = [
   // ── Qualquer usuário logado ───────────────────────────────
   { path: 'estanteVirtual', component: EncontrarMaterial, canActivate: [authGuard] },
   { path: 'historicoEmprestimo', component: HistorioEmprestimo, canActivate: [authGuard] }, // usuário vê só o dele
-  { path: 'reservar', component: ReservarMaterial, canActivate: [authGuard] },
-  { path: 'reservar-material', component: ReservarMaterial, canActivate: [authGuard] },
+  {
+    path: 'reservar',
+    component: ReservarMaterial,
+    canActivate: [permissaoGuard],
+    data: { permissoes: [P.GERENCIAR_EMPRESTIMOS] },
+  },
+  {
+    path: 'reservar-material',
+    component: ReservarMaterial,
+    canActivate: [permissaoGuard],
+    data: { permissoes: [P.GERENCIAR_EMPRESTIMOS] },
+  },
   { path: 'suporte', component: TelaSuporte, canActivate: [authGuard] },
   { path: 'chat-suporte', component: TelaSuporte, canActivate: [authGuard] },
   { path: 'configuracoes', component: Configuracoes, canActivate: [authGuard] }, // veja observação abaixo

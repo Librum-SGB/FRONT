@@ -1,4 +1,4 @@
-<button [ngClass]="classe"
+<button type="button" [ngClass]="classe" (click)="acao.emit()"
   class="btn text-white d-flex flex-column align-items-center justify-content-center px-3 fs-3 w-100 ">
   <ng-content></ng-content>
   <p class="fs-6">

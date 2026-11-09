@@ -166,9 +166,13 @@ export class Bloqueios {
     return this.emprestimos.length;
   }
 
-  formatarData(data: Date | undefined): string {
+  formatarData(data: Date | string | undefined): string {
     if (!data) return '';
 
-    return new Date(data).toLocaleDateString('pt-BR');
+    const dataLocal =
+      typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data)
+        ? new Date(`${data}T00:00:00`)
+        : new Date(data);
+    return dataLocal.toLocaleDateString('pt-BR');
   }
 }

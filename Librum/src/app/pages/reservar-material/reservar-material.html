@@ -1,55 +1,99 @@
 <app-corpo-padrao>
-  <div class="titulo">Reservar Material</div>
-  <div class="subtitulo">Unidade x</div>
-
+  <div class="titulo">Realizar Empréstimo de Material</div>
 
   <div class="corpo">
+    @if (erroCarregamento) {
+      <div class="alert alert-danger" role="alert">
+        {{ erroCarregamento }}
+        <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="carregarDados()">
+          Tentar novamente
+        </button>
+      </div>
+    }
 
     <div class="row g-4">
       <div class="col-md-6 mb-4">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body p-4">
-            <h2 class="h5 mb-4">Etapa 1</h2>
+            <h2 class="h5 mb-4">Etapa 1 — Materiais</h2>
+            <label for="buscaMaterial" class="visually-hidden">Buscar materiais</label>
+            <input id="buscaMaterial" class="form-control mb-3" type="search"
+              placeholder="Buscar por nome, autor ou tipo..." [(ngModel)]="buscaMaterial">
 
-            <input class="form-control mb-3" type="text" value="Unidade x" disabled>
-            <input class="form-control mb-4" type="text" placeholder="Buscar Material..." [(ngModel)]="buscaMaterial">
-
-            <div class="overflow-auto pe-2" style="max-height: 360px;">
-              <div class="card mb-3 " *ngFor="let livro of livrosFiltrados">
-                <div class="card-body d-flex justify-content-between align-items-center gap-3">
-                  <div>
-                    <h3 class="h6 mb-1">{{ livro.id }} - {{ livro.titulo }}</h3>
-                    <p class="text-muted mb-0">{{ livro.disponiveis }} disponiveis</p>
-                  </div>
-                  <button lbrButton variant="cadastrar" (click)="selecionarMaterial(livro)"
-                    [disabled]="materiaisSelecionados.includes(livro)">
-                    +
-                  </button>
-                </div>
+            @if (carregando) {
+              <p class="text-center text-secondary py-4">Carregando materiais e usuários...</p>
+            } @else if (materiaisFiltrados.length === 0) {
+              <p class="text-center text-secondary py-4">Nenhum material cadastrado.</p>
+            } @else {
+              <div class="table-responsive overflow-auto" style="max-height: 360px;">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">Material</th>
+                      <th scope="col">Autor</th>
+                      <th scope="col">Tipo</th>
+                      <th scope="col">Disponibilidade</th>
+                      <th scope="col" class="text-end">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of materiaisFiltrados; track item.material.id) {
+                      <tr>
+                        <th scope="row" class="fw-semibold">{{ item.material.titulo }}</th>
+                        <td>{{ item.autor }}</td>
+                        <td>{{ item.material.tipo }}</td>
+                        <td>
+                          @if (quantidadeDisponivel(item) > 0) {
+                            <span class="text-success">Disponível</span>
+                          } @else {
+                            <span class="text-secondary">Indisponível</span>
+                          }
+                        </td>
+                        <td class="text-end text-nowrap">
+                          <button type="button" class="btn btn-outline-secondary btn-sm me-1"
+                            (click)="materialDetalhe = item"
+                            [attr.aria-label]="'Ver informações de ' + item.material.titulo"
+                            title="Mais informações">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" class="btn btn-primary btn-sm"
+                            (click)="selecionarMaterial(item)"
+                            [disabled]="quantidadeDisponivel(item) === 0 || salvando"
+                            [attr.aria-label]="'Adicionar ' + item.material.titulo + ' ao empréstimo'"
+                            title="Adicionar ao empréstimo">
+                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
               </div>
-            </div>
+            }
 
             <div class="border rounded p-3 my-4">
-              <strong>Materiais Selecionados ({{ materiaisSelecionados.length }})</strong>
-
-              <p class="text-muted mb-0" *ngIf="materiaisSelecionados.length === 0">
-                Nenhum material selecionado
-              </p>
-
-              <ul class="list-group mt-2" *ngIf="materiaisSelecionados.length > 0">
-                <li class="list-group-item d-flex justify-content-between align-items-center"
-                  *ngFor="let material of materiaisSelecionados">
-                  {{ material.titulo }}
-                  <button lbrButton variant="excluir" type="button" (click)="removerMaterial(material)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </li>
-              </ul>
+              <strong>Materiais selecionados ({{ materiaisSelecionados.length }})</strong>
+              @if (materiaisSelecionados.length === 0) {
+                <p class="text-muted mb-0 mt-2">Nenhum material selecionado</p>
+              } @else {
+                <ul class="list-group mt-2">
+                  @for (item of materiaisSelecionados; track item.exemplarId) {
+                    <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                      <span>{{ item.material.material.titulo }} <small class="text-secondary">— {{ item.material.autor }}</small></span>
+                      <button type="button" class="btn btn-outline-danger btn-sm"
+                        (click)="removerMaterial(item)" [disabled]="salvando"
+                        [attr.aria-label]="'Remover ' + item.material.material.titulo">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
             </div>
 
             <div class="d-grid">
-              <button lbrButton variant="concluir" type="button" (click)="continuar()"
-                [disabled]="materiaisSelecionados.length === 0">
+              <button type="button" class="btn btn-primary" (click)="continuar()"
+                [disabled]="materiaisSelecionados.length === 0 || salvando">
                 Continuar
               </button>
             </div>
@@ -58,48 +102,179 @@
       </div>
 
       <div class="col-md-6 mb-4" [class.opacity-50]="etapaAtual === 1">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body p-4">
-            <h2 class="h5 mb-4">Etapa 2</h2>
+            <h2 class="h5 mb-4">Etapa 2 — Usuário e confirmação</h2>
+            <label for="buscaUsuario" class="visually-hidden">Buscar usuário</label>
+            <input id="buscaUsuario" class="form-control mb-3" type="search"
+              placeholder="Buscar usuário por nome ou ID..." [(ngModel)]="buscaUsuario"
+              [disabled]="etapaAtual === 1 || salvando">
 
-            <input class="form-control mb-4" type="text" placeholder="Buscar Usuario" [(ngModel)]="buscaUsuario"
-              [disabled]="etapaAtual === 1">
-
-            <div class="overflow-auto pe-2" style="max-height: 360px;">
-              <div class="card mb-3" *ngFor="let usuario of usuariosFiltrados">
-                <div class="card-body d-flex justify-content-between align-items-center gap-3">
-                  <div>
-                    <h3 class="h6 mb-1">{{ usuario.id }} - {{ usuario.nome }}</h3>
-                    <p class="text-muted mb-0">{{ usuario.email }}</p>
-                    <span class="badge bg-danger" *ngIf="usuario.estaBloqueado">Bloqueado</span>
-                  </div>
-                  <button lbrButton variant="outros" type="button" (click)="selecionarUsuario(usuario)"
-                    [disabled]="etapaAtual === 1 || usuario.estaBloqueado">
-                    Selecionar
-                  </button>
-                </div>
-              </div>
+            <div class="table-responsive overflow-auto" style="max-height: 300px;">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col">Usuário</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (usuario of usuariosFiltrados; track usuario.id) {
+                    <tr>
+                      <th scope="row" class="fw-semibold">{{ usuario.nome }}</th>
+                      <td>{{ usuario.email }}</td>
+                      <td>
+                        @if (usuario.estaBloqueado) {
+                          <span class="text-danger">Bloqueado</span>
+                        } @else {
+                          <span class="text-success">Disponível</span>
+                        }
+                      </td>
+                      <td class="text-end text-nowrap">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1"
+                          (click)="usuarioDetalhe = usuario"
+                          [attr.aria-label]="'Ver informações de ' + usuario.nome"
+                          title="Mais informações">
+                          <i class="bi bi-eye" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm"
+                          (click)="selecionarUsuario(usuario)"
+                          [disabled]="etapaAtual === 1 || salvando || usuario.estaBloqueado"
+                          [attr.aria-label]="'Selecionar ' + usuario.nome"
+                          title="Selecionar usuário">
+                          <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    @if (!carregando) {
+                      <tr>
+                        <td colspan="4" class="text-center text-secondary py-3">Nenhum usuário encontrado.</td>
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </table>
             </div>
 
-            <div class="border rounded p-3 my-4">
-              <strong>Usuario Selecionado</strong>
-              <p class="text-muted mb-0" *ngIf="!usuarioSelecionado">Nenhum usuario selecionado</p>
-              <p class="mb-0" *ngIf="usuarioSelecionado">{{ usuarioSelecionado.nome }}</p>
+            <div class="border rounded p-3 my-4 d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <strong>Usuário selecionado</strong>
+                @if (usuarioSelecionado) {
+                  <p class="mb-1 mt-2">{{ usuarioSelecionado.nome }}</p>
+                  <small class="text-secondary">
+                    Empréstimos em aberto: {{ emprestimosAbertos }} de {{ usuarioSelecionado.limiteLivros ?? 3 }}
+                  </small>
+                  @if (limiteExcedido) {
+                    <p class="text-danger mb-0 mt-2">A quantidade selecionada ultrapassa o limite deste usuário.</p>
+                  }
+                } @else {
+                  <p class="text-muted mb-0 mt-2">Nenhum usuário selecionado</p>
+                }
+              </div>
+              @if (usuarioSelecionado) {
+                <button type="button" class="btn btn-outline-danger btn-sm"
+                  (click)="removerUsuario()" [disabled]="salvando"
+                  [attr.aria-label]="'Remover ' + usuarioSelecionado.nome"
+                  title="Remover usuário selecionado">
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
+              }
+            </div>
+
+            <div class="mb-4">
+              <label for="dataDevolucao" class="form-label">Data prevista para devolução</label>
+              <input id="dataDevolucao" class="form-control" type="date"
+                [(ngModel)]="dataDevolucaoPrevista" [min]="hoje"
+                [disabled]="etapaAtual === 1 || salvando">
             </div>
 
             <div class="d-flex gap-2 mt-4">
-              <button lbrButton variant="cancelar" type="button" (click)="voltar()" [disabled]="etapaAtual === 1">
+              <button type="button" class="btn btn-outline-secondary" (click)="voltar()"
+                [disabled]="etapaAtual === 1 || salvando">
                 Voltar
               </button>
-              <button lbrButton variant="concluir" type="button" (click)="concluirReserva()"
-                [disabled]="etapaAtual === 1 || !usuarioSelecionado">
-                Concluir Reserva
+              <button type="button" class="btn btn-success" (click)="concluirReserva()"
+                [disabled]="etapaAtual === 1 || !usuarioSelecionado || !materiaisSelecionados.length || limiteExcedido || salvando">
+                {{ salvando ? 'Registrando empréstimo...' : 'Confirmar empréstimo' }}
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </app-corpo-padrao>
+
+@if (materialDetalhe; as detalhe) {
+  <div class="modal-backdrop fade show" (click)="materialDetalhe = null"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="detalheMaterialTitulo">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-body text-body">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detalheMaterialTitulo">{{ detalhe.material.titulo }}</h5>
+          <button type="button" class="btn-close" aria-label="Fechar" (click)="materialDetalhe = null"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Autor:</strong> {{ detalhe.autor }}</p>
+          <p><strong>Tipo:</strong> {{ detalhe.material.tipo }}</p>
+          <p><strong>Disponibilidade:</strong> {{ quantidadeDisponivel(detalhe) > 0 ? 'Disponível' : 'Indisponível' }}</p>
+          @if (detalhe.material.isbn) {
+            <p><strong>ISBN:</strong> {{ detalhe.material.isbn }}</p>
+          }
+          @if (detalhe.material.anoPublicacao) {
+            <p><strong>Ano:</strong> {{ detalhe.material.anoPublicacao }}</p>
+          }
+          @if (detalhe.material.descricao || detalhe.material.sinopse) {
+            <p><strong>Descrição:</strong> {{ detalhe.material.descricao || detalhe.material.sinopse }}</p>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="materialDetalhe = null">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (usuarioDetalhe; as detalhe) {
+  <div class="modal-backdrop fade show" (click)="usuarioDetalhe = null"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="detalheUsuarioTitulo">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-body text-body">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detalheUsuarioTitulo">{{ detalhe.nome }}</h5>
+          <button type="button" class="btn-close" aria-label="Fechar" (click)="usuarioDetalhe = null"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>E-mail:</strong> {{ detalhe.email }}</p>
+          <p><strong>CPF:</strong> {{ detalhe.cpf }}</p>
+          @if (detalhe.telefone) {
+            <p><strong>Telefone:</strong> {{ detalhe.telefone }}</p>
+          }
+          @if (detalhe.funcao) {
+            <p><strong>Função:</strong> {{ detalhe.funcao }}</p>
+          }
+          @if (detalhe.dataNascimento) {
+            <p><strong>Data de nascimento:</strong> {{ detalhe.dataNascimento | date:'dd/MM/yyyy' }}</p>
+          }
+          <p><strong>Limite de empréstimos:</strong> {{ detalhe.limiteLivros ?? 3 }}</p>
+          <p><strong>Status:</strong> {{ detalhe.estaBloqueado ? 'Bloqueado' : 'Ativo' }}</p>
+          @if (detalhe.endereco || detalhe.numero || detalhe.bairro || detalhe.cidade || detalhe.estado || detalhe.cep) {
+            <p class="mb-0"><strong>Endereço:</strong>
+              {{ detalhe.endereco }}{{ detalhe.numero ? ', ' + detalhe.numero : '' }}
+              {{ detalhe.bairro ? ' — ' + detalhe.bairro : '' }}
+              {{ detalhe.cidade }}{{ detalhe.estado ? '/' + detalhe.estado : '' }}
+              {{ detalhe.cep ? ' — CEP ' + detalhe.cep : '' }}
+            </p>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="usuarioDetalhe = null">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

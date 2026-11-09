@@ -413,6 +413,19 @@ export class EditarExcluirMaterial implements OnInit {
     return material.id;
   }
 
+  iconeTipo(tipo: string): string {
+    switch (tipo) {
+      case 'LIVRO':
+        return 'bi-book';
+      case 'PERIODICO':
+        return 'bi-newspaper';
+      case 'OUTRO':
+        return 'bi-box-seam';
+      default:
+        return 'bi-collection';
+    }
+  }
+
   // ---------- Busca e paginação ----------
 
   onFiltroChange(valor: string): void {

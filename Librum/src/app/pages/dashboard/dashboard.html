@@ -2,22 +2,22 @@
   <main class="corpo">
     <section class="row mt-3 row-gap-2">
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Alunos Cadastrados" valor="1203" classe="bg-verde">
+        <app-card-informativo titulo="Alunos Cadastrados" [valor]="resumo.alunosCadastrados.toString()" classe="bg-verde">
           <i class="bi bi-people-fill fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Livros nos acrevos" valor="1203" classe="bg-azul-escuro">
+        <app-card-informativo titulo="Livros no acervo" [valor]="resumo.livrosNoAcervo.toString()" classe="bg-azul-escuro">
           <i class="bi bi-book fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Emprestimos ativos" valor="1203" classe="bg-azul-claro">
+        <app-card-informativo titulo="Empréstimos ativos" [valor]="resumo.emprestimosAtivos.toString()" classe="bg-azul-claro">
           <i class="bi bi-arrow-clockwise fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="A vencer" valor="1203" classe="bg-laranja">
+        <app-card-informativo titulo="A vencer (7 dias)" [valor]="resumo.emprestimosAVencer.toString()" classe="bg-laranja">
           <i class="bi bi-exclamation-circle fs-1"></i>
         </app-card-informativo>
       </div>
@@ -63,13 +63,13 @@
         </div>
         <div class="row">
           <div class="col-12 col-md-4">
-            <app-card-status titulo="em andamento" conteudo="2" />
+            <app-card-status titulo="em andamento" [conteudo]="resumo.emAndamento.toString()" />
           </div>
           <div class="col-12 col-md-4">
-            <app-card-status titulo="a vencer" conteudo="2" cor="warning" />
+            <app-card-status titulo="a vencer (7 dias)" [conteudo]="resumo.emprestimosAVencer.toString()" cor="warning" />
           </div>
           <div class="col-12 col-md-4">
-            <app-card-status titulo="vencidos" conteudo="2" cor="danger" />
+            <app-card-status titulo="vencidos" [conteudo]="resumo.vencidos.toString()" cor="danger" />
           </div>
         </div>
         <div class="row">
@@ -77,30 +77,28 @@
             <thead>
               <tr>
                 <th scope="col">Aluno</th>
-                <th scope="col">Livro</th>
-                <th scope="col">Devolução</th>
+                <th scope="col">Material</th>
+                <th scope="col">Devolução prevista</th>
                 <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">Ttw</th>
-                <td>juanito</td>
-                <td>há 2 dias</td>
-                <td><app-badge status="success">Em andamento</app-badge></td>
-              </tr>
-              <tr>
-                <th scope="row">Ttw</th>
-                <td>juanito</td>
-                <td>há 2 dias</td>
-                <td><app-badge status="warning">A vencer</app-badge></td>
-              </tr>
-              <tr>
-                <th scope="row">Ttw</th>
-                <td>juanito</td>
-                <td>há 2 dias</td>
-                <td><app-badge status="danger">Vencido</app-badge></td>
-              </tr>
+              @for (emprestimo of resumo.emprestimos; track emprestimo.id) {
+                <tr>
+                  <th scope="row">{{ emprestimo.usuarioNome || 'Usuário' }}</th>
+                  <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
+                  <td>{{ formatarData(emprestimo.dataDevolucaoPrevista) }}</td>
+                  <td>
+                    <app-badge [status]="getBadgeStatus(emprestimo)">
+                      {{ getStatusEmprestimo(emprestimo) }}
+                    </app-badge>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="text-center text-secondary">Nenhum empréstimo ativo.</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -129,7 +127,7 @@
         </app-botao-acao-rapida>
       </div>
       <div class="col-6 col-sm-6 col-md-2">
-        <app-botao-acao-rapida titulo="Novo Empréstimo" classe="bg-verde">
+        <app-botao-acao-rapida titulo="Novo Empréstimo" classe="bg-verde" (acao)="navegarParaEmprestimo()">
           <i class="bi bi-calendar-check"></i>
         </app-botao-acao-rapida>
       </div>

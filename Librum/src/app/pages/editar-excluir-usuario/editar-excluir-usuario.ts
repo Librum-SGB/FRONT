@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -15,8 +15,11 @@ import { InputBusca } from '../../shared/component/input-busca/input-busca';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 import { FormUtils } from '../../utils/FormUtil';
 import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
+import { UsuarioService } from '../../services/usuario.service';
 
 declare var bootstrap: any;
+
+const ITENS_POR_PAGINA = 20;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
@@ -33,12 +36,15 @@ declare var bootstrap: any;
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })
-export class EditarExcluirUsuario {
+export class EditarExcluirUsuario implements OnInit {
   filtro = 'nome';
   busca = '';
 
   usuarioSelecionado: Usuario | null = null;
   usuarioEditando: Usuario = {} as Usuario;
+  usuarios: Usuario[] = [];
+  carregando = true;
+  paginaAtual = 1;
 
   formUsuario: FormGroup;
   enviado = false;
@@ -61,6 +67,7 @@ export class EditarExcluirUsuario {
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
     private fb: FormBuilder,
+    private usuarioService: UsuarioService,
   ) {
     this.formUsuario = this.fb.group({
       id: [{ value: null, disabled: true }],
@@ -78,73 +85,30 @@ export class EditarExcluirUsuario {
     });
   }
 
+  ngOnInit(): void {
+    this.usuarioService.listarAlunos().subscribe({
+      next: (usuarios) => {
+        this.usuarios = usuarios;
+        this.carregando = false;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.carregando = false;
+        this.cdr.markForCheck();
+        this.toastService.erro(error.error?.message ?? 'Não foi possível carregar os usuários.');
+      },
+    });
+  }
+
   isInvalido(campo: string): boolean {
     return FormUtils.isInvalido(this.formUsuario, campo, this.enviado);
   }
 
   pesquisarUsuario(busca: Busca): void {
-    console.log(busca);
+    this.busca = busca.texto.trim();
+    this.filtro = busca.filtro === 'ID' ? 'id' : 'nome';
+    this.paginaAtual = 1;
   }
-
-  usuarios: Usuario[] = [
-    {
-      id: 1,
-      nome: 'João Pedro Silva',
-      cpf: '123.456.789-00',
-      email: 'joao@email.com',
-      telefone: '(11) 99999-9999',
-      dataNascimento: new Date('2000-05-10'),
-      filialId: 1,
-      endereco: 'Rua A, 100',
-      bairro: 'Centro',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '01000-000',
-      limiteLivros: 3,
-      estaBloqueado: false,
-      dataCriacao: new Date(),
-      dataUltimaAtualizacao: new Date(),
-      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
-    },
-    {
-      id: 2,
-      nome: 'Maria Eduarda Santos',
-      cpf: '987.654.321-00',
-      email: 'maria@email.com',
-      telefone: '(11) 98888-8888',
-      dataNascimento: new Date('1998-07-22'),
-      filialId: 1,
-      endereco: 'Av Paulista, 1000',
-      bairro: 'Bela Vista',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '01310-100',
-      limiteLivros: 5,
-      estaBloqueado: false,
-      dataCriacao: new Date(),
-      dataUltimaAtualizacao: new Date(),
-      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
-    },
-    {
-      id: 3,
-      nome: 'Laura Savi Bressan',
-      cpf: '987.654.321-00',
-      email: 'laura@email.com',
-      telefone: '(11) 98888-8888',
-      dataNascimento: new Date('2006-07-03'),
-      filialId: 1,
-      endereco: 'Av Paulista, 1000',
-      bairro: 'Bela Vista',
-      cidade: 'São Paulo',
-      estado: 'SP',
-      cep: '01310-100',
-      limiteLivros: 5,
-      estaBloqueado: true,
-      dataCriacao: new Date(),
-      dataUltimaAtualizacao: new Date(),
-      foto: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
-    },
-  ];
 
   usuariosFiltrados(): Usuario[] {
     return this.usuarios.filter((usuario) => {
@@ -154,6 +118,42 @@ export class EditarExcluirUsuario {
         ? usuario.nome.toLowerCase().includes(valor)
         : usuario.id?.toString().includes(valor);
     });
+  }
+
+  get totalPaginas(): number {
+    return Math.max(1, Math.ceil(this.usuariosFiltrados().length / ITENS_POR_PAGINA));
+  }
+
+  get paginaEfetiva(): number {
+    return Math.min(this.paginaAtual, this.totalPaginas);
+  }
+
+  get usuariosPagina(): Usuario[] {
+    const inicio = (this.paginaEfetiva - 1) * ITENS_POR_PAGINA;
+    return this.usuariosFiltrados().slice(inicio, inicio + ITENS_POR_PAGINA);
+  }
+
+  get inicioExibicao(): number {
+    return this.usuariosFiltrados().length === 0 ? 0 : (this.paginaEfetiva - 1) * ITENS_POR_PAGINA + 1;
+  }
+
+  get fimExibicao(): number {
+    return Math.min(this.paginaEfetiva * ITENS_POR_PAGINA, this.usuariosFiltrados().length);
+  }
+
+  get paginasVisiveis(): number[] {
+    const total = this.totalPaginas;
+    const atual = this.paginaEfetiva;
+    const janela = 5;
+    let inicio = Math.max(1, atual - Math.floor(janela / 2));
+    const fim = Math.min(total, inicio + janela - 1);
+    inicio = Math.max(1, fim - janela + 1);
+    return Array.from({ length: fim - inicio + 1 }, (_, index) => inicio + index);
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginas) return;
+    this.paginaAtual = pagina;
   }
 
   selecionarUsuario(usuario: Usuario): void {
