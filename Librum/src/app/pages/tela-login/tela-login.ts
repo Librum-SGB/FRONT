@@ -42,8 +42,10 @@ export class TelaLoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (error: HttpErrorResponse) => {
-        this.entrando = false;
-        this.toastService.erro(error.error?.message ?? 'Não foi possível realizar o login.');
+        setTimeout(() => {
+          this.entrando = false;
+          this.toastService.erro(error.error?.message ?? 'Não foi possível realizar o login.');
+        });
       },
     });
   }
