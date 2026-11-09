@@ -4,7 +4,6 @@ import { Bloqueios } from './pages/bloqueios/bloqueios';
 import { CadastrarMaterial } from './pages/cadastrar-material/cadastrar-material';
 import { CadastrarUsuario } from './pages/cadastrar-usuario/cadastrar-usuario';
 import { CadastroBibliotecariaComponent } from './pages/cadastro-bibliotecaria/cadastro-bibliotecaria';
-import { ChatSuporte } from './pages/chat-suporte/chat-suporte';
 import { Configuracoes } from './pages/configuracoes/configuracoes';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { EditarExcluirMaterial } from './pages/editar-excluir-material/editar-excluir-material';
@@ -14,7 +13,6 @@ import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 import { HistorioEmprestimo } from './pages/historico-emprestimo/historico-emprestimo';
 import { Monitoramento } from './pages/monitoramento/monitoramento';
 import { Relatorio } from './pages/relatorio/relatorio';
-import { Configuracoes } from './pages/configuracoes/configuracoes';
 import { RenovarDevolverMaterial } from './pages/renovar-devolver-material/renovar-devolver-material';
 import { ReservarMaterial } from './pages/reservar-material/reservar-material';
 import { AcessoNegado } from './pages/acesso-negado/acesso-negado';
@@ -40,7 +38,7 @@ export const routes: Routes = [
   { path: 'reservar', component: ReservarMaterial, canActivate: [authGuard] },
   { path: 'reservar-material', component: ReservarMaterial, canActivate: [authGuard] },
   { path: 'suporte', component: TelaSuporte, canActivate: [authGuard] },
-  { path: 'chat-suporte', component: ChatSuporte, canActivate: [authGuard] },
+  { path: 'chat-suporte', component: TelaSuporte, canActivate: [authGuard] },
   { path: 'configuracoes', component: Configuracoes, canActivate: [authGuard] }, // veja observação abaixo
 
   // ── Dashboard e relatórios (admin, bibliotecária, assistente) ──
