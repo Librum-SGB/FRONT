@@ -9,17 +9,14 @@
     <div class="row g-4" *ngIf="!carregando()">
       <div class="col-12">
         <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-4">
-          <div class="d-flex gap-2 flex-grow-1">
-            <select class="form-select w-auto" [ngModel]="tipoFiltro()" (ngModelChange)="onFiltroChange($event)">
-              <option value="todos">Todos</option>
-              <option value="codigo">ID</option>
-              <option value="titulo">Título</option>
-              <option value="autor">Autor</option>
-              <option value="genero">Gênero</option>
-            </select>
-
-            <input type="text" class="form-control" placeholder="Buscar material..." [ngModel]="textoBusca()"
-              (ngModelChange)="onBuscaChange($event)" />
+          <div class="flex-grow-1">
+            <app-input-busca
+              TipoInput="LIVRO"
+              [showSelect]="true"
+              [buscarAoDigitar]="true"
+              placeholder="Buscar material..."
+              (buscar)="pesquisarMaterial($event)">
+            </app-input-busca>
           </div>
           <a lbrButton variant="cadastrar" routerLink="/cadastrarMaterial" class="flex-shrink-0">
             <i class="bi bi-plus-lg" aria-hidden="true"></i>
@@ -33,20 +30,22 @@
       </div>
 
       <div class="col-md-3" *ngFor="let material of materiaisPagina(); trackBy: trackById">
-        <div class="card text-center p-3 h-100">
-          <div class="mb-3">
+        <div class="card material-card text-center p-3 h-100">
+          <div class="material-card__icon mb-3">
             <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center"
               style="width: 80px; height: 80px;">
               <i class="bi fs-1" [ngClass]="iconeTipo(material.tipo)" aria-hidden="true"></i>
             </div>
           </div>
-          <h6 class="fw-semibold">{{ material.titulo }}</h6>
+          <h6 class="material-card__title fw-semibold">{{ material.titulo }}</h6>
           <small class="text-muted">ID: {{ material.codigo }}</small>
-          @if (material.autorNome && material.autorNome !== '—') {
-            <small class="text-secondary mt-1">{{ material.autorNome }}</small>
-          }
+          <div class="material-card__author text-secondary mt-1">
+            @if (material.autorNome && material.autorNome !== '—') {
+              <small>{{ material.autorNome }}</small>
+            }
+          </div>
 
-          <div class="d-flex flex-wrap justify-content-center gap-1 mt-3 mb-3">
+          <div class="material-card__badges d-flex flex-wrap justify-content-center align-items-center gap-1 mt-3 mb-3">
               <lbr-badge [variant]="material.tipoVariant">{{ material.tipoLabel }}</lbr-badge>
 
               <lbr-badge *ngIf="material.disponibilidadeVariant as variante" [variant]="variante">
@@ -54,7 +53,7 @@
               </lbr-badge>
           </div>
 
-          <button lbrButton variant="outros" class="w-100" data-bs-toggle="modal"
+          <button lbrButton variant="outros" class="material-card__action w-100" data-bs-toggle="modal"
               data-bs-target="#modalMaterial" (click)="selecionarMaterial(material)">
               Mais informações
           </button>

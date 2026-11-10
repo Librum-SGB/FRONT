@@ -1,6 +1,7 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Busca } from './busca.interface';
 
 interface OpcaoFiltro {
   valor: string;
@@ -57,6 +58,10 @@ export class InputBusca {
   }
 
   pesquisarAoDigitar(): void {
+    if (this.buscarAoDigitar) this.emitirBusca();
+  }
+
+  filtroAlterado(): void {
     if (this.buscarAoDigitar) this.emitirBusca();
   }
 

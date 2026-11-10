@@ -13,13 +13,17 @@ import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { InputBusca } from '../../shared/component/input-busca/input-busca';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { Badge } from '../../shared/component/badge/badge';
 import { FormUtils } from '../../utils/FormUtil';
 import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
-import { UsuarioService } from '../../services/usuario.service';
+import { UsuarioAtualizacao, UsuarioService } from '../../services/usuario.service';
+import { AuthService } from '../../services/auth.service';
+import { Permissao } from '../../enum/permissoes.enum';
+import { Busca } from '../../shared/component/input-busca/busca.interface';
 
 declare var bootstrap: any;
 
-const ITENS_POR_PAGINA = 20;
+const ITENS_POR_PAGINA = 10;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
@@ -30,6 +34,7 @@ const ITENS_POR_PAGINA = 20;
     CorpoPadrao,
     InputBusca,
     LbrButtom,
+    Badge,
     ReactiveFormsModule,
     AlertaErros,
   ],
@@ -37,13 +42,14 @@ const ITENS_POR_PAGINA = 20;
   styleUrl: './editar-excluir-usuario.scss',
 })
 export class EditarExcluirUsuario implements OnInit {
-  filtro = 'nome';
+  filtro = 'TODOS';
   busca = '';
 
   usuarioSelecionado: Usuario | null = null;
   usuarioEditando: Usuario = {} as Usuario;
   usuarios: Usuario[] = [];
   carregando = true;
+  salvando = false;
   paginaAtual = 1;
 
   formUsuario: FormGroup;
@@ -63,25 +69,38 @@ export class EditarExcluirUsuario implements OnInit {
     limiteLivros: 'Limite de Livros',
   };
 
+  get podeEditar(): boolean {
+    return this.authService.temPermissao(Permissao.EDITAR_USUARIO);
+  }
+
+  get podeCriar(): boolean {
+    return this.authService.temPermissao(Permissao.CRIAR_USUARIO);
+  }
+
+  get podeExcluir(): boolean {
+    return this.authService.temPermissao(Permissao.EXCLUIR_USUARIO);
+  }
+
   constructor(
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
+    private authService: AuthService,
   ) {
     this.formUsuario = this.fb.group({
       id: [{ value: null, disabled: true }],
       nome: ['', [Validators.required, Validators.minLength(3)]],
-      cpf: ['', [Validators.required, FormUtils.cpf]],
+      cpf: ['', FormUtils.cpf],
       email: ['', [Validators.required, Validators.email]],
-      telefone: ['', Validators.required],
-      endereco: ['', Validators.required],
-      bairro: ['', Validators.required],
-      cidade: ['', Validators.required],
-      estado: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(2)]],
-      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
-      limiteLivros: [1, [Validators.required, Validators.min(1)]],
-      estaBloqueado: [false],
+      telefone: [''],
+      endereco: [''],
+      numero: [''],
+      bairro: [''],
+      cidade: [''],
+      estado: ['', [Validators.minLength(2), Validators.maxLength(2)]],
+      cep: ['', Validators.pattern(/^\d{5}-?\d{3}$/)],
+      limiteLivros: [1, Validators.min(1)],
     });
   }
 
@@ -106,7 +125,7 @@ export class EditarExcluirUsuario implements OnInit {
 
   pesquisarUsuario(busca: Busca): void {
     this.busca = busca.texto.trim();
-    this.filtro = busca.filtro === 'ID' ? 'id' : 'nome';
+    this.filtro = busca.filtro;
     this.paginaAtual = 1;
   }
 
@@ -114,9 +133,9 @@ export class EditarExcluirUsuario implements OnInit {
     return this.usuarios.filter((usuario) => {
       const valor = this.busca.toLowerCase();
 
-      return this.filtro === 'nome'
-        ? usuario.nome.toLowerCase().includes(valor)
-        : usuario.id?.toString().includes(valor);
+      if (this.filtro === 'ID') return usuario.id?.toString().includes(valor) ?? false;
+      if (this.filtro === 'NOME') return usuario.nome.toLowerCase().includes(valor);
+      return usuario.nome.toLowerCase().includes(valor) || usuario.id?.toString().includes(valor) === true;
     });
   }
 
@@ -198,12 +217,12 @@ export class EditarExcluirUsuario implements OnInit {
       email: this.usuarioSelecionado.email,
       telefone: this.usuarioSelecionado.telefone,
       endereco: this.usuarioSelecionado.endereco,
+      numero: this.usuarioSelecionado.numero,
       bairro: this.usuarioSelecionado.bairro,
       cidade: this.usuarioSelecionado.cidade,
       estado: this.usuarioSelecionado.estado,
       cep: this.usuarioSelecionado.cep,
       limiteLivros: this.usuarioSelecionado.limiteLivros,
-      estaBloqueado: this.usuarioSelecionado.estaBloqueado,
     });
 
     this.enviado = false;
@@ -213,12 +232,13 @@ export class EditarExcluirUsuario implements OnInit {
   }
 
   salvarEdicao(): void {
+    if (!this.podeEditar || this.salvando) return;
     this.enviado = true;
     this.mensagensErro = FormUtils.gerarMensagensErro(this.formUsuario, this.nomesCampos);
 
     if (this.formUsuario.invalid) return; // o modal continua aberto, com o alerta
 
-    // sincroniza para o modal de confirmação mostrar o nome novo
+    // Sincroniza o nome exibido na confirmação antes de persistir.
     this.usuarioEditando = { ...this.usuarioEditando, ...this.formUsuario.getRawValue() };
 
     this.trocarModal('editarModal', 'confirmarEdicaoUsuarioModal');
@@ -229,18 +249,43 @@ export class EditarExcluirUsuario implements OnInit {
   }
 
   confirmarEdicao(): void {
-    const index = this.usuarios.findIndex((usuario) => usuario.id === this.usuarioEditando.id);
+    const selecionado = this.usuarioSelecionado;
+    const id = selecionado?.id;
+    if (!this.podeEditar || !selecionado || id == null || this.salvando) return;
 
-    if (index !== -1) {
-      this.usuarioEditando.dataUltimaAtualizacao = new Date();
+    const dados = this.formUsuario.getRawValue();
+    const atualizacao: UsuarioAtualizacao = {
+      nome: String(dados.nome).trim(),
+      email: String(dados.email).trim().toLocaleLowerCase('pt-BR'),
+      filialId: selecionado.filialId,
+      cpf: dados.cpf ? String(dados.cpf).replace(/\D/g, '') : undefined,
+      telefone: dados.telefone ? String(dados.telefone).replace(/\D/g, '') : undefined,
+      dataNascimento: this.dataISO(selecionado.dataNascimento),
+      endereco: String(dados.endereco ?? '').trim() || undefined,
+      numero: String(dados.numero ?? '').trim() || undefined,
+      bairro: String(dados.bairro ?? '').trim() || undefined,
+      cidade: String(dados.cidade ?? '').trim() || undefined,
+      estado: String(dados.estado ?? '').trim() || undefined,
+      cep: dados.cep ? String(dados.cep).replace(/\D/g, '') : undefined,
+      limiteLivros: dados.limiteLivros == null ? undefined : Number(dados.limiteLivros),
+    };
 
-      this.usuarios[index] = { ...this.usuarioEditando };
-      this.usuarioSelecionado = { ...this.usuarioEditando };
-
-      this.toastService.sucesso('Usuário editado com sucesso!');
-    }
-
-    bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoUsuarioModal'))?.hide();
+    this.salvando = true;
+    this.usuarioService.atualizar(id, atualizacao).subscribe({
+      next: (usuarioAtualizado) => {
+        const index = this.usuarios.findIndex((usuario) => usuario.id === id);
+        if (index !== -1) this.usuarios[index] = usuarioAtualizado;
+        this.usuarioSelecionado = usuarioAtualizado;
+        this.usuarioEditando = { ...usuarioAtualizado };
+        this.salvando = false;
+        bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoUsuarioModal'))?.hide();
+        this.toastService.sucesso('Usuário editado com sucesso!');
+      },
+      error: (error) => {
+        this.salvando = false;
+        this.toastService.erro(error.error?.message ?? 'Não foi possível editar o usuário.');
+      },
+    });
   }
 
   abrirModalExcluir(): void {
@@ -252,42 +297,31 @@ export class EditarExcluirUsuario implements OnInit {
   }
 
   confirmarExclusao(): void {
-    if (!this.usuarioSelecionado) return;
+    const id = this.usuarioSelecionado?.id;
+    if (!this.podeExcluir || id == null || this.salvando) return;
 
-    this.usuarios = this.usuarios.filter((usuario) => usuario.id !== this.usuarioSelecionado?.id);
-
-    this.toastService.sucesso('Usuário excluído com sucesso!');
-    this.usuarioSelecionado = null;
-
-    bootstrap.Modal.getInstance(document.getElementById('excluirModal'))?.hide();
+    this.salvando = true;
+    this.usuarioService.excluir(id).subscribe({
+      next: () => {
+        this.usuarios = this.usuarios.filter((usuario) => usuario.id !== id);
+        this.usuarioSelecionado = null;
+        this.salvando = false;
+        bootstrap.Modal.getInstance(document.getElementById('excluirModal'))?.hide();
+        this.toastService.sucesso('Usuário excluído com sucesso!');
+      },
+      error: (error) => {
+        this.salvando = false;
+        this.toastService.erro(error.error?.message ?? 'Não foi possível excluir o usuário.');
+      },
+    });
   }
 
-  alterarFoto(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (!input.files || input.files.length === 0) return;
-
-    const arquivo = input.files[0];
-    const reader = new FileReader();
-
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      const novaFoto = e.target?.result as string;
-
-      this.usuarioEditando = {
-        ...this.usuarioEditando,
-        foto: novaFoto,
-      };
-
-      if (this.usuarioSelecionado) {
-        this.usuarioSelecionado = {
-          ...this.usuarioSelecionado,
-          foto: novaFoto,
-        };
-      }
-
-      this.cdr.detectChanges();
-    };
-
-    reader.readAsDataURL(arquivo);
+  private dataISO(data?: Date | string): string | undefined {
+    if (!data) return undefined;
+    if (typeof data === 'string') return data.slice(0, 10);
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
   }
 }

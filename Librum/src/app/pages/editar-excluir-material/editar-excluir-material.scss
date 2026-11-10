@@ -1,0 +1,28 @@
+.material-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.material-card__icon {
+  min-height: 80px;
+}
+
+.material-card__title {
+  display: -webkit-box;
+  min-height: 3rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.material-card__author {
+  min-height: 1.25rem;
+}
+
+.material-card__badges {
+  min-height: 2rem;
+}
+
+.material-card__action {
+  margin-top: auto;
+}

@@ -2,7 +2,8 @@
   <div class="row row-gap-3">
     @if (showSelect) {
     <div class="col-lg-3 col-md-2 col-sm-12">
-      <select class="form-select" name="select" [(ngModel)]="filtroSelecionado">
+      <select class="form-select" name="select" [(ngModel)]="filtroSelecionado"
+        (ngModelChange)="filtroAlterado()">
         @for (opcao of opcoesFiltro; track opcao.valor) {
         <option [value]="opcao.valor">
           {{ opcao.label }}

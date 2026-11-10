@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './guards/admin.guard';
 import { Bloqueios } from './pages/bloqueios/bloqueios';
 import { CadastrarMaterial } from './pages/cadastrar-material/cadastrar-material';
 import { CadastrarUsuario } from './pages/cadastrar-usuario/cadastrar-usuario';

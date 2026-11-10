@@ -6,7 +6,7 @@
       <div class="flex-grow-1">
         <app-input-busca TipoInput="USUARIO" [showSelect]="true" (buscar)="pesquisarUsuario($event)"></app-input-busca>
       </div>
-      <a lbrButton variant="cadastrar" routerLink="/cadastrar-usuario" class="flex-shrink-0">
+      <a *ngIf="podeCriar" lbrButton variant="cadastrar" routerLink="/cadastrar-usuario" class="flex-shrink-0">
         <i class="bi bi-person-plus" aria-hidden="true"></i>
         Cadastrar Usuário
       </a>
@@ -34,12 +34,9 @@
 
 
           <div class="d-flex justify-content-center mt-3 mb-3">
-            <span class="badge rounded-pill small" [ngClass]="{
-                'bg-success-subtle text-success': !usuario.estaBloqueado,
-                'bg-danger-subtle text-danger': usuario.estaBloqueado
-              }">
+            <app-badge [status]="usuario.estaBloqueado ? 'danger' : 'success'">
               {{ usuario.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
-            </span>
+            </app-badge>
           </div>
 
           <button lbrButton variant="outros" class="w-100" data-bs-toggle="modal" data-bs-target="#modalUsuario"
@@ -111,9 +108,11 @@
         <p><strong>Última Atualização:</strong> {{ usuarioSelecionado.dataUltimaAtualizacao | date:'dd/MM/yyyy' }}
         </p>
         <p><strong>Limite Livros:</strong> {{ usuarioSelecionado.limiteLivros }}</p>
-        <p>
+        <p class="d-flex align-items-center gap-2">
           <strong>Status:</strong>
-          {{ usuarioSelecionado.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
+          <app-badge [status]="usuarioSelecionado.estaBloqueado ? 'danger' : 'success'">
+            {{ usuarioSelecionado.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
+          </app-badge>
         </p>
       </div>
 
@@ -126,13 +125,13 @@
             </button>
           </div>
 
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" *ngIf="podeEditar">
             <button lbrButton variant="editar" class="w-100" (click)="editarUsuario()">
               Editar
             </button>
           </div>
 
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" *ngIf="podeExcluir">
             <button lbrButton variant="excluir" class="w-100" (click)="abrirModalExcluir()">
               Excluir
             </button>
@@ -166,7 +165,7 @@
           Cancelar
         </button>
 
-        <button class="btn btn-success" (click)="confirmarEdicao()">
+        <button class="btn btn-success" (click)="confirmarEdicao()" [disabled]="salvando">
           Salvar Alterações
         </button>
       </div>
@@ -190,9 +189,11 @@
         <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
 
         <div class="text-center mb-4">
-          <img [src]="usuarioEditando.foto" class="rounded-circle mb-3"
-            style="width: 100px; height: 100px; object-fit: cover;">
-          <input type="file" class="form-control" accept="image/*" (change)="alterarFoto($event)">
+          <img *ngIf="usuarioEditando.foto; else avatarEditarPadrao" [src]="usuarioEditando.foto"
+            class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+          <ng-template #avatarEditarPadrao>
+            <i class="bi bi-person-circle fs-1" aria-hidden="true"></i>
+          </ng-template>
         </div>
 
         <form [formGroup]="formUsuario" (ngSubmit)="salvarEdicao()">
@@ -208,7 +209,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">CPF *</label>
+            <label class="form-label">CPF</label>
             <input type="text" class="form-control" formControlName="cpf" [class.is-invalid]="isInvalido('cpf')">
           </div>
 
@@ -218,50 +219,47 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Telefone *</label>
+            <label class="form-label">Telefone</label>
             <input type="text" class="form-control" formControlName="telefone"
               [class.is-invalid]="isInvalido('telefone')">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Endereço *</label>
+            <label class="form-label">Endereço</label>
             <input type="text" class="form-control" formControlName="endereco"
               [class.is-invalid]="isInvalido('endereco')">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Bairro *</label>
+            <label class="form-label">Número</label>
+            <input type="text" class="form-control" formControlName="numero">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Bairro</label>
             <input type="text" class="form-control" formControlName="bairro" [class.is-invalid]="isInvalido('bairro')">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Cidade *</label>
+            <label class="form-label">Cidade</label>
             <input type="text" class="form-control" formControlName="cidade" [class.is-invalid]="isInvalido('cidade')">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Estado *</label>
+            <label class="form-label">Estado</label>
             <input type="text" class="form-control" formControlName="estado" maxlength="2"
               [class.is-invalid]="isInvalido('estado')">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">CEP *</label>
+            <label class="form-label">CEP</label>
             <input type="text" class="form-control" formControlName="cep" [class.is-invalid]="isInvalido('cep')">
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Limite de Livros *</label>
+            <label class="form-label">Limite de Livros</label>
             <input type="number" class="form-control" formControlName="limiteLivros" min="1"
               [class.is-invalid]="isInvalido('limiteLivros')">
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Status</label>
-            <select class="form-select" formControlName="estaBloqueado">
-              <option [ngValue]="false">Ativo</option>
-              <option [ngValue]="true">Bloqueado</option>
-            </select>
           </div>
 
         </form>
@@ -272,7 +270,7 @@
           Cancelar
         </button>
 
-        <button type="button" lbrButton variant="cadastrar" (click)="salvarEdicao()">
+        <button type="button" lbrButton variant="cadastrar" (click)="salvarEdicao()" [disabled]="salvando">
           Salvar Alterações
         </button>
       </div>
@@ -301,7 +299,7 @@
           Cancelar
         </button>
 
-        <button lbrButton variant="excluir" (click)="confirmarExclusao()">
+        <button lbrButton variant="excluir" (click)="confirmarExclusao()" [disabled]="salvando">
           Excluir
         </button>
       </div>

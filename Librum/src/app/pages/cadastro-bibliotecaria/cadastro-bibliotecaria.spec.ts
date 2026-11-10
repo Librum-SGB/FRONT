@@ -1,17 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
-import { CadastroBibliotecaria } from './cadastro-bibliotecaria';
+import { CadastroBibliotecariaComponent } from './cadastro-bibliotecaria';
 
-describe('CadastroBibliotecaria', () => {
-  let component: CadastroBibliotecaria;
-  let fixture: ComponentFixture<CadastroBibliotecaria>;
+describe('CadastroBibliotecariaComponent', () => {
+  let component: CadastroBibliotecariaComponent;
+  let fixture: ComponentFixture<CadastroBibliotecariaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CadastroBibliotecaria],
+      imports: [CadastroBibliotecariaComponent],
+      providers: [provideRouter([])],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CadastroBibliotecaria);
+    fixture = TestBed.createComponent(CadastroBibliotecariaComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
