@@ -215,7 +215,7 @@ export class CadastrarMaterial implements OnInit {
   // ---------- PERIÓDICO ----------
 
   salvarPeriodico() {
-    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
+    if (!this.validar(this.formPeriodico, this.nomesCamposPeriodico)) return;
 
     const form = this.formPeriodico.getRawValue();
 
@@ -246,7 +246,7 @@ export class CadastrarMaterial implements OnInit {
   // ---------- OUTROS MATERIAIS ----------
 
   salvarOutro() {
-    if (!this.validar(this.formLivro, this.nomesCamposLivro)) return;
+    if (!this.validar(this.formOutros, this.nomesCamposOutros)) return;
 
     const form = this.formOutros.getRawValue();
 

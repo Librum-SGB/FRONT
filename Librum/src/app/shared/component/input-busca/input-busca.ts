@@ -1,6 +1,7 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Busca } from './busca.interface';
 
 interface OpcaoFiltro {
   valor: string;
@@ -18,6 +19,10 @@ export class InputBusca {
   TipoInput: 'LIVRO' | 'USUARIO' = 'LIVRO';
   @Input()
   showSelect: boolean = false;
+  @Input()
+  placeholder = '';
+  @Input()
+  buscarAoDigitar = false;
 
   @Output()
   buscar = new EventEmitter<Busca>();
@@ -43,9 +48,24 @@ export class InputBusca {
     return this.TipoInput === 'LIVRO' ? this.OPCOES_LIVRO : this.OPCOES_USUARIO;
   }
 
+  get placeholderBusca(): string {
+    return this.placeholder || (this.TipoInput === 'LIVRO' ? 'Digite o título do livro' : 'Digite o nome do usuário');
+  }
+
   pesquisar(event: SubmitEvent): void {
     event.preventDefault();
+    this.emitirBusca();
+  }
 
+  pesquisarAoDigitar(): void {
+    if (this.buscarAoDigitar) this.emitirBusca();
+  }
+
+  filtroAlterado(): void {
+    if (this.buscarAoDigitar) this.emitirBusca();
+  }
+
+  private emitirBusca(): void {
     this.buscar.emit({
       texto: this.textoBusca,
       filtro: this.filtroSelecionado,

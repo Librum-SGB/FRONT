@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -10,4 +10,5 @@ import { NgClass } from '@angular/common';
 export class BotaoAcaoRapida {
   @Input({ required: true }) titulo: string = 'titulo';
   @Input({ required: false }) classe: string = 'bg-primary';
+  @Output() acao = new EventEmitter<void>();
 }

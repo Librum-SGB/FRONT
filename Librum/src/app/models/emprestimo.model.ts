@@ -4,13 +4,16 @@ export interface Emprestimo {
   id?: number;
 
   usuarioId: number;
+  usuarioNome?: string;
   exemplarId: number;
-  gestorId: number;
+  materialTitulo?: string;
+  gestorId?: number;
+  usuarioResponsavelId?: number;
 
-  dataSaida?: Date;
+  dataSaida?: Date | string;
 
-  dataDevolucaoPrevista: Date;
-  dataDevolucaoEfetivada?: Date;
+  dataDevolucaoPrevista: Date | string;
+  dataDevolucaoEfetivada?: Date | string;
 
   renovacoesContagem?: number;
 
@@ -22,6 +25,6 @@ export interface Emprestimo {
 
   observacao?: string;
 
-  dataCriacao?: Date;
-  dataUltimaAtualizacao?: Date;
+  dataCriacao?: Date | string;
+  dataUltimaAtualizacao?: Date | string;
 }

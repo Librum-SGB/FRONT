@@ -1,93 +1,77 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { prioridade } from '../../enum/prioridade.enum';
 import { Tarefa } from '../../models/tarefa.model';
+
+type StatusTarefaApi = 'PENDENTE' | 'EM_ANDAMENTO' | 'CONCLUIDA';
+
+interface TarefaApi {
+  id: number;
+  usuarioId: number;
+  descricao: string;
+  prioridade: prioridade;
+  status: StatusTarefaApi;
+  prazo?: string;
+  dataCriacao?: string;
+  dataUltimaAtualizacao?: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class TarefaService {
-  private tarefas: Tarefa[] = [
-    {
-      id: 1,
-      gestorId: 101,
-      descricao: 'Implementar login com JWT',
-      prioridade: prioridade.ALTA,
-      concluida: false,
-      dataCriacao: new Date('2026-04-20'),
-      dataUltimaAtualizacao: new Date('2026-04-24'),
-    },
-    {
-      id: 2,
-      gestorId: 101,
-      descricao: 'Criar layout da dashboard',
-      prioridade: prioridade.MEDIA,
-      concluida: true,
-      dataCriacao: new Date('2026-04-18'),
-      dataUltimaAtualizacao: new Date('2026-04-22'),
-    },
-    {
-      id: 3,
-      gestorId: 102,
-      descricao: 'Corrigir bug no filtro de busca',
-      prioridade: prioridade.ALTA,
-      concluida: false,
-      dataCriacao: new Date('2026-04-23'),
-      dataUltimaAtualizacao: new Date('2026-04-25'),
-    },
-  ];
+  private readonly apiUrl = `${environment.apiUrl}/tarefas`;
 
-  private nextId = 4;
+  constructor(private readonly http: HttpClient) {}
 
-  // 📥 GET - listar tarefas
-  getTarefas(): Tarefa[] {
-    return [...this.tarefas]; // evita alteração direta externa
+  getMinhasTarefas(): Observable<Tarefa[]> {
+    return this.http
+      .get<TarefaApi[]>(`${this.apiUrl}/minhas`)
+      .pipe(map((tarefas) => tarefas.map((tarefa) => this.mapTarefa(tarefa))));
   }
 
-  // 📥 GET por ID (extra útil)
-  getTarefaById(id: number): Tarefa | undefined {
-    return this.tarefas.find((t) => t.id === id);
+  adicionarTarefa(descricao: string): Observable<Tarefa> {
+    return this.http
+      .post<TarefaApi>(this.apiUrl, {
+        descricao,
+        prioridade: prioridade.MEDIA,
+        status: 'PENDENTE',
+      })
+      .pipe(map((tarefa) => this.mapTarefa(tarefa)));
   }
 
-  // ➕ POST - adicionar tarefa
-  adicionarTarefa(tarefa: Tarefa): void {
-    const novaTarefa: Tarefa = {
-      ...tarefa,
-      id: this.nextId++,
-      concluida: tarefa.concluida ?? false,
-      dataCriacao: new Date(),
-      dataUltimaAtualizacao: new Date(),
+  alternarConclusao(tarefa: Tarefa): Observable<Tarefa> {
+    if (tarefa.id == null) {
+      throw new Error('Não é possível atualizar uma tarefa sem identificador.');
+    }
+
+    return this.http
+      .put<TarefaApi>(`${this.apiUrl}/${tarefa.id}`, {
+        descricao: tarefa.descricao,
+        prioridade: tarefa.prioridade,
+        status: tarefa.concluida ? 'PENDENTE' : 'CONCLUIDA',
+        prazo: tarefa.prazo,
+      })
+      .pipe(map((atualizada) => this.mapTarefa(atualizada)));
+  }
+
+  removerTarefa(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  private mapTarefa(tarefa: TarefaApi): Tarefa {
+    return {
+      id: tarefa.id,
+      usuarioId: tarefa.usuarioId,
+      descricao: tarefa.descricao,
+      prioridade: tarefa.prioridade,
+      status: tarefa.status,
+      concluida: tarefa.status === 'CONCLUIDA',
+      prazo: tarefa.prazo,
+      dataCriacao: tarefa.dataCriacao,
+      dataUltimaAtualizacao: tarefa.dataUltimaAtualizacao,
     };
-
-    this.tarefas.push(novaTarefa);
-  }
-
-  // 🔁 PATCH - alternar conclusão
-  alternarConclusao(id: number): void {
-    const tarefa = this.tarefas.find((t) => t.id === id);
-
-    if (!tarefa) return;
-
-    tarefa.concluida = !tarefa.concluida;
-    tarefa.dataUltimaAtualizacao = new Date();
-  }
-
-  // ✏️ atualizar descrição
-  atualizarDescricao(id: number, descricao: string): void {
-    const tarefa = this.tarefas.find((t) => t.id === id);
-
-    if (!tarefa) return;
-
-    tarefa.descricao = descricao;
-    tarefa.dataUltimaAtualizacao = new Date();
-  }
-
-  // 🗑 remover tarefa (extra útil)
-  removerTarefa(id: number): void {
-    this.tarefas = this.tarefas.filter((t) => t.id !== id);
-  }
-
-  // 📊 contar concluídas (extra para dashboard)
-  contarConcluidas(): number {
-    return this.tarefas.filter((t) => t.concluida).length;
   }
 }

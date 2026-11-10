@@ -1,4 +1,5 @@
 export enum StatusEmprestimo {
+  ATIVO = 'ATIVO',
   ANDAMENTO = 'ANDAMENTO',
   DEVOLVIDO = 'DEVOLVIDO',
   ATRASADO = 'ATRASADO',

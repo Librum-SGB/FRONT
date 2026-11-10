@@ -1,125 +1,192 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-// Import da sua Badge que vimos na foto do seu VS Code
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Emprestimo } from '../../models/emprestimo.model';
+import { EmprestimoService } from '../../services/emprestimo.service';
 import { Badge } from '../../shared/component/badge/badge';
-import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
-import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
+import { InputBusca } from '../../shared/component/input-busca/input-busca';
+import { ToastService } from '../../shared/services/toast.service';
+
+const ITENS_POR_PAGINA = 10;
 
 @Component({
   selector: 'app-renovar-devolver-material',
   standalone: true,
-  imports: [CommonModule, FormsModule, Badge, CorpoPadrao, LbrButtom], // Adicionado a Badge aqui
+  imports: [CommonModule, Badge, CorpoPadrao, InputBusca],
   templateUrl: './renovar-devolver-material.html',
-  styleUrl: './renovar-devolver-material.scss',
 })
-export class RenovarDevolverMaterial {
-  constructor(private toastService: ToastService) {}
+export class RenovarDevolverMaterial implements OnInit {
+  emprestimos: Emprestimo[] = [];
+  emprestimoSelecionado: Emprestimo | null = null;
+  busca = '';
+  paginaAtual = 1;
+  carregando = true;
+  salvando = false;
+  erroCarregamento = '';
 
-  searchId: string = '';
-  emprestimoSelecionado: any = null;
+  constructor(
+    private readonly emprestimoService: EmprestimoService,
+    private readonly toastService: ToastService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
 
-  emprestimos = [
-    {
-      id: 'EMP-001',
-      usuario: 'Juanito Silva',
-      livro: 'Programação em Python',
-      dataDevolucao: '19/11/2025',
-      vencido: false,
-    },
-    {
-      id: 'EMP-002',
-      usuario: 'Maria Cecília Santos',
-      livro: 'JavaScript Avançado',
-      dataDevolucao: '18/11/2025',
-      vencido: false,
-    },
-    {
-      id: 'EMP-008',
-      usuario: 'Rafael Souza',
-      livro: 'Banco de Dados NoSQL',
-      dataDevolucao: '26/11/2025',
-      vencido: true,
-    },
-    {
-      id: 'EMP-003',
-      usuario: 'Rodolfo Alberto Souza',
-      livro: 'React e Redux',
-      dataDevolucao: '10/11/2025',
-      vencido: true,
-    },
-    {
-      id: 'EMP-004',
-      usuario: 'Ana Julia Costa',
-      livro: 'Node.js Completo',
-      dataDevolucao: '21/11/2025',
-      vencido: false,
-    },
-    {
-      id: 'EMP-005',
-      usuario: 'João Henrique Lima',
-      livro: 'TypeScript Guide',
-      dataDevolucao: '14/11/2025',
-      vencido: true,
-    },
-    {
-      id: 'EMP-006',
-      usuario: 'Allan Ferreira',
-      livro: 'Angular na Prática',
-      dataDevolucao: '24/11/2025',
-      vencido: false,
-    },
-    {
-      id: 'EMP-007',
-      usuario: 'Priscilla Novaes ',
-      livro: 'UX Design 101',
-      dataDevolucao: '15/11/2025',
-      vencido: true,
-    },
-  ];
-
-  // AQUI ESTÁ A SUA PESQUISA INTELIGENTE:
-  onSearch() {
-    const termo = this.searchId.trim().toUpperCase();
-
-    // Se limpar o campo, remove o empréstimo selecionado da tela
-    if (!termo) {
-      this.emprestimoSelecionado = null;
-      return;
-    }
-
-    // Verifica se digitou APENAS números (ex: "3" ou "003")
-    const apenasNumeros = /^\d+$/.test(termo);
-
-    if (apenasNumeros) {
-      // Transforma "3" em "003" para bater com o padrão "EMP-003"
-      const numeroFormatado = termo.padStart(3, '0');
-      const idParaBuscar = `EMP-${numeroFormatado}`;
-
-      this.emprestimoSelecionado = this.emprestimos.find((e) => e.id === idParaBuscar) || null;
-    } else {
-      // Se digitou letras, busca por parte do nome do Usuário, do Livro ou ID completo
-      this.emprestimoSelecionado =
-        this.emprestimos.find(
-          (e) =>
-            e.usuario.toUpperCase().includes(termo) ||
-            e.livro.toUpperCase().includes(termo) ||
-            e.id.toUpperCase() === termo,
-        ) || null;
-    }
+  ngOnInit(): void {
+    this.carregarEmprestimos();
   }
 
-  selecionar(emp: any) {
-    this.emprestimoSelecionado = emp;
-    this.searchId = emp.id;
+  get emprestimosFiltrados(): Emprestimo[] {
+    const termo = this.busca.trim().toLocaleLowerCase('pt-BR');
+    if (!termo) return this.emprestimos;
+
+    return this.emprestimos.filter((emprestimo) =>
+      [
+        emprestimo.id,
+        emprestimo.usuarioNome,
+        emprestimo.materialTitulo,
+      ]
+        .some((valor) => String(valor ?? '').toLocaleLowerCase('pt-BR').includes(termo)),
+    );
   }
 
-  renovar() {
-    this.toastService.sucesso('Empréstimo renovado com sucesso!');
+  get totalPaginas(): number {
+    return Math.max(1, Math.ceil(this.emprestimosFiltrados.length / ITENS_POR_PAGINA));
   }
 
-  devolver() {
-    this.toastService.sucesso('Empréstimo devolvido com sucesso!');
+  get paginaEfetiva(): number {
+    return Math.min(this.paginaAtual, this.totalPaginas);
+  }
+
+  get emprestimosPagina(): Emprestimo[] {
+    const inicio = (this.paginaEfetiva - 1) * ITENS_POR_PAGINA;
+    return this.emprestimosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA);
+  }
+
+  get inicioExibicao(): number {
+    return this.emprestimosFiltrados.length === 0 ? 0 : (this.paginaEfetiva - 1) * ITENS_POR_PAGINA + 1;
+  }
+
+  get fimExibicao(): number {
+    return Math.min(this.paginaEfetiva * ITENS_POR_PAGINA, this.emprestimosFiltrados.length);
+  }
+
+  get paginasVisiveis(): number[] {
+    const total = this.totalPaginas;
+    const atual = this.paginaEfetiva;
+    const janela = 5;
+    let inicio = Math.max(1, atual - Math.floor(janela / 2));
+    const fim = Math.min(total, inicio + janela - 1);
+    inicio = Math.max(1, fim - janela + 1);
+    return Array.from({ length: fim - inicio + 1 }, (_, index) => inicio + index);
+  }
+
+  aplicarBusca(busca: { texto: string; filtro: string }): void {
+    this.busca = busca.texto;
+    this.paginaAtual = 1;
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginas) return;
+    this.paginaAtual = pagina;
+  }
+
+  selecionar(emprestimo: Emprestimo): void {
+    this.emprestimoSelecionado =
+      this.emprestimoSelecionado?.id === emprestimo.id ? null : emprestimo;
+  }
+
+  statusLabel(emprestimo: Emprestimo): string {
+    return this.estaAtrasado(emprestimo) ? 'Atrasado' : 'Em andamento';
+  }
+
+  statusBadge(emprestimo: Emprestimo): 'danger' | 'success' {
+    return this.estaAtrasado(emprestimo) ? 'danger' : 'success';
+  }
+
+  podeRenovar(emprestimo: Emprestimo): boolean {
+    return emprestimo.status === 'ATIVO' && !this.estaAtrasado(emprestimo);
+  }
+
+  formatarData(data?: Date | string): string {
+    if (!data) return '—';
+    const dataISO = typeof data === 'string' ? data.slice(0, 10) : this.dataISO(data);
+    if (!dataISO) return '—';
+    return new Date(`${dataISO}T00:00:00`).toLocaleDateString('pt-BR');
+  }
+
+  renovar(): void {
+    const emprestimo = this.emprestimoSelecionado;
+    if (!emprestimo?.id || !this.podeRenovar(emprestimo) || this.salvando) return;
+
+    this.salvando = true;
+    this.emprestimoService.renovar(emprestimo.id).subscribe({
+      next: (atualizado) => {
+        this.atualizarEmprestimo(atualizado);
+        this.toastService.sucesso('Empréstimo renovado com sucesso.');
+        this.salvando = false;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.toastService.erro(error.error?.message ?? 'Não foi possível renovar o empréstimo.');
+        this.salvando = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  devolver(): void {
+    const emprestimo = this.emprestimoSelecionado;
+    if (!emprestimo?.id || this.salvando) return;
+
+    this.salvando = true;
+    this.emprestimoService.devolver(emprestimo.id).subscribe({
+      next: (atualizado) => {
+        this.emprestimos = this.emprestimos.filter((item) => item.id !== atualizado.id);
+        this.emprestimoSelecionado = null;
+        if (this.paginaAtual > this.totalPaginas) this.paginaAtual = this.totalPaginas;
+        this.toastService.sucesso('Material devolvido com sucesso.');
+        this.salvando = false;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.toastService.erro(error.error?.message ?? 'Não foi possível registrar a devolução.');
+        this.salvando = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  carregarEmprestimos(): void {
+    this.carregando = true;
+    this.erroCarregamento = '';
+    this.emprestimoService.listarVisiveis(true).subscribe({
+      next: (emprestimos) => {
+        this.emprestimos = emprestimos.filter((emprestimo) => emprestimo.status !== 'DEVOLVIDO');
+        this.carregando = false;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.erroCarregamento = error.error?.message ?? 'Não foi possível carregar os empréstimos em aberto.';
+        this.carregando = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  private atualizarEmprestimo(atualizado: Emprestimo): void {
+    this.emprestimos = this.emprestimos.map((item) => item.id === atualizado.id ? atualizado : item);
+    this.emprestimoSelecionado = atualizado;
+  }
+
+  private estaAtrasado(emprestimo: Emprestimo): boolean {
+    if (emprestimo.status === 'ATRASADO') return true;
+    if (emprestimo.status !== 'ATIVO' || !emprestimo.dataDevolucaoPrevista) return false;
+    return String(emprestimo.dataDevolucaoPrevista).slice(0, 10) < this.dataISO(new Date());
+  }
+
+  private dataISO(data: Date): string {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
   }
 }
