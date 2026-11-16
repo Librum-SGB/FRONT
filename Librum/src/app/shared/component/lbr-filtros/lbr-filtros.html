@@ -1,0 +1,107 @@
+<div class="lbr-filtros">
+  <!-- BUSCA + BOTÃO FILTROS + AÇÕES DA PÁGINA -->
+  <div class="d-flex flex-column flex-md-row gap-2">
+    <div class="input-group flex-grow-1">
+      <span class="input-group-text bg-body" aria-hidden="true"><i class="bi bi-search"></i></span>
+      <label class="visually-hidden" [for]="idBase + '-busca'">Buscar</label>
+      <input [id]="idBase + '-busca'" type="search" class="form-control"
+        [placeholder]="config().placeholderBusca ?? 'Buscar...'" [disabled]="desabilitado()"
+        [value]="valorTexto(CHAVE_BUSCA)" (input)="alterarBusca($any($event.target).value)">
+    </div>
+
+    <div class="d-flex gap-2 flex-shrink-0">
+      @if (campos().length) {
+        <button type="button" class="btn btn-outline-primary d-inline-flex align-items-center gap-2 flex-grow-1"
+          [class.active]="painelAberto()" [disabled]="desabilitado()"
+          [attr.aria-expanded]="painelAberto()" [attr.aria-controls]="idBase + '-painel'"
+          (click)="painelAberto.set(!painelAberto())">
+          <i class="bi bi-funnel" aria-hidden="true"></i>
+          Filtros
+          @if (quantidadeAtivos()) {
+            <span class="badge rounded-pill text-bg-primary">{{ quantidadeAtivos() }}</span>
+          }
+        </button>
+      }
+      <ng-content select="[lbrFiltrosAcoes]" />
+    </div>
+  </div>
+
+  <!-- PAINEL DE FILTROS -->
+  @if (painelAberto() && campos().length) {
+    <div [id]="idBase + '-painel'" class="card card-body bg-body-tertiary border-0 mt-2">
+      <div class="row g-3">
+        @for (campo of campos(); track campo.chave) {
+          <div class="col-md-6 col-xl-4">
+            @switch (campo.tipo) {
+              @case ('opcoes') {
+                <span class="form-label d-block small fw-semibold" [id]="idBase + '-' + campo.chave">
+                  {{ campo.rotulo }}
+                </span>
+                <div class="d-flex flex-wrap gap-2" role="group" [attr.aria-labelledby]="idBase + '-' + campo.chave">
+                  @for (opcao of opcoesDo(campo); track opcao.valor) {
+                    <button type="button" class="btn btn-sm rounded-pill"
+                      [class.btn-primary]="estaSelecionado(campo, opcao)"
+                      [class.btn-outline-secondary]="!estaSelecionado(campo, opcao)"
+                      [attr.aria-pressed]="estaSelecionado(campo, opcao)"
+                      (click)="alternarOpcao(campo, opcao)">
+                      @if (estaSelecionado(campo, opcao)) {
+                        <i class="bi bi-check-lg" aria-hidden="true"></i>
+                      }
+                      {{ opcao.rotulo }}
+                    </button>
+                  }
+                </div>
+              }
+              @case ('lista') {
+                <label class="form-label small fw-semibold">{{ campo.rotulo }}</label>
+                <app-select-pesquisavel [itens]="opcoesSelect()[campo.chave]" [multiplo]="true" [permitirCriar]="false"
+                  [placeholder]="placeholderDo(campo)"
+                  [ngModel]="idsSelecionados()[campo.chave]" (ngModelChange)="alterarLista(campo, $event)">
+                </app-select-pesquisavel>
+              }
+              @case ('periodo') {
+                <span class="form-label d-block small fw-semibold">{{ campo.rotulo }}</span>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="input-group">
+                      <label class="input-group-text" [for]="idBase + '-' + campo.chave + DE">De</label>
+                      <input [id]="idBase + '-' + campo.chave + DE" type="date" class="form-control"
+                        [attr.aria-label]="campo.rotulo + ': de'"
+                        [value]="valorTexto(campo.chave + DE)" [max]="valorTexto(campo.chave + ATE)"
+                        (change)="alterarPeriodo(campo, DE, $any($event.target).value)">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group">
+                      <label class="input-group-text" [for]="idBase + '-' + campo.chave + ATE">Até</label>
+                      <input [id]="idBase + '-' + campo.chave + ATE" type="date" class="form-control"
+                        [attr.aria-label]="campo.rotulo + ': até'"
+                        [value]="valorTexto(campo.chave + ATE)" [min]="valorTexto(campo.chave + DE)"
+                        (change)="alterarPeriodo(campo, ATE, $any($event.target).value)">
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- FILTROS ATIVOS -->
+  @if (chips().length) {
+    <div class="d-flex flex-wrap align-items-center gap-2 mt-2" aria-label="Filtros ativos">
+      @for (chip of chips(); track chip.id) {
+        <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis border border-primary-subtle d-inline-flex align-items-center gap-1 fw-normal chip">
+          {{ chip.texto }}
+          <button type="button" class="btn-close btn-close-sm" [attr.aria-label]="'Remover ' + chip.texto"
+            (click)="chip.remover()"></button>
+        </span>
+      }
+      <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 ms-1" (click)="limpar()">
+        Limpar filtros
+      </button>
+    </div>
+  }
+</div>

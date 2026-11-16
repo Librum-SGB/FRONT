@@ -1,0 +1,94 @@
+<app-corpo-padrao>
+  <div class="titulo">Cadastrar Funcionário</div>
+
+  <div class="corpo">
+    <lbr-trilha atual="Cadastrar" [padrao]="{ rotulo: 'Funcionários', rota: '/funcionarios' }" />
+
+    <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+      <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
+      @if (erroFiliais()) {
+        <div class="alert alert-danger" role="alert">
+          {{ erroFiliais() }}
+          <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="carregarFiliais()">
+            Tentar novamente
+          </button>
+        </div>
+      }
+
+      <p class="text-secondary">Os campos marcados com * são obrigatórios.</p>
+
+      <h2 class="h5 mt-4">Função</h2>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="funcao" class="form-label">Função *</label>
+          <select id="funcao" class="form-select" formControlName="funcao" [class.is-invalid]="isInvalido('funcao')">
+            <option value="" disabled>Selecione a função...</option>
+            @for (funcao of funcoes; track funcao.valor) {
+              <option [value]="funcao.valor">{{ funcao.rotulo }}</option>
+            }
+          </select>
+          <div class="invalid-feedback">{{ erro('funcao') }}</div>
+        </div>
+        <div class="col-md-6">
+          <label for="filialId" class="form-label">Unidade / Filial *</label>
+          <select id="filialId" class="form-select" formControlName="filialId" [class.is-invalid]="isInvalido('filialId')">
+            <option value="" disabled>{{ carregandoFiliais() ? 'Carregando unidades...' : 'Selecione a unidade...' }}</option>
+            @for (filial of filiais(); track filial.id) {
+              <option [value]="filial.id">{{ filial.nomeFantasia }}</option>
+            }
+          </select>
+          <div class="invalid-feedback">{{ erro('filialId') }}</div>
+        </div>
+      </div>
+
+      <h2 class="h5 mt-4">Dados pessoais</h2>
+      <div class="mb-3">
+        <label for="nome" class="form-label">Nome completo *</label>
+        <input id="nome" type="text" class="form-control" formControlName="nome" autocomplete="name"
+          [class.is-invalid]="isInvalido('nome')">
+        <div class="invalid-feedback">{{ erro('nome') }}</div>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="email" class="form-label">E-mail *</label>
+          <input id="email" type="email" class="form-control" formControlName="email" autocomplete="email"
+            [class.is-invalid]="isInvalido('email')">
+          <div class="invalid-feedback">{{ erro('email') }}</div>
+        </div>
+        <div class="col-md-6">
+          <label for="matriculaFuncionario" class="form-label">Matrícula *</label>
+          <input id="matriculaFuncionario" type="text" class="form-control" formControlName="matriculaFuncionario"
+            placeholder="Ex.: 2026-001" [class.is-invalid]="isInvalido('matriculaFuncionario')">
+          <div class="invalid-feedback">{{ erro('matriculaFuncionario') }}</div>
+        </div>
+      </div>
+
+      <h2 class="h5 mt-4">Acesso</h2>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="senha" class="form-label">Senha *</label>
+          <input id="senha" type="password" class="form-control" formControlName="senha" autocomplete="new-password"
+            [class.is-invalid]="isInvalido('senha')">
+          <div class="invalid-feedback">{{ erro('senha') }}</div>
+          <div class="form-text">A senha deve ter pelo menos 6 caracteres.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="confirmarSenha" class="form-label">Confirmar senha *</label>
+          <input id="confirmarSenha" type="password" class="form-control" formControlName="confirmarSenha"
+            autocomplete="new-password" [class.is-invalid]="isInvalido('confirmarSenha')">
+          <div class="invalid-feedback">{{ erro('confirmarSenha') }}</div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" lbrButton variant="cancelar" lbrVoltar="/funcionarios" [disabled]="salvando()">
+          Cancelar
+        </button>
+        <button type="submit" lbrButton variant="cadastrar" [disabled]="salvando() || carregandoFiliais() || !!erroFiliais()">
+          {{ salvando() ? 'Salvando...' : 'Cadastrar funcionário' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</app-corpo-padrao>

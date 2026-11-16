@@ -18,41 +18,55 @@ export class FormUtils {
 
       if (control.hasError('required')) possuiRequired = true;
 
-      const nome = nomesCampos[campo] ?? campo;
-
-      if (control.hasError('minlength')) {
-        const { requiredLength } = control.getError('minlength');
-        mensagens.push(`${nome} deve possuir no mínimo ${requiredLength} caracteres.`);
-      }
-      if (control.hasError('maxlength')) {
-        const { requiredLength } = control.getError('maxlength');
-        mensagens.push(`${nome} deve possuir no máximo ${requiredLength} caracteres.`);
-      }
-      if (control.hasError('min')) {
-        mensagens.push(`${nome} deve ser maior ou igual a ${control.getError('min').min}.`);
-      }
-      if (control.hasError('max')) {
-        mensagens.push(`${nome} deve ser menor ou igual a ${control.getError('max').max}.`);
-      }
-      if (control.hasError('pattern')) {
-        mensagens.push(`${nome} possui um formato inválido.`);
-      }
-      if (control.hasError('email')) {
-        mensagens.push(`${nome} deve ser um e-mail válido.`);
-      }
-      if (control.hasError('cpfInvalido')) {
-        mensagens.push(`${nome} é inválido.`);
-      }
-      if (control.hasError('senhasDiferentes')) {
-        mensagens.push('As senhas não coincidem.');
-      }
-      if (control.hasError('dataFutura')) {
-        mensagens.push(`${nome} deve ser uma data no passado.`);
-      }
+      mensagens.push(...FormUtils.mensagensDoControle(control, nomesCampos[campo] ?? campo));
     });
 
     if (possuiRequired) {
       mensagens.push('Preencha todos os campos obrigatórios.');
+    }
+
+    return mensagens;
+  }
+
+  /** Primeira mensagem de erro de um campo, para exibir logo abaixo dele. */
+  static mensagemCampo(form: FormGroup, campo: string, nome: string): string | null {
+    const control = form.get(campo);
+    if (!control?.errors) return null;
+    if (control.hasError('required')) return `${nome} é obrigatório.`;
+    return FormUtils.mensagensDoControle(control, nome)[0] ?? null;
+  }
+
+  private static mensagensDoControle(control: AbstractControl, nome: string): string[] {
+    const mensagens: string[] = [];
+
+    if (control.hasError('minlength')) {
+      const { requiredLength } = control.getError('minlength');
+      mensagens.push(`${nome} deve possuir no mínimo ${requiredLength} caracteres.`);
+    }
+    if (control.hasError('maxlength')) {
+      const { requiredLength } = control.getError('maxlength');
+      mensagens.push(`${nome} deve possuir no máximo ${requiredLength} caracteres.`);
+    }
+    if (control.hasError('min')) {
+      mensagens.push(`${nome} deve ser maior ou igual a ${control.getError('min').min}.`);
+    }
+    if (control.hasError('max')) {
+      mensagens.push(`${nome} deve ser menor ou igual a ${control.getError('max').max}.`);
+    }
+    if (control.hasError('pattern')) {
+      mensagens.push(`${nome} possui um formato inválido.`);
+    }
+    if (control.hasError('email')) {
+      mensagens.push(`${nome} deve ser um e-mail válido.`);
+    }
+    if (control.hasError('cpfInvalido')) {
+      mensagens.push(`${nome} é inválido.`);
+    }
+    if (control.hasError('senhasDiferentes')) {
+      mensagens.push('As senhas não coincidem.');
+    }
+    if (control.hasError('dataFutura')) {
+      mensagens.push(`${nome} deve ser uma data no passado.`);
     }
 
     return mensagens;

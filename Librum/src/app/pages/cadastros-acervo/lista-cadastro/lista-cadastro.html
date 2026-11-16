@@ -1,0 +1,48 @@
+<app-corpo-padrao>
+  <div class="titulo">{{ config.plural }}</div>
+
+  <div class="corpo">
+    <lbr-filtros [config]="configFiltro()" [(valores)]="filtros">
+      @if (podeEditar) {
+        <a lbrFiltrosAcoes lbrButton variant="cadastrar" [routerLink]="[config.rotaLista, 'novo']" class="text-nowrap">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i>
+          Cadastrar {{ config.singular }}
+        </a>
+      }
+    </lbr-filtros>
+
+    <lbr-tabela
+      [dados]="registrosFiltrados()"
+      [carregando]="carregando()"
+      [mensagemCarregando]="'Carregando ' + config.plural.toLowerCase() + '...'"
+      [mensagemVazio]="temFiltroAtivo(filtros())
+        ? 'Nada encontrado para os filtros selecionados.'
+        : 'Nenhum registro cadastrado.'"
+      [iconeVazio]="config.icone"
+      [rotulo]="'Paginação de ' + config.plural.toLowerCase()">
+      <ng-template lbrTabelaCabecalho>
+        <th scope="col" lbrOrdenar="nome">Nome</th>
+        @for (coluna of config.colunas; track coluna.rotulo) {
+          <th scope="col" [lbrOrdenar]="coluna.ordenar">{{ coluna.rotulo }}</th>
+        }
+        <th scope="col" [lbrOrdenar]="porQuantidade">Materiais</th>
+        <th scope="col" class="text-end">Ações</th>
+      </ng-template>
+      <ng-template [lbrTabelaLinha]="registrosFiltrados()" let-registro>
+        <tr>
+          <td>
+            <a class="fw-semibold link-underline link-underline-opacity-0 link-underline-opacity-100-hover"
+              [routerLink]="[config.rotaLista, registro.id]">{{ registro.nome }}</a>
+          </td>
+          @for (coluna of config.colunas; track coluna.rotulo) {
+            <td class="text-truncate coluna-texto">{{ coluna.valor(registro) }}</td>
+          }
+          <td>{{ quantidadeMateriais(registro) ?? '—' }}</td>
+          <td class="text-end">
+            <lbr-acoes [acoes]="acoesDoRegistro(registro)" [descricao]="registro.nome" />
+          </td>
+        </tr>
+      </ng-template>
+    </lbr-tabela>
+  </div>
+</app-corpo-padrao>

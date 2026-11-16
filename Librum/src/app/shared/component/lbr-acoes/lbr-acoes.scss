@@ -1,0 +1,23 @@
+:host {
+  display: inline-block;
+}
+
+.lbr-acoes__botao {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  color: var(--bs-secondary-color);
+
+  &:hover,
+  &:focus-visible,
+  &.show {
+    color: var(--bs-emphasis-color);
+    background-color: var(--bs-secondary-bg);
+  }
+}
+
+.dropdown-item small {
+  white-space: normal;
+  max-width: 16rem;
+}

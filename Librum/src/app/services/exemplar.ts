@@ -19,6 +19,10 @@ export class ExemplarService {
     return this.http.get<ExemplarResponse[]>(url);
   }
 
+  findByMaterial(materialId: number): Observable<ExemplarResponse[]> {
+    return this.http.get<ExemplarResponse[]>(this.apiUrl, { params: { materialId } });
+  }
+
   findById(id: number): Observable<ExemplarResponse> {
     return this.http.get<ExemplarResponse>(`${this.apiUrl}/${id}`);
   }

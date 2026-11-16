@@ -1,13 +1,23 @@
-<div class="card p-2 text-white" [ngClass]="classe">
-  <div class="row">
-    <div class="col-8">
-      <div class="d-flex flex-column">
-        <p><b>{{titulo}}</b></p>
-        <h3>{{valor}}</h3>
-      </div>
-    </div>
-    <div class="col-4 d-flex justify-content-end align-items-center pe-3">
-      <ng-content></ng-content>
-    </div>
+@if (link) {
+  <a class="card card-informativo card-informativo--link text-white text-decoration-none" [ngClass]="classe"
+    [routerLink]="link" [queryParams]="queryParams" [attr.aria-label]="titulo + ': ' + valor + '. Abrir'">
+    <ng-container [ngTemplateOutlet]="conteudo" />
+    <span class="card-informativo__ver">Ver <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+  </a>
+} @else {
+  <div class="card card-informativo text-white" [ngClass]="classe">
+    <ng-container [ngTemplateOutlet]="conteudo" />
   </div>
-</div>
+}
+
+<ng-template #conteudo>
+  <div class="d-flex justify-content-between align-items-start gap-3">
+    <div class="d-flex flex-column">
+      <span class="card-informativo__titulo">{{ titulo }}</span>
+      <span class="card-informativo__valor">{{ valor }}</span>
+    </div>
+    <span class="card-informativo__icone" aria-hidden="true">
+      <ng-content></ng-content>
+    </span>
+  </div>
+</ng-template>

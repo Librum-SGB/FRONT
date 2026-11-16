@@ -1,0 +1,54 @@
+<app-corpo-padrao>
+  <div class="titulo">{{ titulo }}</div>
+
+  <div class="corpo">
+    <lbr-trilha [atual]="edicao ? 'Editar' : 'Cadastrar'"
+      [padrao]="{ rotulo: edicao ? (nomeAtual() || config.singular) : config.plural, rota: destinoPadrao }" />
+
+    @if (carregando()) {
+      <p class="text-center text-secondary py-5 mb-0">Carregando...</p>
+    } @else if (erroCarregamento()) {
+      <lbr-aviso [mensagem]="erroCarregamento()">
+        <a lbrButton variant="outros" [routerLink]="config.rotaLista">Voltar para {{ config.plural.toLowerCase() }}</a>
+      </lbr-aviso>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+        <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
+        <p class="text-secondary">Os campos marcados com * são obrigatórios.</p>
+
+        <div class="row g-3 mb-4">
+          @for (campo of config.campos; track campo.chave) {
+            <div [class]="colunaDo(campo)">
+              <label [for]="campo.chave" class="form-label">{{ campo.rotulo }}{{ campo.obrigatorio ? ' *' : '' }}</label>
+              @switch (campo.tipo) {
+                @case ('textoLongo') {
+                  <textarea [id]="campo.chave" class="form-control" rows="4" [formControlName]="campo.chave"
+                    [class.is-invalid]="isInvalido(campo.chave)"></textarea>
+                }
+                @case ('data') {
+                  <input [id]="campo.chave" type="date" class="form-control" [formControlName]="campo.chave"
+                    [class.is-invalid]="isInvalido(campo.chave)">
+                }
+                @default {
+                  <input [id]="campo.chave" type="text" class="form-control" [formControlName]="campo.chave"
+                    [attr.maxlength]="campo.maxLength ?? null" [class.is-invalid]="isInvalido(campo.chave)">
+                }
+              }
+              <div class="invalid-feedback">{{ erro(campo.chave) }}</div>
+            </div>
+          }
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" lbrButton variant="cancelar" [lbrVoltar]="destinoPadrao" [disabled]="salvando()">
+            Cancelar
+          </button>
+          <button type="submit" lbrButton variant="cadastrar" [disabled]="salvando()">
+            {{ salvando() ? 'Salvando...' : (edicao ? 'Salvar alterações' : 'Cadastrar') }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</app-corpo-padrao>

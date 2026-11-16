@@ -2,10 +2,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Modal } from '../../../shared/component/modal/modal';
 import { ExemplarVirtualDto } from '../../../dto/estantevirtual.dto';
 import { LbrButtom } from '../../../shared/component/lbr-buttom/lbr-buttom';
+import { LbrLinkEntidade } from '../../../shared/component/lbr-link-entidade/lbr-link-entidade';
 
 @Component({
   selector: 'app-modal-livro',
-  imports: [Modal, LbrButtom],
+  imports: [Modal, LbrButtom, LbrLinkEntidade],
   templateUrl: './modal-livro.html',
   styleUrl: './modal-livro.scss',
 })

@@ -5,5 +5,5 @@ export interface MensagemToast {
 
 export const TEMPO = {
   //miliseconds
-  TEMPO_MENSAGEM: 3000,
+  TEMPO_MENSAGEM: 3500,
 };

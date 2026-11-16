@@ -1,0 +1,94 @@
+<app-corpo-padrao>
+  <div class="titulo">{{ titulo }}</div>
+
+  <div class="corpo">
+    <lbr-trilha [atual]="registro()?.nome ?? 'Detalhes'" [padrao]="{ rotulo: config.plural, rota: config.rotaLista }" />
+
+    @if (carregando()) {
+      <p class="text-center text-secondary py-5 mb-0">Carregando...</p>
+    } @else if (erroCarregamento()) {
+      <lbr-aviso [mensagem]="erroCarregamento()">
+        <a lbrButton variant="outros" [routerLink]="config.rotaLista">Voltar para {{ config.plural.toLowerCase() }}</a>
+      </lbr-aviso>
+    } @else if (registro(); as registro) {
+      <lbr-cabecalho-detalhe [icone]="config.icone" [titulo]="registro.nome">
+        <span subtitulo>{{ config.singular }} · ID {{ registro.id }}</span>
+        <ng-container acoes>
+          <button type="button" lbrButton variant="cancelar" [lbrVoltar]="config.rotaLista">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar
+          </button>
+          @if (podeEditar) {
+            <a lbrButton variant="editar" [routerLink]="[config.rotaLista, registro.id, 'editar']">
+              <i class="bi bi-pencil" aria-hidden="true"></i> Editar
+            </a>
+          }
+          @if (podeExcluir) {
+            <button type="button" lbrButton variant="excluir" [disabled]="excluindo()" (click)="excluir()">
+              <i class="bi bi-trash" aria-hidden="true"></i> Excluir
+            </button>
+          }
+        </ng-container>
+      </lbr-cabecalho-detalhe>
+
+      <div class="row g-4">
+        <div class="col-lg-8 d-flex flex-column gap-4">
+          @if (campos().length) {
+            <section class="card">
+              <div class="card-body p-4">
+                <h3 class="h6 text-uppercase text-secondary mb-3">Informações</h3>
+                <dl class="row mb-0">
+                  @for (campo of campos(); track campo.rotulo) {
+                    <dt class="col-sm-4 fw-semibold">{{ campo.rotulo }}</dt>
+                    <dd class="col-sm-8" [style.white-space]="campo.longo ? 'pre-line' : null">{{ campo.valor }}</dd>
+                  }
+                </dl>
+              </div>
+            </section>
+          }
+
+          <section class="card">
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="h6 text-uppercase text-secondary mb-0">
+                  Materiais vinculados ({{ materiais() ? materiaisVinculados().length : '—' }})
+                </h3>
+                @if (materiaisVinculados().length) {
+                  <a class="small text-decoration-none" [routerLink]="rotaMateriais" [queryParams]="filtroMateriais(registro)">
+                    Ver no acervo <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                  </a>
+                }
+              </div>
+
+              @if (materiais() === null) {
+                <p class="text-secondary mb-0">Não foi possível carregar os materiais.</p>
+              } @else {
+                <lbr-tabela
+                  [dados]="materiaisVinculados()"
+                  mensagemVazio="Nenhum material vinculado."
+                  iconeVazio="bi-book"
+                  rotulo="Paginação dos materiais vinculados">
+                  <ng-template lbrTabelaCabecalho>
+                    <th scope="col" lbrOrdenar="titulo">Título</th>
+                    <th scope="col" lbrOrdenar="tipo">Tipo</th>
+                    <th scope="col" lbrOrdenar="anoPublicacao">Ano</th>
+                  </ng-template>
+                  <ng-template [lbrTabelaLinha]="materiaisVinculados()" let-material>
+                    <tr>
+                      <td><lbr-link-entidade class="fw-semibold" tipo="material" [id]="material.id" [texto]="material.titulo" /></td>
+                      <td>{{ rotuloTipo(material.tipo) }}</td>
+                      <td>{{ material.anoPublicacao ?? '—' }}</td>
+                    </tr>
+                  </ng-template>
+                </lbr-tabela>
+              }
+            </div>
+          </section>
+        </div>
+
+        <div class="col-lg-4">
+          <lbr-cartao-registro [criadoEm]="registro.dataCriacao" [atualizadoEm]="registro.dataUltimaAtualizacao" />
+        </div>
+      </div>
+    }
+  </div>
+</app-corpo-padrao>

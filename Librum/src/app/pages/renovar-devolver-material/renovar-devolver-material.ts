@@ -1,42 +1,99 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, OnInit, signal } from '@angular/core';
 import { Emprestimo } from '../../models/emprestimo.model';
 import { EmprestimoService } from '../../services/emprestimo.service';
+import { OperacoesEmprestimoService } from '../../services/operacoes-emprestimo.service';
 import { Badge } from '../../shared/component/badge/badge';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
-import { InputBusca } from '../../shared/component/input-busca/input-busca';
+import { AcaoMenu, LbrAcoes } from '../../shared/component/lbr-acoes/lbr-acoes';
+import { LbrFiltros } from '../../shared/component/lbr-filtros/lbr-filtros';
+import {
+  ConfigFiltro,
+  filtrarItens,
+  opcoesDosItens,
+  temFiltroAtivo,
+  ValoresFiltro,
+} from '../../shared/component/lbr-filtros/filtros';
+import { LbrLinkEntidade } from '../../shared/component/lbr-link-entidade/lbr-link-entidade';
 import {
   LbrTabela,
   LbrTabelaCabecalho,
   LbrTabelaLinha,
+  LbrTabelaOrdenar,
 } from '../../shared/component/lbr-tabela/lbr-tabela';
-import { ToastService } from '../../shared/services/toast.service';
+import {
+  corSituacao,
+  diasDeAtraso,
+  rotuloSituacao,
+} from '../../utils/emprestimo.util';
+import { formatarDataBR } from '../../utils/data.util';
 
 @Component({
   selector: 'app-renovar-devolver-material',
   standalone: true,
   imports: [
-    CommonModule,
     Badge,
     CorpoPadrao,
-    InputBusca,
+    LbrAcoes,
+    LbrLinkEntidade,
+    LbrFiltros,
     LbrTabela,
     LbrTabelaCabecalho,
     LbrTabelaLinha,
+    LbrTabelaOrdenar,
   ],
   templateUrl: './renovar-devolver-material.html',
 })
 export class RenovarDevolverMaterial implements OnInit {
-  emprestimos: Emprestimo[] = [];
-  emprestimoSelecionado: Emprestimo | null = null;
-  busca = '';
+  protected readonly temFiltroAtivo = temFiltroAtivo;
+  protected readonly formatarData = formatarDataBR;
+  protected readonly rotuloSituacao = rotuloSituacao;
+  protected readonly corSituacao = corSituacao;
+
+  private readonly emprestimos = signal<Emprestimo[]>([]);
+  /** Empréstimo com renovação/devolução em andamento (evita cliques repetidos). */
+  private readonly processandoId = signal<number | null>(null);
   carregando = true;
-  salvando = false;
   erroCarregamento = '';
+
+  readonly filtros = signal<ValoresFiltro>({});
+
+  readonly configFiltro = computed<ConfigFiltro<Emprestimo>>(() => ({
+    placeholderBusca: 'Buscar por ID, usuário ou material...',
+    busca: (e) => [e.id, e.usuarioNome, e.materialTitulo],
+    campos: [
+      {
+        tipo: 'opcoes',
+        chave: 'situacao',
+        rotulo: 'Situação',
+        valorDoItem: (e) => (diasDeAtraso(e) > 0 || e.status === 'ATRASADO' ? 'ATRASADO' : 'EM_ANDAMENTO'),
+        opcoes: [
+          { valor: 'EM_ANDAMENTO', rotulo: 'Em andamento' },
+          { valor: 'ATRASADO', rotulo: 'Atrasado' },
+        ],
+      },
+      {
+        tipo: 'lista',
+        chave: 'usuario',
+        rotulo: 'Usuário',
+        valorDoItem: (e) => e.usuarioId,
+        opcoes: opcoesDosItens(this.emprestimos(), (e) => e.usuarioId, (e) => e.usuarioNome),
+      },
+      {
+        tipo: 'periodo',
+        chave: 'vencimento',
+        rotulo: 'Devolução prevista',
+        valorDoItem: (e) => e.dataDevolucaoPrevista,
+      },
+    ],
+  }));
+
+  readonly emprestimosFiltrados = computed(() =>
+    filtrarItens(this.emprestimos(), this.configFiltro(), this.filtros()),
+  );
 
   constructor(
     private readonly emprestimoService: EmprestimoService,
-    private readonly toastService: ToastService,
+    private readonly operacoes: OperacoesEmprestimoService,
     private readonly cdr: ChangeDetectorRef,
   ) {}
 
@@ -44,87 +101,46 @@ export class RenovarDevolverMaterial implements OnInit {
     this.carregarEmprestimos();
   }
 
-  get emprestimosFiltrados(): Emprestimo[] {
-    const termo = this.busca.trim().toLocaleLowerCase('pt-BR');
-    if (!termo) return this.emprestimos;
-
-    return this.emprestimos.filter((emprestimo) =>
-      [
-        emprestimo.id,
-        emprestimo.usuarioNome,
-        emprestimo.materialTitulo,
-      ]
-        .some((valor) => String(valor ?? '').toLocaleLowerCase('pt-BR').includes(termo)),
-    );
-  }
-
-  aplicarBusca(busca: { texto: string; filtro: string }): void {
-    this.busca = busca.texto;
-  }
-
-  selecionar(emprestimo: Emprestimo): void {
-    this.emprestimoSelecionado =
-      this.emprestimoSelecionado?.id === emprestimo.id ? null : emprestimo;
-  }
-
-  statusLabel(emprestimo: Emprestimo): string {
-    return this.estaAtrasado(emprestimo) ? 'Atrasado' : 'Em andamento';
-  }
-
-  statusBadge(emprestimo: Emprestimo): 'danger' | 'success' {
-    return this.estaAtrasado(emprestimo) ? 'danger' : 'success';
-  }
-
-  podeRenovar(emprestimo: Emprestimo): boolean {
-    return emprestimo.status === 'ATIVO' && !this.estaAtrasado(emprestimo);
-  }
-
-  formatarData(data?: Date | string): string {
-    if (!data) return '—';
-    const dataISO = typeof data === 'string' ? data.slice(0, 10) : this.dataISO(data);
-    if (!dataISO) return '—';
-    return new Date(`${dataISO}T00:00:00`).toLocaleDateString('pt-BR');
-  }
-
-  renovar(): void {
-    const emprestimo = this.emprestimoSelecionado;
-    if (!emprestimo?.id || !this.podeRenovar(emprestimo) || this.salvando) return;
-
-    this.salvando = true;
-    this.emprestimoService.renovar(emprestimo.id).subscribe({
-      next: (atualizado) => {
-        this.atualizarEmprestimo(atualizado);
-        this.toastService.sucesso('Empréstimo renovado com sucesso.');
-        this.salvando = false;
-        this.cdr.markForCheck();
+  acoesDoEmprestimo(emprestimo: Emprestimo): AcaoMenu[] {
+    const ocupado = this.processandoId() !== null;
+    const atrasado = diasDeAtraso(emprestimo) > 0 || emprestimo.status === 'ATRASADO';
+    return [
+      { rotulo: 'Ver detalhes', icone: 'bi-eye', rota: ['/emprestimos', emprestimo.id] },
+      {
+        rotulo: 'Renovar',
+        icone: 'bi-arrow-repeat',
+        separadorAntes: true,
+        desabilitado: ocupado || atrasado,
+        dica: atrasado ? 'Empréstimos atrasados não podem ser renovados.' : undefined,
+        executar: () => void this.renovar(emprestimo),
       },
-      error: (error) => {
-        this.toastService.erro(error.error?.message ?? 'Não foi possível renovar o empréstimo.');
-        this.salvando = false;
-        this.cdr.markForCheck();
+      {
+        rotulo: 'Registrar devolução',
+        icone: 'bi-box-arrow-in-down',
+        desabilitado: ocupado,
+        executar: () => void this.devolver(emprestimo),
       },
-    });
+    ];
   }
 
-  devolver(): void {
-    const emprestimo = this.emprestimoSelecionado;
-    if (!emprestimo?.id || this.salvando) return;
+  async renovar(emprestimo: Emprestimo): Promise<void> {
+    this.processandoId.set(emprestimo.id ?? null);
+    const atualizado = await this.operacoes.renovar(emprestimo);
+    this.processandoId.set(null);
+    if (atualizado) {
+      this.emprestimos.update((lista) =>
+        lista.map((item) => (item.id === atualizado.id ? atualizado : item)),
+      );
+    }
+  }
 
-    this.salvando = true;
-    this.emprestimoService.devolver(emprestimo.id).subscribe({
-      next: (atualizado) => {
-        this.emprestimos = this.emprestimos.filter((item) => item.id !== atualizado.id);
-        this.emprestimoSelecionado = null;
-        this.toastService.sucesso('Material devolvido com sucesso.');
-        this.salvando = false;
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        this.toastService.erro(error.error?.message ?? 'Não foi possível registrar a devolução.');
-        this.salvando = false;
-        this.cdr.markForCheck();
-      },
-    });
+  async devolver(emprestimo: Emprestimo): Promise<void> {
+    this.processandoId.set(emprestimo.id ?? null);
+    const atualizado = await this.operacoes.devolver(emprestimo);
+    this.processandoId.set(null);
+    if (atualizado) {
+      this.emprestimos.update((lista) => lista.filter((item) => item.id !== atualizado.id));
+    }
   }
 
   carregarEmprestimos(): void {
@@ -132,7 +148,7 @@ export class RenovarDevolverMaterial implements OnInit {
     this.erroCarregamento = '';
     this.emprestimoService.listarVisiveis(true).subscribe({
       next: (emprestimos) => {
-        this.emprestimos = emprestimos.filter((emprestimo) => emprestimo.status !== 'DEVOLVIDO');
+        this.emprestimos.set(emprestimos.filter((emprestimo) => emprestimo.status !== 'DEVOLVIDO'));
         this.carregando = false;
         this.cdr.markForCheck();
       },
@@ -142,23 +158,5 @@ export class RenovarDevolverMaterial implements OnInit {
         this.cdr.markForCheck();
       },
     });
-  }
-
-  private atualizarEmprestimo(atualizado: Emprestimo): void {
-    this.emprestimos = this.emprestimos.map((item) => item.id === atualizado.id ? atualizado : item);
-    this.emprestimoSelecionado = atualizado;
-  }
-
-  private estaAtrasado(emprestimo: Emprestimo): boolean {
-    if (emprestimo.status === 'ATRASADO') return true;
-    if (emprestimo.status !== 'ATIVO' || !emprestimo.dataDevolucaoPrevista) return false;
-    return String(emprestimo.dataDevolucaoPrevista).slice(0, 10) < this.dataISO(new Date());
-  }
-
-  private dataISO(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
   }
 }

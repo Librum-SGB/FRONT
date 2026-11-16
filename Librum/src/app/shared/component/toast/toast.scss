@@ -2,46 +2,54 @@
   position: fixed;
   top: 24px;
   right: 24px;
-  min-width: 280px;
-  max-width: 360px;
   z-index: 2000;
-  animation: slideIn 3s ease-in-out;
+  width: min(22rem, calc(100vw - 48px));
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color-translucent);
+  border-left-width: 4px; // a cor da faixa vem do tipo da mensagem (no template)
+  border-radius: 0.75rem;
+  background-color: var(--bs-body-bg);
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.15);
+  animation: entrar 0.25s ease-out;
+}
 
-  &.sucesso {
-    border-color: #10b98160;
-  }
+.toast-icone {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
 
-  &.erro {
-    border-color: #ef444460;
-  }
+.btn-close-sm {
+  width: 0.6rem;
+  height: 0.6rem;
+  background-size: 0.6rem;
+}
 
-  &.aviso {
-    border-color: #92400e60;
+.toast-tempo {
+  height: 3px;
+  opacity: 0.6;
+  transform-origin: left;
+  animation: tempo-restante linear forwards;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
   }
 }
 
-.icone-toast {
-  font-size: 1.25rem;
+@keyframes tempo-restante {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
-@keyframes slideIn {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-
-  15% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-
-  85% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
+@media (prefers-reduced-motion: reduce) {
+  .toast-box,
+  .toast-tempo {
+    animation: none;
   }
 }

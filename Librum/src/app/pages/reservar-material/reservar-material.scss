@@ -1,0 +1,109 @@
+// ---------- Indicador de etapas (centralizado) ----------
+.etapas {
+  display: flex;
+  max-width: 44rem;
+  margin: 0 auto 2rem;
+  padding: 0;
+}
+
+.etapa {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+
+  // linha que liga o círculo desta etapa ao da próxima
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 1.25rem;
+    left: calc(50% + 1.75rem);
+    right: calc(-50% + 1.75rem);
+    height: 2px;
+    background-color: var(--bs-border-color);
+  }
+
+  &.etapa--concluida:not(:last-child)::after {
+    background-color: var(--bs-primary);
+  }
+}
+
+.etapa__botao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  color: inherit;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.etapa__numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid var(--bs-border-color);
+  border-radius: 50%;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-secondary-color);
+  font-weight: 600;
+}
+
+.etapa__texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.etapa__rotulo {
+  font-weight: 600;
+}
+
+.etapa__resumo {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--bs-secondary-color);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.etapa--ativa .etapa__numero {
+  border-color: var(--bs-primary);
+  background-color: var(--bs-primary);
+  color: #fff;
+}
+
+.etapa--concluida .etapa__numero {
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+}
+
+// Em telas pequenas mostra só o número e o nome da etapa
+@media (max-width: 575.98px) {
+  .etapa__resumo {
+    display: none;
+  }
+}
+
+// ---------- Itens escolhidos ----------
+.chip {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+}
+
+.btn-close-sm {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-size: 0.5rem;
+}

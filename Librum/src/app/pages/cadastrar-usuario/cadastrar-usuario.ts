@@ -10,6 +10,7 @@ import { IMaskDirective } from 'angular-imask';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 import { FormUtils } from '../../utils/FormUtil';
+import { dataISO } from '../../utils/data.util';
 import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 
 @Component({
@@ -20,7 +21,7 @@ import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
 })
 export class CadastrarUsuario implements OnInit {
   protected readonly Mask = MaskConstants;
-  readonly hoje = this.dataISO(new Date());
+  readonly hoje = dataISO(new Date());
 
   formUsuario!: FormGroup;
   enviado = false;
@@ -149,12 +150,5 @@ export class CadastrarUsuario implements OnInit {
   cancelar(): void {
     this.toastService.aviso('Cadastro de usuário cancelado.');
     this.router.navigate(['/dashboard']);
-  }
-
-  private dataISO(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
   }
 }

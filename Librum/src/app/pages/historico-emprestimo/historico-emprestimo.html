@@ -29,75 +29,42 @@
       </div>
     </div>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <label for="dataInicial" class="form-label">Data inicial</label>
-        <input type="date" id="dataInicial" class="form-control"
-          [(ngModel)]="dataInicial">
-      </div>
-      <div class="col-md-6">
-        <label for="dataFinal" class="form-label">Data final</label>
-        <input type="date" id="dataFinal" class="form-control"
-          [(ngModel)]="dataFinal">
-      </div>
-      <div class="col-md-4">
-        <label for="filtroStatus" class="form-label">Status</label>
-        <select id="filtroStatus" class="form-select"
-          [(ngModel)]="statusSelecionado">
-          <option value="TODOS">Todos os status</option>
-          <option [value]="statusEmprestimo.ATIVO">Em andamento</option>
-          <option [value]="statusEmprestimo.DEVOLVIDO">Devolvido</option>
-          <option [value]="statusEmprestimo.ATRASADO">Atrasado</option>
-          <option [value]="statusEmprestimo.BLOQUEADO">Bloqueado</option>
-        </select>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Buscar no histórico</label>
-        <app-input-busca
-          [showSelect]="false"
-          [buscarAoDigitar]="true"
-          placeholder="Buscar por ID, usuário ou material..."
-          (buscar)="aplicarBusca($event)">
-        </app-input-busca>
-      </div>
-    </div>
-
-    @if (dataInicial && dataFinal && dataInicial > dataFinal) {
-      <div class="alert alert-warning" role="alert">
-        A data inicial não pode ser posterior à data final.
-      </div>
-    }
+    <lbr-filtros [config]="configFiltro()" [(valores)]="filtros" />
 
     <lbr-tabela
-      [dados]="listaFiltrada"
+      [dados]="listaFiltrada()"
       [carregando]="carregando"
       mensagemCarregando="Carregando histórico de empréstimos..."
       iconeVazio="bi-journal-check"
       rotulo="Paginação do histórico de empréstimos"
-      [mensagemVazio]="busca.trim() || dataInicial || dataFinal || statusSelecionado !== 'TODOS'
+      [mensagemVazio]="temFiltroAtivo(filtros())
         ? 'Nenhum empréstimo encontrado para os filtros selecionados.'
         : 'Ainda não há empréstimos no histórico.'">
       <ng-template lbrTabelaCabecalho>
-        <th scope="col">ID</th>
-        <th scope="col">Data do empréstimo</th>
-        <th scope="col">Usuário</th>
-        <th scope="col">Material</th>
-        <th scope="col">Devolução prevista</th>
-        <th scope="col">Devolução realizada</th>
-        <th scope="col">Status</th>
+        <th scope="col" lbrOrdenar="id">ID</th>
+        <th scope="col" lbrOrdenar="dataSaida">Data do empréstimo</th>
+        <th scope="col" lbrOrdenar="usuarioNome">Usuário</th>
+        <th scope="col" lbrOrdenar="materialTitulo">Material</th>
+        <th scope="col" lbrOrdenar="dataDevolucaoPrevista">Devolução prevista</th>
+        <th scope="col" lbrOrdenar="dataDevolucaoEfetivada">Devolução realizada</th>
+        <th scope="col" [lbrOrdenar]="porStatus">Status</th>
+        <th scope="col" class="text-end">Ações</th>
       </ng-template>
-      <ng-template [lbrTabelaLinha]="listaFiltrada" let-emprestimo>
+      <ng-template [lbrTabelaLinha]="listaFiltrada()" let-emprestimo>
         <tr>
           <th scope="row">#{{ emprestimo.id }}</th>
           <td>{{ formatarDataEmprestimo(emprestimo.dataSaida) }}</td>
-          <td>{{ emprestimo.usuarioNome || 'Usuário' }}</td>
-          <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
+          <td><lbr-link-entidade tipo="usuario" [id]="emprestimo.usuarioId" [texto]="emprestimo.usuarioNome" /></td>
+          <td><lbr-link-entidade tipo="material" [id]="emprestimo.materialId" [texto]="emprestimo.materialTitulo" /></td>
           <td>{{ formatarDataEmprestimo(emprestimo.dataDevolucaoPrevista) }}</td>
           <td>{{ formatarDataEmprestimo(emprestimo.dataDevolucaoEfetivada) }}</td>
           <td>
             <span class="badge rounded-pill" [ngClass]="getBadge(getStatus(emprestimo))">
               {{ rotuloStatus(getStatus(emprestimo)) }}
             </span>
+          </td>
+          <td class="text-end">
+            <lbr-acoes [acoes]="acoesDoEmprestimo(emprestimo)" [descricao]="'empréstimo #' + emprestimo.id" />
           </td>
         </tr>
       </ng-template>

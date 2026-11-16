@@ -19,4 +19,16 @@ export class AutorService {
   create(autor: AutorRequest): Observable<AutorResponse> {
     return this.http.post<AutorResponse>(this.apiUrl, autor);
   }
+
+  findById(id: number): Observable<AutorResponse> {
+    return this.http.get<AutorResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  update(id: number, autor: AutorRequest): Observable<AutorResponse> {
+    return this.http.put<AutorResponse>(`${this.apiUrl}/${id}`, autor);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

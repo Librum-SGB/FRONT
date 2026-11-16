@@ -1,0 +1,147 @@
+<app-corpo-padrao>
+  <div class="titulo">Editar Material</div>
+
+  <div class="corpo">
+    <lbr-trilha atual="Editar" [padrao]="{ rotulo: material()?.titulo ?? 'Material', rota: ['/materiais', id] }" />
+
+    @if (carregando()) {
+      <p class="text-center text-secondary py-5 mb-0">Carregando dados do material...</p>
+    } @else if (erroCarregamento()) {
+      <lbr-aviso [mensagem]="erroCarregamento()">
+        <a lbrButton variant="outros" [routerLink]="rotaMateriais">Voltar para materiais</a>
+      </lbr-aviso>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+        <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
+        @if (material(); as material) {
+          <p class="text-secondary d-flex flex-wrap align-items-center gap-2">
+            {{ material.codigo }}
+            <lbr-badge [variant]="material.tipoVariant">{{ material.tipoLabel }}</lbr-badge>
+            · Os campos marcados com * são obrigatórios.
+          </p>
+        }
+
+        <!-- IDENTIFICAÇÃO -->
+        <div class="row g-3 mb-3">
+          <div [class]="tipo() === 'LIVRO' ? 'col-md-6' : 'col-12'">
+            <label for="titulo" class="form-label">{{ tipo() === 'OUTRO' ? 'Nome' : 'Título' }} *</label>
+            <input id="titulo" type="text" class="form-control" formControlName="titulo"
+              [class.is-invalid]="isInvalido('titulo')">
+            <div class="invalid-feedback">{{ erro('titulo') }}</div>
+          </div>
+          @if (tipo() === 'LIVRO') {
+            <div class="col-md-6">
+              <label for="subtitulo" class="form-label">Subtítulo</label>
+              <input id="subtitulo" type="text" class="form-control" formControlName="subtitulo">
+            </div>
+          }
+        </div>
+
+        <!-- AUTORIA E PUBLICAÇÃO -->
+        <div class="row g-3 mb-3">
+          @if (tipo() !== 'PERIODICO') {
+            <div class="col-md-6">
+              <label class="form-label">Autor {{ tipo() === 'LIVRO' ? '*' : '' }}</label>
+              <app-select-pesquisavel [itens]="referencias().autores" formControlName="autorId" [permitirCriar]="false"
+                [invalido]="isInvalido('autorId')" placeholder="Digite para buscar autor...">
+              </app-select-pesquisavel>
+              @if (isInvalido('autorId')) {
+                <div class="invalid-feedback d-block">{{ erro('autorId') }}</div>
+              }
+            </div>
+          }
+          <div class="col-md-6">
+            <label class="form-label">Editora {{ tipo() === 'OUTRO' ? '' : '*' }}</label>
+            <app-select-pesquisavel [itens]="referencias().editoras" formControlName="editoraId" [permitirCriar]="false"
+              [invalido]="isInvalido('editoraId')" placeholder="Digite para buscar editora...">
+            </app-select-pesquisavel>
+            @if (isInvalido('editoraId')) {
+              <div class="invalid-feedback d-block">{{ erro('editoraId') }}</div>
+            }
+          </div>
+        </div>
+
+        @if (tipo() !== 'OUTRO') {
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label for="anoPublicacao" class="form-label">Ano de Publicação *</label>
+              <input id="anoPublicacao" type="number" class="form-control" formControlName="anoPublicacao"
+                min="1000" [max]="anoAtual" [class.is-invalid]="isInvalido('anoPublicacao')">
+              <div class="invalid-feedback">{{ erro('anoPublicacao') }}</div>
+            </div>
+            <div class="col-md-4">
+              @if (tipo() === 'LIVRO') {
+                <label for="isbn" class="form-label">ISBN *</label>
+                <input id="isbn" type="text" class="form-control" formControlName="isbn"
+                  [class.is-invalid]="isInvalido('isbn')">
+                <div class="invalid-feedback">{{ erro('isbn') }}</div>
+              } @else {
+                <label for="issn" class="form-label">ISSN *</label>
+                <input id="issn" type="text" class="form-control" formControlName="issn"
+                  [class.is-invalid]="isInvalido('issn')">
+                <div class="invalid-feedback">{{ erro('issn') }}</div>
+              }
+            </div>
+            <div class="col-md-4">
+              <label for="edicao" class="form-label">
+                {{ tipo() === 'PERIODICO' ? 'Edição/Número *' : 'Edição' }}
+              </label>
+              <input id="edicao" type="number" class="form-control" formControlName="edicao" min="1"
+                [class.is-invalid]="isInvalido('edicao')">
+              <div class="invalid-feedback">{{ erro('edicao') }}</div>
+            </div>
+          </div>
+        }
+
+        <!-- CONTEÚDO -->
+        @if (tipo() === 'LIVRO') {
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Gênero</label>
+              <app-select-pesquisavel [itens]="referencias().generos" [multiplo]="true" formControlName="generoIds"
+                [permitirCriar]="false" placeholder="Digite para buscar gênero...">
+              </app-select-pesquisavel>
+            </div>
+            <div class="col-md-6">
+              <label for="quantidadePaginas" class="form-label">Quantidade de Páginas</label>
+              <input id="quantidadePaginas" type="number" class="form-control" min="1"
+                formControlName="quantidadePaginas" [class.is-invalid]="isInvalido('quantidadePaginas')">
+              <div class="invalid-feedback">{{ erro('quantidadePaginas') }}</div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="sinopse" class="form-label">Sinopse</label>
+            <textarea id="sinopse" class="form-control" rows="3" formControlName="sinopse"></textarea>
+          </div>
+        } @else {
+          <div class="mb-3">
+            <label for="tema" class="form-label">{{ tipo() === 'OUTRO' ? 'Tipo *' : 'Tema' }}</label>
+            <input id="tema" type="text" class="form-control" formControlName="tema"
+              [class.is-invalid]="isInvalido('tema')">
+            <div class="invalid-feedback">{{ erro('tema') }}</div>
+          </div>
+          <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição</label>
+            <textarea id="descricao" class="form-control" rows="3" formControlName="descricao"></textarea>
+          </div>
+          @if (tipo() === 'OUTRO') {
+            <div class="mb-4">
+              <label for="observacao" class="form-label">Observação</label>
+              <textarea id="observacao" class="form-control" rows="2" formControlName="observacao"></textarea>
+            </div>
+          }
+        }
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" lbrButton variant="cancelar" [lbrVoltar]="['/materiais', id]" [disabled]="salvando()">
+            Cancelar
+          </button>
+          <button type="submit" lbrButton variant="cadastrar" [disabled]="salvando()">
+            {{ salvando() ? 'Salvando...' : 'Salvar alterações' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</app-corpo-padrao>

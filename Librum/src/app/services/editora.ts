@@ -19,4 +19,16 @@ export class EditoraService {
   create(editora: EditoraRequest): Observable<EditoraResponse> {
     return this.http.post<EditoraResponse>(this.apiUrl, editora);
   }
+
+  findById(id: number): Observable<EditoraResponse> {
+    return this.http.get<EditoraResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  update(id: number, editora: EditoraRequest): Observable<EditoraResponse> {
+    return this.http.put<EditoraResponse>(`${this.apiUrl}/${id}`, editora);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

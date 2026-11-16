@@ -6,6 +6,7 @@ export interface Emprestimo {
   usuarioId: number;
   usuarioNome?: string;
   exemplarId: number;
+  materialId?: number;
   materialTitulo?: string;
   gestorId?: number;
   usuarioResponsavelId?: number;
@@ -27,4 +28,17 @@ export interface Emprestimo {
 
   dataCriacao?: Date | string;
   dataUltimaAtualizacao?: Date | string;
+}
+
+/** Simulação da renovação devolvida pelo backend (GET /emprestimos/{id}/renovacao). */
+export interface RenovacaoPrevia {
+  emprestimoId: number;
+  permitida: boolean;
+  motivo?: string;
+  dataDevolucaoAtual: string;
+  novaDataDevolucao?: string;
+  renovacoesRealizadas: number;
+  limiteRenovacoes?: number;
+  /** Quando permitida: quantas restam depois desta. Senão: quantas restam agora. */
+  renovacoesRestantes?: number;
 }

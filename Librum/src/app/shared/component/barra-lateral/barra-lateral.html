@@ -52,30 +52,34 @@
 
           <!-- FUNCIONÁRIO -->
           @if (authService.temPermissao(Permissao.EDITAR_USUARIO)) {
-          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Funcionário">
+          <a routerLink="/funcionarios" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Funcionário" (click)="aoNavegar()">
             <i class="bi bi-person-badge icon-funcionario"></i>
             <span class="menu-label ms-2">Funcionário</span>
-          </div>
+          </a>
           }
 
           @if (authService.temPermissao(Permissao.EDITAR_MATERIAL)) {
           <!-- AUTOR -->
-          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Autor">
+          <a routerLink="/autores" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Autor" (click)="aoNavegar()">
             <i class="bi bi-person-lines-fill icon-autor"></i>
             <span class="menu-label ms-2">Autor</span>
-          </div>
+          </a>
 
           <!-- EDITORA -->
-          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Editora">
+          <a routerLink="/editoras" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Editora" (click)="aoNavegar()">
             <i class="bi bi-building icon-editora"></i>
             <span class="menu-label ms-2">Editora</span>
-          </div>
+          </a>
 
           <!-- GÊNERO -->
-          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Gênero">
+          <a routerLink="/generos" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Gênero" (click)="aoNavegar()">
             <i class="bi bi-tags icon-genero"></i>
             <span class="menu-label ms-2">Gênero</span>
-          </div>
+          </a>
           }
 
         </nav>
@@ -105,9 +109,9 @@
 
           <!-- EMPRÉSTIMOS (equipe) -->
           <a routerLink="/reservar-material" routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded" title="Realizar empréstimo" (click)="aoNavegar()">
+            class="nav-link menu-item d-flex align-items-center rounded" title="Realizar Empréstimos" (click)="aoNavegar()">
             <i class="bi bi-journal-check icon-green"></i>
-            <span class="menu-label ms-2">Realizar empréstimo</span>
+            <span class="menu-label ms-2">Realizar Empréstimos</span>
           </a>
 
           <!-- RENOVAÇÕES / DEVOLUÇÕES (funcionários) -->
@@ -122,10 +126,10 @@
 
           <!-- HISTÓRICO (todos; usuário vê só o dele) -->
           <a routerLink="/historicoEmprestimo" routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded" title="Histórico Usuário"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Histórico Empréstimos"
             (click)="aoNavegar()">
             <i class="bi bi-clock-history icon-blue"></i>
-            <span class="menu-label ms-2">Histórico Usuário</span>
+            <span class="menu-label ms-2">Histórico Empréstimos</span>
           </a>
 
         </nav>

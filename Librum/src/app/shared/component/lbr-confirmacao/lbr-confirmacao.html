@@ -1,0 +1,35 @@
+@if (servico.pedidoAtual(); as pedido) {
+  <app-modal [isOpen]="true" [title]="pedido.titulo" [icone]="pedido.icone ?? ''" [tom]="pedido.tom ?? 'primary'"
+    [showDefaultFooter]="false" (isOpenChange)="servico.responder(false)">
+    @if (pedido.mensagem) {
+      <p class="text-secondary mb-3">{{ pedido.mensagem }}</p>
+    }
+
+    @if (pedido.detalhes?.length) {
+      <dl class="confirmacao-detalhes mb-0">
+        @for (detalhe of pedido.detalhes; track detalhe.rotulo) {
+          <div class="confirmacao-detalhes__linha">
+            <dt class="fw-normal text-secondary">{{ detalhe.rotulo }}</dt>
+            <dd class="mb-0 text-end" [class.fw-semibold]="detalhe.destaque">{{ detalhe.valor }}</dd>
+          </div>
+        }
+      </dl>
+    }
+
+    @if (pedido.aviso) {
+      <p class="small text-{{ pedido.tom === 'danger' ? 'danger' : 'warning-emphasis' }} mt-3 mb-0">
+        <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ pedido.aviso }}
+      </p>
+    }
+
+    <div modal-footer class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="servico.responder(false)">
+        {{ pedido.textoCancelar ?? 'Cancelar' }}
+      </button>
+      <button #botaoConfirmar type="button" class="btn btn-{{ pedido.tom ?? 'primary' }}"
+        (click)="servico.responder(true)">
+        {{ pedido.textoConfirmar ?? 'Confirmar' }}
+      </button>
+    </div>
+  </app-modal>
+}

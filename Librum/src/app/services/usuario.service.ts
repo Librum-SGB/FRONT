@@ -1,7 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, expand, reduce } from 'rxjs';
+import { EMPTY, Observable, expand, map, reduce } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { FuncaoUsuario } from '../enum/funcaoUsuario.enum';
 import { Usuario } from '../models/usuario.model';
 
 interface PaginaUsuarios {
@@ -24,6 +25,9 @@ export interface UsuarioCadastro {
   cidade?: string;
   estado?: string;
   cep?: string;
+  /** Funcionários: função (sem ela, o backend cadastra como leitor) e matrícula. */
+  funcao?: string;
+  matriculaFuncionario?: string;
 }
 
 export interface UsuarioAtualizacao {
@@ -40,6 +44,8 @@ export interface UsuarioAtualizacao {
   estado?: string;
   cep?: string;
   limiteLivros?: number;
+  /** Funcionários: reenviar a matrícula atual (o backend apaga o que não for enviado). */
+  matriculaFuncionario?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -52,12 +58,23 @@ export class UsuarioService {
     return this.http.post<Usuario>(this.apiUrl, usuario);
   }
 
-  listarAlunos(): Observable<Usuario[]> {
-    const params = new HttpParams()
-      .set('funcao', 'USUARIO')
-      .set('ativo', 'true')
-      .set('size', '100');
+  /** Leitores (função USUARIO). Por padrão só os ativos; `incluirInativos` traz todos. */
+  listarAlunos(incluirInativos = false): Observable<Usuario[]> {
+    return this.listarTodasAsPaginas(
+      new HttpParams().set('funcao', 'USUARIO').set('ativo', incluirInativos ? 'todos' : 'true'),
+    );
+  }
 
+  /** Funcionários (todas as funções exceto leitor), incluindo inativos. */
+  listarFuncionarios(): Observable<Usuario[]> {
+    return this.listarTodasAsPaginas(new HttpParams().set('ativo', 'todos')).pipe(
+      map((usuarios) => usuarios.filter((u) => u.funcao && u.funcao !== FuncaoUsuario.USUARIO)),
+    );
+  }
+
+  /** O backend devolve os usuários paginados; busca página por página e junta tudo. */
+  private listarTodasAsPaginas(filtros: HttpParams): Observable<Usuario[]> {
+    const params = filtros.set('size', '100');
     const carregarPagina = (numero: number) =>
       this.http.get<PaginaUsuarios>(this.apiUrl, {
         params: params.set('page', numero),
@@ -73,8 +90,21 @@ export class UsuarioService {
     );
   }
 
+  buscarPorId(id: number): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
+  }
+
   atualizar(id: number, usuario: UsuarioAtualizacao): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/${id}`, usuario);
+  }
+
+  atualizarBloqueio(id: number, bloqueado: boolean): Observable<Usuario> {
+    return this.http.patch<Usuario>(`${this.apiUrl}/${id}/bloqueio`, { bloqueado });
+  }
+
+  /** Inativa (a conta deixa de entrar no sistema) ou reativa o usuário. */
+  atualizarAtivacao(id: number, ativo: boolean): Observable<Usuario> {
+    return this.http.patch<Usuario>(`${this.apiUrl}/${id}/ativacao`, { ativo });
   }
 
   excluir(id: number): Observable<void> {

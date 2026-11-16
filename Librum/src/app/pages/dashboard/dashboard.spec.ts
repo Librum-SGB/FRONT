@@ -4,6 +4,7 @@ import { Dashboard } from './dashboard';
 import { ConfiguracaoService } from '../../shared/services/configuracao.service';
 import { TarefaService } from '../../shared/services/tarefas.service';
 import { DashboardService } from '../../services/dashboard.service';
+import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { Router } from '@angular/router';
 
@@ -44,6 +45,8 @@ describe('Dashboard', () => {
           },
         },
         { provide: ToastService, useValue: { erro: () => {} } },
+        // sem permissão: os cards ficam só informativos (sem link)
+        { provide: AuthService, useValue: { temPermissao: () => false } },
         { provide: Router, useValue: { navigate: () => Promise.resolve(true) } },
       ],
     }).compileComponents();

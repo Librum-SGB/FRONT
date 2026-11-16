@@ -2,22 +2,26 @@
   <main class="corpo">
     <section class="row mt-3 row-gap-2">
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Alunos Cadastrados" [valor]="resumo.alunosCadastrados.toString()" classe="bg-verde">
+        <app-card-informativo titulo="Alunos Cadastrados" [valor]="resumo.alunosCadastrados.toString()" classe="bg-verde"
+          [link]="linkSePermitido('/editar-excluir-usuario', Permissao.VER_USUARIOS)">
           <i class="bi bi-people-fill fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Livros no acervo" [valor]="resumo.livrosNoAcervo.toString()" classe="bg-azul-escuro">
+        <app-card-informativo titulo="Livros no acervo" [valor]="resumo.livrosNoAcervo.toString()" classe="bg-azul-escuro"
+          [link]="linkSePermitido('/editarExcluirMaterial', Permissao.EDITAR_MATERIAL)">
           <i class="bi bi-book fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="Empréstimos ativos" [valor]="resumo.emprestimosAtivos.toString()" classe="bg-azul-claro">
+        <app-card-informativo titulo="Empréstimos ativos" [valor]="resumo.emprestimosAtivos.toString()" classe="bg-azul-claro"
+          [link]="linkSePermitido('/renovar-devolver', Permissao.GERENCIAR_EMPRESTIMOS)">
           <i class="bi bi-arrow-clockwise fs-1"></i>
         </app-card-informativo>
       </div>
       <div class="col-sm-6 col-md-3">
-        <app-card-informativo titulo="A vencer (7 dias)" [valor]="resumo.emprestimosAVencer.toString()" classe="bg-laranja">
+        <app-card-informativo titulo="A vencer (7 dias)" [valor]="resumo.emprestimosAVencer.toString()" classe="bg-laranja"
+          [link]="linkSePermitido('/renovar-devolver', Permissao.GERENCIAR_EMPRESTIMOS)" [queryParams]="filtroAVencer">
           <i class="bi bi-exclamation-circle fs-1"></i>
         </app-card-informativo>
       </div>
@@ -58,7 +62,7 @@
       <div class="bg-body rounded-3 dashboard py-3">
         <div class="row">
           <div class="col-12">
-            <h4>Status de Empréstimo</h4>
+            <h4>Empréstimos em andamento</h4>
           </div>
         </div>
         <div class="row">
@@ -81,15 +85,15 @@
             iconeVazio="bi-journal-check"
             rotulo="Paginação dos empréstimos ativos">
             <ng-template lbrTabelaCabecalho>
-              <th scope="col">Aluno</th>
-              <th scope="col">Material</th>
-              <th scope="col">Devolução prevista</th>
-              <th scope="col">Status</th>
+              <th scope="col" lbrOrdenar="usuarioNome">Aluno</th>
+              <th scope="col" lbrOrdenar="materialTitulo">Material</th>
+              <th scope="col" lbrOrdenar="dataDevolucaoPrevista">Devolução prevista</th>
+              <th scope="col" [lbrOrdenar]="porStatus">Status</th>
             </ng-template>
             <ng-template [lbrTabelaLinha]="resumo.emprestimos" let-emprestimo>
               <tr>
-                <th scope="row">{{ emprestimo.usuarioNome || 'Usuário' }}</th>
-                <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
+                <th scope="row"><lbr-link-entidade tipo="usuario" [id]="emprestimo.usuarioId" [texto]="emprestimo.usuarioNome" /></th>
+                <td><lbr-link-entidade tipo="material" [id]="emprestimo.materialId" [texto]="emprestimo.materialTitulo" /></td>
                 <td>{{ formatarData(emprestimo.dataDevolucaoPrevista) }}</td>
                 <td>
                   <app-badge [status]="getBadgeStatus(emprestimo)">

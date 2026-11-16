@@ -1,25 +1,33 @@
-<div class="modal fade show" [ngClass]="isOpen ? 'd-block' : 'd-none'" tabindex="-1">
-  <div class="modal-dialog" [ngClass]="'modal-' + size">
-    <div class="modal-content">
+@if (isOpen) {
+  <div class="modal-backdrop show lbr-modal-fundo"></div>
 
-      <div class="modal-header">
-        <h5 class="modal-title">{{ title }}</h5>
-        <button type="button" class="btn-close" (click)="close()"></button>
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" [attr.aria-labelledby]="idTitulo"
+    (click)="clicouNoFundo($event)">
+    <div class="modal-dialog modal-dialog-centered lbr-modal" [ngClass]="'modal-' + size">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title d-flex align-items-center gap-2" [id]="idTitulo">
+            @if (icone) {
+              <i class="bi {{ icone }} text-{{ tom }}" aria-hidden="true"></i>
+            }
+            {{ title }}
+          </h5>
+          <button type="button" class="btn-close" aria-label="Fechar" (click)="close()"></button>
+        </div>
+
+        <div class="modal-body">
+          <ng-content></ng-content>
+        </div>
+
+        @if (showDefaultFooter) {
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" (click)="close()">Fechar</button>
+          </div>
+        }
+        <ng-content select="[modal-footer]"></ng-content>
+
       </div>
-
-      <div class="modal-body">
-        <ng-content></ng-content>
-      </div>
-
-      @if (showDefaultFooter) {
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" (click)="close()">Fechar</button>
-      </div>
-      }
-      <ng-content select="[modal-footer]"></ng-content>
-
     </div>
   </div>
-</div>
-
-<div [ngClass]=" isOpen? 'modal-backdrop fade show' : 'd-none'"></div>
+}
