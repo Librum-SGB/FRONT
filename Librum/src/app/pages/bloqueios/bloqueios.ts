@@ -4,10 +4,22 @@ import { FormsModule } from '@angular/forms';
 import { Emprestimo } from '../../models/emprestimo.model';
 import { StatusEmprestimo } from '../../enum/status.enum';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import {
+  LbrTabela,
+  LbrTabelaCabecalho,
+  LbrTabelaLinha,
+} from '../../shared/component/lbr-tabela/lbr-tabela';
 
 @Component({
   selector: 'app-bloqueios',
-  imports: [CommonModule, FormsModule, CorpoPadrao],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CorpoPadrao,
+    LbrTabela,
+    LbrTabelaCabecalho,
+    LbrTabelaLinha,
+  ],
   templateUrl: './bloqueios.html',
   styleUrl: './bloqueios.scss',
 })

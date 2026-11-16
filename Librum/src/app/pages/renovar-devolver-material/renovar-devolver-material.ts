@@ -5,21 +5,31 @@ import { EmprestimoService } from '../../services/emprestimo.service';
 import { Badge } from '../../shared/component/badge/badge';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
 import { InputBusca } from '../../shared/component/input-busca/input-busca';
+import {
+  LbrTabela,
+  LbrTabelaCabecalho,
+  LbrTabelaLinha,
+} from '../../shared/component/lbr-tabela/lbr-tabela';
 import { ToastService } from '../../shared/services/toast.service';
-
-const ITENS_POR_PAGINA = 10;
 
 @Component({
   selector: 'app-renovar-devolver-material',
   standalone: true,
-  imports: [CommonModule, Badge, CorpoPadrao, InputBusca],
+  imports: [
+    CommonModule,
+    Badge,
+    CorpoPadrao,
+    InputBusca,
+    LbrTabela,
+    LbrTabelaCabecalho,
+    LbrTabelaLinha,
+  ],
   templateUrl: './renovar-devolver-material.html',
 })
 export class RenovarDevolverMaterial implements OnInit {
   emprestimos: Emprestimo[] = [];
   emprestimoSelecionado: Emprestimo | null = null;
   busca = '';
-  paginaAtual = 1;
   carregando = true;
   salvando = false;
   erroCarregamento = '';
@@ -48,45 +58,8 @@ export class RenovarDevolverMaterial implements OnInit {
     );
   }
 
-  get totalPaginas(): number {
-    return Math.max(1, Math.ceil(this.emprestimosFiltrados.length / ITENS_POR_PAGINA));
-  }
-
-  get paginaEfetiva(): number {
-    return Math.min(this.paginaAtual, this.totalPaginas);
-  }
-
-  get emprestimosPagina(): Emprestimo[] {
-    const inicio = (this.paginaEfetiva - 1) * ITENS_POR_PAGINA;
-    return this.emprestimosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA);
-  }
-
-  get inicioExibicao(): number {
-    return this.emprestimosFiltrados.length === 0 ? 0 : (this.paginaEfetiva - 1) * ITENS_POR_PAGINA + 1;
-  }
-
-  get fimExibicao(): number {
-    return Math.min(this.paginaEfetiva * ITENS_POR_PAGINA, this.emprestimosFiltrados.length);
-  }
-
-  get paginasVisiveis(): number[] {
-    const total = this.totalPaginas;
-    const atual = this.paginaEfetiva;
-    const janela = 5;
-    let inicio = Math.max(1, atual - Math.floor(janela / 2));
-    const fim = Math.min(total, inicio + janela - 1);
-    inicio = Math.max(1, fim - janela + 1);
-    return Array.from({ length: fim - inicio + 1 }, (_, index) => inicio + index);
-  }
-
   aplicarBusca(busca: { texto: string; filtro: string }): void {
     this.busca = busca.texto;
-    this.paginaAtual = 1;
-  }
-
-  irParaPagina(pagina: number): void {
-    if (pagina < 1 || pagina > this.totalPaginas) return;
-    this.paginaAtual = pagina;
   }
 
   selecionar(emprestimo: Emprestimo): void {
@@ -142,7 +115,6 @@ export class RenovarDevolverMaterial implements OnInit {
       next: (atualizado) => {
         this.emprestimos = this.emprestimos.filter((item) => item.id !== atualizado.id);
         this.emprestimoSelecionado = null;
-        if (this.paginaAtual > this.totalPaginas) this.paginaAtual = this.totalPaginas;
         this.toastService.sucesso('Material devolvido com sucesso.');
         this.salvando = false;
         this.cdr.markForCheck();

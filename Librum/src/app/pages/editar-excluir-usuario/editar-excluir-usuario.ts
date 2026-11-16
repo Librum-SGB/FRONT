@@ -20,10 +20,13 @@ import { UsuarioAtualizacao, UsuarioService } from '../../services/usuario.servi
 import { AuthService } from '../../services/auth.service';
 import { Permissao } from '../../enum/permissoes.enum';
 import { Busca } from '../../shared/component/input-busca/busca.interface';
+import {
+  LbrTabela,
+  LbrTabelaCabecalho,
+  LbrTabelaLinha,
+} from '../../shared/component/lbr-tabela/lbr-tabela';
 
 declare var bootstrap: any;
-
-const ITENS_POR_PAGINA = 10;
 
 @Component({
   selector: 'app-editar-excluir-usuario',
@@ -37,6 +40,9 @@ const ITENS_POR_PAGINA = 10;
     Badge,
     ReactiveFormsModule,
     AlertaErros,
+    LbrTabela,
+    LbrTabelaCabecalho,
+    LbrTabelaLinha,
   ],
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
@@ -50,7 +56,6 @@ export class EditarExcluirUsuario implements OnInit {
   usuarios: Usuario[] = [];
   carregando = true;
   salvando = false;
-  paginaAtual = 1;
 
   formUsuario: FormGroup;
   enviado = false;
@@ -126,7 +131,6 @@ export class EditarExcluirUsuario implements OnInit {
   pesquisarUsuario(busca: Busca): void {
     this.busca = busca.texto.trim();
     this.filtro = busca.filtro;
-    this.paginaAtual = 1;
   }
 
   usuariosFiltrados(): Usuario[] {
@@ -137,42 +141,6 @@ export class EditarExcluirUsuario implements OnInit {
       if (this.filtro === 'NOME') return usuario.nome.toLowerCase().includes(valor);
       return usuario.nome.toLowerCase().includes(valor) || usuario.id?.toString().includes(valor) === true;
     });
-  }
-
-  get totalPaginas(): number {
-    return Math.max(1, Math.ceil(this.usuariosFiltrados().length / ITENS_POR_PAGINA));
-  }
-
-  get paginaEfetiva(): number {
-    return Math.min(this.paginaAtual, this.totalPaginas);
-  }
-
-  get usuariosPagina(): Usuario[] {
-    const inicio = (this.paginaEfetiva - 1) * ITENS_POR_PAGINA;
-    return this.usuariosFiltrados().slice(inicio, inicio + ITENS_POR_PAGINA);
-  }
-
-  get inicioExibicao(): number {
-    return this.usuariosFiltrados().length === 0 ? 0 : (this.paginaEfetiva - 1) * ITENS_POR_PAGINA + 1;
-  }
-
-  get fimExibicao(): number {
-    return Math.min(this.paginaEfetiva * ITENS_POR_PAGINA, this.usuariosFiltrados().length);
-  }
-
-  get paginasVisiveis(): number[] {
-    const total = this.totalPaginas;
-    const atual = this.paginaEfetiva;
-    const janela = 5;
-    let inicio = Math.max(1, atual - Math.floor(janela / 2));
-    const fim = Math.min(total, inicio + janela - 1);
-    inicio = Math.max(1, fim - janela + 1);
-    return Array.from({ length: fim - inicio + 1 }, (_, index) => inicio + index);
-  }
-
-  irParaPagina(pagina: number): void {
-    if (pagina < 1 || pagina > this.totalPaginas) return;
-    this.paginaAtual = pagina;
   }
 
   selecionarUsuario(usuario: Usuario): void {

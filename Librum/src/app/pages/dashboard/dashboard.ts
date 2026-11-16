@@ -13,6 +13,11 @@ import { DashboardResumo, DashboardService } from '../../services/dashboard.serv
 import { Emprestimo } from '../../models/emprestimo.model';
 import { ToastService } from '../../shared/services/toast.service';
 import { Router } from '@angular/router';
+import {
+  LbrTabela,
+  LbrTabelaCabecalho,
+  LbrTabelaLinha,
+} from '../../shared/component/lbr-tabela/lbr-tabela';
 
 declare var bootstrap: any;
 
@@ -26,6 +31,9 @@ declare var bootstrap: any;
     FormsModule,
     Badge,
     CorpoPadrao,
+    LbrTabela,
+    LbrTabelaCabecalho,
+    LbrTabelaLinha,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

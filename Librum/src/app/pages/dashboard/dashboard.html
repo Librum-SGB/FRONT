@@ -73,34 +73,32 @@
           </div>
         </div>
         <div class="row">
-          <table class="table mt-3">
-            <thead>
+          <lbr-tabela
+            class="mt-3"
+            [dados]="resumo.emprestimos"
+            [hover]="false"
+            mensagemVazio="Nenhum empréstimo ativo."
+            iconeVazio="bi-journal-check"
+            rotulo="Paginação dos empréstimos ativos">
+            <ng-template lbrTabelaCabecalho>
+              <th scope="col">Aluno</th>
+              <th scope="col">Material</th>
+              <th scope="col">Devolução prevista</th>
+              <th scope="col">Status</th>
+            </ng-template>
+            <ng-template [lbrTabelaLinha]="resumo.emprestimos" let-emprestimo>
               <tr>
-                <th scope="col">Aluno</th>
-                <th scope="col">Material</th>
-                <th scope="col">Devolução prevista</th>
-                <th scope="col">Status</th>
+                <th scope="row">{{ emprestimo.usuarioNome || 'Usuário' }}</th>
+                <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
+                <td>{{ formatarData(emprestimo.dataDevolucaoPrevista) }}</td>
+                <td>
+                  <app-badge [status]="getBadgeStatus(emprestimo)">
+                    {{ getStatusEmprestimo(emprestimo) }}
+                  </app-badge>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @for (emprestimo of resumo.emprestimos; track emprestimo.id) {
-                <tr>
-                  <th scope="row">{{ emprestimo.usuarioNome || 'Usuário' }}</th>
-                  <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
-                  <td>{{ formatarData(emprestimo.dataDevolucaoPrevista) }}</td>
-                  <td>
-                    <app-badge [status]="getBadgeStatus(emprestimo)">
-                      {{ getStatusEmprestimo(emprestimo) }}
-                    </app-badge>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="4" class="text-center text-secondary">Nenhum empréstimo ativo.</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+            </ng-template>
+          </lbr-tabela>
         </div>
       </div>
     </section>
