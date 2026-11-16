@@ -12,62 +12,50 @@
       </a>
     </div>
 
-    <div class="row">
-      <p *ngIf="carregando" class="text-center text-secondary">Carregando usuários...</p>
-      <p *ngIf="!carregando && usuariosFiltrados().length === 0" class="text-center text-secondary">
-        Nenhum usuário encontrado.
-      </p>
-      <div class="col-md-3 mb-4" *ngFor="let usuario of usuariosPagina">
-
-        <div class="card text-center p-3 h-100">
-
-          <div class="mb-3">
-            <img *ngIf="usuario.foto; else avatarPadrao" [src]="usuario.foto" class="rounded-circle"
-              style="width: 80px; height: 80px; object-fit: cover;">
-            <ng-template #avatarPadrao>
-              <i class="bi bi-person-circle fs-1" aria-hidden="true"></i>
-            </ng-template>
-          </div>
-
-          <h6>{{ usuario.nome }}</h6>
-          <small>ID: {{ usuario.id }}</small>
-
-
-          <div class="d-flex justify-content-center mt-3 mb-3">
+    <lbr-tabela
+      [dados]="usuariosFiltrados()"
+      [carregando]="carregando"
+      mensagemCarregando="Carregando usuários..."
+      mensagemVazio="Nenhum usuário encontrado."
+      iconeVazio="bi-people"
+      rotulo="Paginação dos usuários">
+      <ng-template lbrTabelaCabecalho>
+        <th scope="col">ID</th>
+        <th scope="col">Usuário</th>
+        <th scope="col">E-mail</th>
+        <th scope="col">Status</th>
+        <th scope="col" class="text-end">Ações</th>
+      </ng-template>
+      <ng-template [lbrTabelaLinha]="usuariosFiltrados()" let-usuario>
+        <tr>
+          <th scope="row">#{{ usuario.id }}</th>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              @if (usuario.foto) {
+                <img [src]="usuario.foto" alt="" class="rounded-circle avatar-tabela">
+              } @else {
+                <i class="bi bi-person-circle fs-4 text-secondary" aria-hidden="true"></i>
+              }
+              <span class="fw-semibold">{{ usuario.nome }}</span>
+            </div>
+          </td>
+          <td>{{ usuario.email }}</td>
+          <td>
             <app-badge [status]="usuario.estaBloqueado ? 'danger' : 'success'">
               {{ usuario.estaBloqueado ? 'Bloqueado' : 'Ativo' }}
             </app-badge>
-          </div>
-
-          <button lbrButton variant="outros" class="w-100" data-bs-toggle="modal" data-bs-target="#modalUsuario"
-            (click)="selecionarUsuario(usuario)">
-            Mais informações
-          </button>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3"
-      *ngIf="!carregando && usuariosFiltrados().length > 0">
-      <small class="text-muted">
-        Exibindo {{ inicioExibicao }}–{{ fimExibicao }} de {{ usuariosFiltrados().length }}
-      </small>
-
-      <nav *ngIf="totalPaginas > 1" aria-label="Paginação dos usuários">
-        <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" [class.disabled]="paginaEfetiva === 1">
-            <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva - 1)">Anterior</button>
-          </li>
-          <li class="page-item" *ngFor="let pagina of paginasVisiveis" [class.active]="pagina === paginaEfetiva">
-            <button type="button" class="page-link" (click)="irParaPagina(pagina)">{{ pagina }}</button>
-          </li>
-          <li class="page-item" [class.disabled]="paginaEfetiva === totalPaginas">
-            <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva + 1)">Próxima</button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+          </td>
+          <td class="text-end text-nowrap">
+            <button type="button" lbrButton variant="outros" size="sm" data-bs-toggle="modal"
+              data-bs-target="#modalUsuario" (click)="selecionarUsuario(usuario)"
+              [attr.aria-label]="'Mais informações de ' + usuario.nome">
+              <i class="bi bi-eye" aria-hidden="true"></i>
+              Mais informações
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </lbr-tabela>
   </div>
 </app-corpo-padrao>
 

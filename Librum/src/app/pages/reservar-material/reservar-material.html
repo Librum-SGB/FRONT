@@ -20,56 +20,51 @@
             <input id="buscaMaterial" class="form-control mb-3" type="search"
               placeholder="Buscar por nome, autor ou tipo..." [(ngModel)]="buscaMaterial">
 
-            @if (carregando) {
-              <p class="text-center text-secondary py-4">Carregando materiais e usuários...</p>
-            } @else if (materiaisFiltrados.length === 0) {
-              <p class="text-center text-secondary py-4">Nenhum material cadastrado.</p>
-            } @else {
-              <div class="table-responsive overflow-auto" style="max-height: 360px;">
-                <table class="table align-middle">
-                  <thead>
-                    <tr>
-                      <th scope="col">Material</th>
-                      <th scope="col">Autor</th>
-                      <th scope="col">Tipo</th>
-                      <th scope="col">Disponibilidade</th>
-                      <th scope="col" class="text-end">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (item of materiaisFiltrados; track item.material.id) {
-                      <tr>
-                        <th scope="row" class="fw-semibold">{{ item.material.titulo }}</th>
-                        <td>{{ item.autor }}</td>
-                        <td>{{ item.material.tipo }}</td>
-                        <td>
-                          @if (quantidadeDisponivel(item) > 0) {
-                            <span class="text-success">Disponível</span>
-                          } @else {
-                            <span class="text-secondary">Indisponível</span>
-                          }
-                        </td>
-                        <td class="text-end text-nowrap">
-                          <button type="button" class="btn btn-outline-secondary btn-sm me-1"
-                            (click)="materialDetalhe = item"
-                            [attr.aria-label]="'Ver informações de ' + item.material.titulo"
-                            title="Mais informações">
-                            <i class="bi bi-eye" aria-hidden="true"></i>
-                          </button>
-                          <button type="button" class="btn btn-primary btn-sm"
-                            (click)="selecionarMaterial(item)"
-                            [disabled]="quantidadeDisponivel(item) === 0 || salvando"
-                            [attr.aria-label]="'Adicionar ' + item.material.titulo + ' ao empréstimo'"
-                            title="Adicionar ao empréstimo">
-                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                          </button>
-                        </td>
-                      </tr>
+            <lbr-tabela
+              [dados]="materiaisFiltrados"
+              [carregando]="carregando"
+              [hover]="false"
+              mensagemCarregando="Carregando materiais e usuários..."
+              [mensagemVazio]="buscaMaterial.trim() ? 'Nenhum material encontrado para essa busca.' : 'Nenhum material cadastrado.'"
+              iconeVazio="bi-book"
+              rotulo="Paginação dos materiais">
+              <ng-template lbrTabelaCabecalho>
+                <th scope="col">Material</th>
+                <th scope="col">Autor</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Disponibilidade</th>
+                <th scope="col" class="text-end">Ações</th>
+              </ng-template>
+              <ng-template [lbrTabelaLinha]="materiaisFiltrados" let-item>
+                <tr>
+                  <th scope="row" class="fw-semibold">{{ item.material.titulo }}</th>
+                  <td>{{ item.autor }}</td>
+                  <td>{{ item.material.tipo }}</td>
+                  <td>
+                    @if (quantidadeDisponivel(item) > 0) {
+                      <span class="text-success">Disponível</span>
+                    } @else {
+                      <span class="text-secondary">Indisponível</span>
                     }
-                  </tbody>
-                </table>
-              </div>
-            }
+                  </td>
+                  <td class="text-end text-nowrap">
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-1"
+                      (click)="materialDetalhe = item"
+                      [attr.aria-label]="'Ver informações de ' + item.material.titulo"
+                      title="Mais informações">
+                      <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm"
+                      (click)="selecionarMaterial(item)"
+                      [disabled]="quantidadeDisponivel(item) === 0 || salvando"
+                      [attr.aria-label]="'Adicionar ' + item.material.titulo + ' ao empréstimo'"
+                      title="Adicionar ao empréstimo">
+                      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </lbr-tabela>
 
             <div class="border rounded p-3 my-4">
               <strong>Materiais selecionados ({{ materiaisSelecionados.length }})</strong>
@@ -110,54 +105,49 @@
               placeholder="Buscar usuário por nome ou ID..." [(ngModel)]="buscaUsuario"
               [disabled]="etapaAtual === 1 || salvando">
 
-            <div class="table-responsive overflow-auto" style="max-height: 300px;">
-              <table class="table align-middle">
-                <thead>
-                  <tr>
-                    <th scope="col">Usuário</th>
-                    <th scope="col">E-mail</th>
-                    <th scope="col">Status</th>
-                    <th scope="col" class="text-end">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (usuario of usuariosFiltrados; track usuario.id) {
-                    <tr>
-                      <th scope="row" class="fw-semibold">{{ usuario.nome }}</th>
-                      <td>{{ usuario.email }}</td>
-                      <td>
-                        @if (usuario.estaBloqueado) {
-                          <span class="text-danger">Bloqueado</span>
-                        } @else {
-                          <span class="text-success">Disponível</span>
-                        }
-                      </td>
-                      <td class="text-end text-nowrap">
-                        <button type="button" class="btn btn-outline-secondary btn-sm me-1"
-                          (click)="usuarioDetalhe = usuario"
-                          [attr.aria-label]="'Ver informações de ' + usuario.nome"
-                          title="Mais informações">
-                          <i class="bi bi-eye" aria-hidden="true"></i>
-                        </button>
-                        <button type="button" class="btn btn-primary btn-sm"
-                          (click)="selecionarUsuario(usuario)"
-                          [disabled]="etapaAtual === 1 || salvando || usuario.estaBloqueado"
-                          [attr.aria-label]="'Selecionar ' + usuario.nome"
-                          title="Selecionar usuário">
-                          <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  } @empty {
-                    @if (!carregando) {
-                      <tr>
-                        <td colspan="4" class="text-center text-secondary py-3">Nenhum usuário encontrado.</td>
-                      </tr>
+            <lbr-tabela
+              [dados]="usuariosFiltrados"
+              [carregando]="carregando"
+              [hover]="false"
+              mensagemCarregando="Carregando usuários..."
+              mensagemVazio="Nenhum usuário encontrado."
+              iconeVazio="bi-people"
+              rotulo="Paginação dos usuários">
+              <ng-template lbrTabelaCabecalho>
+                <th scope="col">Usuário</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-end">Ações</th>
+              </ng-template>
+              <ng-template [lbrTabelaLinha]="usuariosFiltrados" let-usuario>
+                <tr>
+                  <th scope="row" class="fw-semibold">{{ usuario.nome }}</th>
+                  <td>{{ usuario.email }}</td>
+                  <td>
+                    @if (usuario.estaBloqueado) {
+                      <span class="text-danger">Bloqueado</span>
+                    } @else {
+                      <span class="text-success">Disponível</span>
                     }
-                  }
-                </tbody>
-              </table>
-            </div>
+                  </td>
+                  <td class="text-end text-nowrap">
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-1"
+                      (click)="usuarioDetalhe = usuario"
+                      [attr.aria-label]="'Ver informações de ' + usuario.nome"
+                      title="Mais informações">
+                      <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm"
+                      (click)="selecionarUsuario(usuario)"
+                      [disabled]="etapaAtual === 1 || salvando || usuario.estaBloqueado"
+                      [attr.aria-label]="'Selecionar ' + usuario.nome"
+                      title="Selecionar usuário">
+                      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </lbr-tabela>
 
             <div class="border rounded p-3 my-4 d-flex justify-content-between align-items-start gap-3">
               <div>

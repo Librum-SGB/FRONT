@@ -1,0 +1,65 @@
+@if (carregando()) {
+  <p class="text-center text-secondary py-4 mb-0">{{ mensagemCarregando() }}</p>
+} @else if (totalRegistros() === 0) {
+  <div class="text-center py-5 border border-secondary border-opacity-25 rounded">
+    <i class="bi {{ iconeVazio() }} fs-1 text-secondary opacity-50" aria-hidden="true"></i>
+    <p class="text-secondary mt-2 mb-0">{{ mensagemVazio() }}</p>
+  </div>
+} @else {
+  <div class="table-responsive">
+    <table class="table align-middle mb-0" [class.table-hover]="hover()">
+      <thead>
+        <tr>
+          <ng-container [ngTemplateOutlet]="cabecalho().template" />
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of itensPagina(); track $index) {
+          <ng-container
+            [ngTemplateOutlet]="linha().template"
+            [ngTemplateOutletContext]="{ $implicit: item, indice: indiceInicial() + $index }" />
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <label [for]="idSeletor" class="small text-muted mb-0">Exibir</label>
+      <select [id]="idSeletor" class="form-select form-select-sm w-auto"
+        (change)="alterarItensPorPagina($any($event.target).value)">
+        @for (opcao of opcoesItensPorPagina(); track opcao) {
+          <option [value]="opcao" [selected]="opcao === itensPorPagina()">{{ opcao }}</option>
+        }
+      </select>
+      <small class="text-muted">
+        Exibindo {{ inicioExibicao() }}–{{ fimExibicao() }} de {{ totalRegistros() }}
+      </small>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <nav [attr.aria-label]="rotulo()">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="paginaEfetiva() === 1">
+            <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva() - 1)">
+              Anterior
+            </button>
+          </li>
+          @for (pagina of paginasVisiveis(); track pagina) {
+            <li class="page-item" [class.active]="pagina === paginaEfetiva()">
+              <button type="button" class="page-link" (click)="irParaPagina(pagina)"
+                [attr.aria-current]="pagina === paginaEfetiva() ? 'page' : null">
+                {{ pagina }}
+              </button>
+            </li>
+          }
+          <li class="page-item" [class.disabled]="paginaEfetiva() === totalPaginas()">
+            <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva() + 1)">
+              Próxima
+            </button>
+          </li>
+        </ul>
+      </nav>
+    }
+  </div>
+}

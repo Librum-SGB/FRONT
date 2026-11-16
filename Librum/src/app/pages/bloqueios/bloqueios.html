@@ -81,60 +81,39 @@
       </div>
     </div>
 
-    <div class="table-responsive">
-      <table class="table align-middle">
-
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Data Devolução</th>
-            <th>Dias Atrasados</th>
-            <th>Penalidade</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let emprestimo of emprestimosFiltrados">
-
-            <td>
-              {{ emprestimo.observacao }}
-            </td>
-
-            <td>
-              {{ formatarData(emprestimo.dataDevolucaoPrevista) }}
-            </td>
-
-            <td>
-
-              <span [ngClass]="(emprestimo.diasAtraso || 0) >= 20
-              ? 'text-danger'
-              : 'text-warning-emphasis'">
-
-                {{ emprestimo.diasAtraso }} dias
-
-              </span>
-
-            </td>
-
-            <td>
-              {{ emprestimo.penalidadeDias }} dias de suspensão
-            </td>
-
-            <td>
-
-              <span class="badge rounded-pill" [ngClass]="emprestimo.status === 'BLOQUEADO'
+    <lbr-tabela
+      [dados]="emprestimosFiltrados"
+      [hover]="false"
+      mensagemVazio="Nenhum bloqueio encontrado."
+      iconeVazio="bi-shield-check"
+      rotulo="Paginação dos bloqueios">
+      <ng-template lbrTabelaCabecalho>
+        <th scope="col">Nome</th>
+        <th scope="col">Data Devolução</th>
+        <th scope="col">Dias Atrasados</th>
+        <th scope="col">Penalidade</th>
+        <th scope="col">Status</th>
+      </ng-template>
+      <ng-template [lbrTabelaLinha]="emprestimosFiltrados" let-emprestimo>
+        <tr>
+          <td>{{ emprestimo.observacao }}</td>
+          <td>{{ formatarData(emprestimo.dataDevolucaoPrevista) }}</td>
+          <td>
+            <span [ngClass]="(emprestimo.diasAtraso || 0) >= 20 ? 'text-danger' : 'text-warning-emphasis'">
+              {{ emprestimo.diasAtraso }} dias
+            </span>
+          </td>
+          <td>{{ emprestimo.penalidadeDias }} dias de suspensão</td>
+          <td>
+            <span class="badge rounded-pill" [ngClass]="emprestimo.status === 'BLOQUEADO'
               ? 'text-bg-danger-subtle text-danger'
               : 'text-bg-warning-subtle text-warning-emphasis'">
-
-                {{ emprestimo.status }}
-
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              {{ emprestimo.status }}
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+    </lbr-tabela>
 
     <div class="alert alert-warning-subtle border-warning-subtle mt-4 mb-0">
 

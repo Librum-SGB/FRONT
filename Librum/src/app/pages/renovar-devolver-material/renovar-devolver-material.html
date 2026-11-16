@@ -78,76 +78,43 @@
 
     <div class="mb-4">
       <h2 class="h5 mb-3">Empréstimos em aberto</h2>
-      @if (carregando) {
-        <p class="text-center text-secondary py-4">Carregando empréstimos...</p>
-      } @else if (emprestimosFiltrados.length === 0) {
-        <div class="text-center py-5 border border-secondary border-opacity-25 rounded">
-          <i class="bi bi-journal-check fs-1 text-secondary opacity-50" aria-hidden="true"></i>
-          <p class="text-secondary mt-2 mb-0">
-            {{ busca.trim() ? 'Nenhum empréstimo encontrado para essa busca.' : 'Não há empréstimos em aberto.' }}
-          </p>
-        </div>
-      } @else {
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead>
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Usuário</th>
-                <th scope="col">Material</th>
-                <th scope="col">Devolução prevista</th>
-                <th scope="col">Status</th>
-                <th scope="col" class="text-end">Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (emprestimo of emprestimosPagina; track emprestimo.id) {
-                <tr [class.table-active]="emprestimoSelecionado?.id === emprestimo.id">
-                  <th scope="row">#{{ emprestimo.id }}</th>
-                  <td>{{ emprestimo.usuarioNome || 'Usuário' }}</td>
-                  <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
-                  <td>{{ formatarData(emprestimo.dataDevolucaoPrevista) }}</td>
-                  <td>
-                    <app-badge [status]="statusBadge(emprestimo)">
-                      {{ statusLabel(emprestimo) }}
-                    </app-badge>
-                  </td>
-                  <td class="text-end">
-                    <button type="button" class="btn btn-outline-primary btn-sm"
-                      (click)="selecionar(emprestimo)"
-                      [disabled]="salvando"
-                      [attr.aria-label]="'Selecionar empréstimo ' + emprestimo.id">
-                      {{ emprestimoSelecionado?.id === emprestimo.id ? 'Desselecionar' : 'Selecionar' }}
-                    </button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
-          <small class="text-muted">
-            Exibindo {{ inicioExibicao }}–{{ fimExibicao }} de {{ emprestimosFiltrados.length }}
-          </small>
-          @if (totalPaginas > 1) {
-            <nav aria-label="Paginação dos empréstimos">
-              <ul class="pagination pagination-sm mb-0">
-                <li class="page-item" [class.disabled]="paginaEfetiva === 1">
-                  <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva - 1)">Anterior</button>
-                </li>
-                @for (pagina of paginasVisiveis; track pagina) {
-                  <li class="page-item" [class.active]="pagina === paginaEfetiva">
-                    <button type="button" class="page-link" (click)="irParaPagina(pagina)">{{ pagina }}</button>
-                  </li>
-                }
-                <li class="page-item" [class.disabled]="paginaEfetiva === totalPaginas">
-                  <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva + 1)">Próxima</button>
-                </li>
-              </ul>
-            </nav>
-          }
-        </div>
-      }
+      <lbr-tabela
+        [dados]="emprestimosFiltrados"
+        [carregando]="carregando"
+        mensagemCarregando="Carregando empréstimos..."
+        iconeVazio="bi-journal-check"
+        rotulo="Paginação dos empréstimos"
+        [mensagemVazio]="busca.trim() ? 'Nenhum empréstimo encontrado para essa busca.' : 'Não há empréstimos em aberto.'">
+        <ng-template lbrTabelaCabecalho>
+          <th scope="col">ID</th>
+          <th scope="col">Usuário</th>
+          <th scope="col">Material</th>
+          <th scope="col">Devolução prevista</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="text-end">Ação</th>
+        </ng-template>
+        <ng-template [lbrTabelaLinha]="emprestimosFiltrados" let-emprestimo>
+          <tr [class.table-active]="emprestimoSelecionado?.id === emprestimo.id">
+            <th scope="row">#{{ emprestimo.id }}</th>
+            <td>{{ emprestimo.usuarioNome || 'Usuário' }}</td>
+            <td>{{ emprestimo.materialTitulo || 'Material' }}</td>
+            <td>{{ formatarData(emprestimo.dataDevolucaoPrevista) }}</td>
+            <td>
+              <app-badge [status]="statusBadge(emprestimo)">
+                {{ statusLabel(emprestimo) }}
+              </app-badge>
+            </td>
+            <td class="text-end">
+              <button type="button" class="btn btn-outline-primary btn-sm"
+                (click)="selecionar(emprestimo)"
+                [disabled]="salvando"
+                [attr.aria-label]="'Selecionar empréstimo ' + emprestimo.id">
+                {{ emprestimoSelecionado?.id === emprestimo.id ? 'Desselecionar' : 'Selecionar' }}
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+      </lbr-tabela>
     </div>
   </div>
 </app-corpo-padrao>

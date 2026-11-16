@@ -13,6 +13,11 @@ import { MaterialService } from '../../services/material';
 import { UsuarioService } from '../../services/usuario.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import {
+  LbrTabela,
+  LbrTabelaCabecalho,
+  LbrTabelaLinha,
+} from '../../shared/component/lbr-tabela/lbr-tabela';
 
 interface MaterialParaEmprestimo {
   material: MaterialResponse;
@@ -28,7 +33,14 @@ interface ItemEmprestimo {
 @Component({
   selector: 'app-reservar-material',
   standalone: true,
-  imports: [CommonModule, FormsModule, CorpoPadrao],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CorpoPadrao,
+    LbrTabela,
+    LbrTabelaCabecalho,
+    LbrTabelaLinha,
+  ],
   templateUrl: './reservar-material.html',
   styleUrl: './reservar-material.scss',
 })

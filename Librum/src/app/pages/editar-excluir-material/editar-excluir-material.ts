@@ -17,6 +17,11 @@ import { FormUtils } from '../../utils/FormUtil';
 import { LbrBadge, LbrBadgeVariant } from '../../shared/component/lbr-badge/lbr-badge';
 import { InputBusca } from '../../shared/component/input-busca/input-busca';
 import { Busca } from '../../shared/component/input-busca/busca.interface';
+import {
+  LbrTabela,
+  LbrTabelaCabecalho,
+  LbrTabelaLinha,
+} from '../../shared/component/lbr-tabela/lbr-tabela';
 
 import { MaterialService } from '../../services/material';
 import { AutorService } from '../../services/autor';
@@ -32,8 +37,6 @@ import { ExemplarResponse } from '../../models/exemplar.model';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 declare var bootstrap: any;
-
-const ITENS_POR_PAGINA = 10;
 
 // Valor do enum StatusExemplar que significa "pode ser emprestado".
 const STATUS_DISPONIVEL = 'DISPONIVEL';
@@ -98,13 +101,14 @@ interface MaterialExibicao {
     LbrBadge,
     InputBusca,
     RouterLink,
+    LbrTabela,
+    LbrTabelaCabecalho,
+    LbrTabelaLinha,
   ],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',
 })
 export class EditarExcluirMaterial implements OnInit {
-  readonly itensPorPagina = ITENS_POR_PAGINA;
-
   // ---------- Dados da API (signals) ----------
   private materiaisOriginais = signal<MaterialResponse[]>([]);
   autores = signal<AutorResponse[]>([]);
@@ -114,10 +118,9 @@ export class EditarExcluirMaterial implements OnInit {
   private exemplaresCarregados = signal(false);
   carregando = signal(true);
 
-  // ---------- Busca e paginação ----------
+  // ---------- Busca ----------
   tipoFiltro = signal('todos');
   textoBusca = signal('');
-  paginaAtual = signal(1);
 
   // IDs dos materiais que têm pelo menos 1 exemplar disponível
   private materiaisComExemplarDisponivel = computed(
@@ -160,39 +163,6 @@ export class EditarExcluirMaterial implements OnInit {
           );
       }
     });
-  });
-
-  totalPaginas = computed(() =>
-    Math.max(1, Math.ceil(this.materiaisFiltrados().length / ITENS_POR_PAGINA)),
-  );
-
-  // Se a página atual deixar de existir, volta pra última
-  paginaEfetiva = computed(() => Math.min(this.paginaAtual(), this.totalPaginas()));
-
-  materiaisPagina = computed(() => {
-    const inicio = (this.paginaEfetiva() - 1) * ITENS_POR_PAGINA;
-    return this.materiaisFiltrados().slice(inicio, inicio + ITENS_POR_PAGINA);
-  });
-
-  inicioExibicao = computed(() =>
-    this.materiaisFiltrados().length === 0 ? 0 : (this.paginaEfetiva() - 1) * ITENS_POR_PAGINA + 1,
-  );
-
-  fimExibicao = computed(() =>
-    Math.min(this.paginaEfetiva() * ITENS_POR_PAGINA, this.materiaisFiltrados().length),
-  );
-
-  // Janela de até 5 números de página ao redor da atual
-  paginasVisiveis = computed(() => {
-    const total = this.totalPaginas();
-    const atual = this.paginaEfetiva();
-    const janela = 5;
-
-    let inicio = Math.max(1, atual - Math.floor(janela / 2));
-    const fim = Math.min(total, inicio + janela - 1);
-    inicio = Math.max(1, fim - janela + 1);
-
-    return Array.from({ length: fim - inicio + 1 }, (_, i) => inicio + i);
   });
 
   // ---------- Modais / edição ----------
@@ -415,10 +385,6 @@ export class EditarExcluirMaterial implements OnInit {
     };
   }
 
-  trackById(_: number, material: MaterialExibicao): number {
-    return material.id;
-  }
-
   iconeTipo(tipo: string): string {
     switch (tipo) {
       case 'LIVRO':
@@ -432,17 +398,11 @@ export class EditarExcluirMaterial implements OnInit {
     }
   }
 
-  // ---------- Busca e paginação ----------
+  // ---------- Busca ----------
 
   pesquisarMaterial(busca: Busca): void {
     this.tipoFiltro.set(busca.filtro);
     this.textoBusca.set(busca.texto);
-    this.paginaAtual.set(1);
-  }
-
-  irParaPagina(pagina: number): void {
-    if (pagina < 1 || pagina > this.totalPaginas()) return;
-    this.paginaAtual.set(pagina);
   }
 
   // ---------- Modais ----------

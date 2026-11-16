@@ -2,88 +2,73 @@
   <div class="titulo">Materiais</div>
 
   <div class="corpo">
-    <div *ngIf="carregando()" class="text-center text-muted py-5">
-      Carregando materiais...
+    <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-4">
+      <div class="flex-grow-1">
+        <app-input-busca
+          TipoInput="LIVRO"
+          [showSelect]="true"
+          [buscarAoDigitar]="true"
+          placeholder="Buscar material..."
+          (buscar)="pesquisarMaterial($event)">
+        </app-input-busca>
+      </div>
+      <a lbrButton variant="cadastrar" routerLink="/cadastrarMaterial" class="flex-shrink-0">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        Cadastrar Material
+      </a>
     </div>
 
-    <div class="row g-4" *ngIf="!carregando()">
-      <div class="col-12">
-        <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-4">
-          <div class="flex-grow-1">
-            <app-input-busca
-              TipoInput="LIVRO"
-              [showSelect]="true"
-              [buscarAoDigitar]="true"
-              placeholder="Buscar material..."
-              (buscar)="pesquisarMaterial($event)">
-            </app-input-busca>
-          </div>
-          <a lbrButton variant="cadastrar" routerLink="/cadastrarMaterial" class="flex-shrink-0">
-            <i class="bi bi-plus-lg" aria-hidden="true"></i>
-            Cadastrar Material
-          </a>
-        </div>
-      </div>
-
-      <div class="text-muted" *ngIf="materiaisFiltrados().length === 0">
-        Nenhum material encontrado.
-      </div>
-
-      <div class="col-md-3" *ngFor="let material of materiaisPagina(); trackBy: trackById">
-        <div class="card material-card text-center p-3 h-100">
-          <div class="material-card__icon mb-3">
-            <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center"
-              style="width: 80px; height: 80px;">
-              <i class="bi fs-1" [ngClass]="iconeTipo(material.tipo)" aria-hidden="true"></i>
+    <lbr-tabela
+      [dados]="materiaisFiltrados()"
+      [carregando]="carregando()"
+      mensagemCarregando="Carregando materiais..."
+      mensagemVazio="Nenhum material encontrado."
+      iconeVazio="bi-book"
+      rotulo="Paginação dos materiais">
+      <ng-template lbrTabelaCabecalho>
+        <th scope="col">Código</th>
+        <th scope="col">Título</th>
+        <th scope="col">Autor</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Disponibilidade</th>
+        <th scope="col" class="text-end">Ações</th>
+      </ng-template>
+      <ng-template [lbrTabelaLinha]="materiaisFiltrados()" let-material>
+        <tr>
+          <th scope="row" class="text-nowrap">{{ material.codigo }}</th>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi {{ iconeTipo(material.tipo) }} text-primary" aria-hidden="true"></i>
+              <div>
+                <div class="fw-semibold">{{ material.titulo }}</div>
+                @if (material.subtitulo) {
+                  <small class="text-secondary">{{ material.subtitulo }}</small>
+                }
+              </div>
             </div>
-          </div>
-          <h6 class="material-card__title fw-semibold">{{ material.titulo }}</h6>
-          <small class="text-muted">ID: {{ material.codigo }}</small>
-          <div class="material-card__author text-secondary mt-1">
-            @if (material.autorNome && material.autorNome !== '—') {
-              <small>{{ material.autorNome }}</small>
+          </td>
+          <td>{{ material.autorNome }}</td>
+          <td>
+            <lbr-badge [variant]="material.tipoVariant">{{ material.tipoLabel }}</lbr-badge>
+          </td>
+          <td>
+            @if (material.disponibilidadeVariant) {
+              <lbr-badge [variant]="material.disponibilidadeVariant">{{ material.disponibilidade }}</lbr-badge>
+            } @else {
+              <span class="text-secondary">—</span>
             }
-          </div>
-
-          <div class="material-card__badges d-flex flex-wrap justify-content-center align-items-center gap-1 mt-3 mb-3">
-              <lbr-badge [variant]="material.tipoVariant">{{ material.tipoLabel }}</lbr-badge>
-
-              <lbr-badge *ngIf="material.disponibilidadeVariant as variante" [variant]="variante">
-                {{ material.disponibilidade }}
-              </lbr-badge>
-          </div>
-
-          <button lbrButton variant="outros" class="material-card__action w-100" data-bs-toggle="modal"
-              data-bs-target="#modalMaterial" (click)="selecionarMaterial(material)">
+          </td>
+          <td class="text-end text-nowrap">
+            <button type="button" lbrButton variant="outros" size="sm" data-bs-toggle="modal"
+              data-bs-target="#modalMaterial" (click)="selecionarMaterial(material)"
+              [attr.aria-label]="'Mais informações de ' + material.titulo">
+              <i class="bi bi-eye" aria-hidden="true"></i>
               Mais informações
-          </button>
-        </div>
-      </div>
-
-      <!-- PAGINAÇÃO -->
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2"
-        *ngIf="materiaisFiltrados().length > 0">
-        <small class="text-muted">
-          Exibindo {{ inicioExibicao() }}–{{ fimExibicao() }} de {{ materiaisFiltrados().length }}
-        </small>
-
-        <nav *ngIf="totalPaginas() > 1" aria-label="Paginação dos materiais">
-          <ul class="pagination pagination-sm mb-0">
-            <li class="page-item" [class.disabled]="paginaEfetiva() === 1">
-              <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva() - 1)">Anterior</button>
-            </li>
-
-            <li class="page-item" *ngFor="let pagina of paginasVisiveis()" [class.active]="pagina === paginaEfetiva()">
-              <button type="button" class="page-link" (click)="irParaPagina(pagina)">{{ pagina }}</button>
-            </li>
-
-            <li class="page-item" [class.disabled]="paginaEfetiva() === totalPaginas()">
-              <button type="button" class="page-link" (click)="irParaPagina(paginaEfetiva() + 1)">Próxima</button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </div>
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </lbr-tabela>
 
     <!-- DETALHES -->
     <div class="modal fade" id="modalMaterial" tabindex="-1">
