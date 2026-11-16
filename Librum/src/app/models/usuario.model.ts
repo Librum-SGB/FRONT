@@ -22,6 +22,8 @@ export interface Usuario {
 
   limiteLivros?: number;
   estaBloqueado?: boolean;
+  /** `false` quando a conta foi inativada. */
+  ativo?: boolean;
 
   funcao?: FuncaoUsuario;
   matriculaFuncionario?: string;

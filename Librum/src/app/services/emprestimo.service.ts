@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Emprestimo } from '../models/emprestimo.model';
+import { Emprestimo, RenovacaoPrevia } from '../models/emprestimo.model';
 
 @Injectable({ providedIn: 'root' })
 export class EmprestimoService {
@@ -25,6 +25,15 @@ export class EmprestimoService {
     dataDevolucaoPrevista: string;
   }): Observable<Emprestimo[]> {
     return this.http.post<Emprestimo[]>(`${this.apiUrl}/lote`, emprestimo);
+  }
+
+  buscarPorId(id: number): Observable<Emprestimo> {
+    return this.http.get<Emprestimo>(`${this.apiUrl}/${id}`);
+  }
+
+  /** Simula a renovação (sem alterar nada): nova data de devolução e renovações restantes. */
+  previaRenovacao(id: number): Observable<RenovacaoPrevia> {
+    return this.http.get<RenovacaoPrevia>(`${this.apiUrl}/${id}/renovacao`);
   }
 
   renovar(id: number): Observable<Emprestimo> {

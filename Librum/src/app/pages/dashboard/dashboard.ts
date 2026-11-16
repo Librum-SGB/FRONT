@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ItemListaTarefa } from '../../shared/component/item-lista-tarefa/item-lista-tarefa';
 import { CardInformativo } from '../../shared/component/card/card-informativo/card-informativo';
 import { CardStatus } from '../../shared/component/card/card-status/card-status';
@@ -13,10 +13,15 @@ import { DashboardResumo, DashboardService } from '../../services/dashboard.serv
 import { Emprestimo } from '../../models/emprestimo.model';
 import { ToastService } from '../../shared/services/toast.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { Permissao } from '../../enum/permissoes.enum';
+import { dataDaquiA, dataISO, formatarDataBR } from '../../utils/data.util';
+import { LbrLinkEntidade } from '../../shared/component/lbr-link-entidade/lbr-link-entidade';
 import {
   LbrTabela,
   LbrTabelaCabecalho,
   LbrTabelaLinha,
+  LbrTabelaOrdenar,
 } from '../../shared/component/lbr-tabela/lbr-tabela';
 
 declare var bootstrap: any;
@@ -31,14 +36,33 @@ declare var bootstrap: any;
     FormsModule,
     Badge,
     CorpoPadrao,
+    LbrLinkEntidade,
     LbrTabela,
     LbrTabelaCabecalho,
     LbrTabelaLinha,
+    LbrTabelaOrdenar,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
+  protected readonly Permissao = Permissao;
+  private readonly authService = inject(AuthService);
+
+  /** Card "A vencer (7 dias)": abre Renovar/Devolver já filtrado pela devolução nos próximos 7 dias. */
+  protected readonly filtroAVencer = {
+    vencimentoDe: dataISO(new Date()),
+    vencimentoAte: dataDaquiA(7),
+  };
+  protected readonly formatarData = formatarDataBR;
+
+  /** Link do card só para quem pode abrir a tela de destino (senão o card fica só informativo). */
+  protected linkSePermitido(rota: string, permissao: Permissao): string | null {
+    return this.authService.temPermissao(permissao) ? rota : null;
+  }
+
+  /** Ordena a coluna Status pelo texto exibido. */
+  protected readonly porStatus = (e: Emprestimo) => this.getStatusEmprestimo(e);
   listaTarefa: Tarefa[] = [];
   resumo: DashboardResumo = {
     alunosCadastrados: 0,
@@ -134,17 +158,15 @@ export class Dashboard implements OnInit {
   }
 
   getStatusEmprestimo(emprestimo: Emprestimo): 'Em andamento' | 'A vencer' | 'Vencido' {
-    const hoje = this.dataLocalISO(new Date());
+    const hoje = dataISO(new Date());
     const dataVencimento =
       typeof emprestimo.dataDevolucaoPrevista === 'string'
         ? emprestimo.dataDevolucaoPrevista.slice(0, 10)
-        : this.dataLocalISO(emprestimo.dataDevolucaoPrevista);
+        : dataISO(emprestimo.dataDevolucaoPrevista);
     const vencimento = dataVencimento;
 
     if (vencimento < hoje) return 'Vencido';
-    const limite = new Date();
-    limite.setDate(limite.getDate() + 7);
-    if (vencimento <= this.dataLocalISO(limite)) return 'A vencer';
+    if (vencimento <= dataDaquiA(7)) return 'A vencer';
     return 'Em andamento';
   }
 
@@ -159,14 +181,6 @@ export class Dashboard implements OnInit {
     }
   }
 
-  formatarData(data: string | Date): string {
-    const valor =
-      typeof data === 'string'
-        ? new Date(`${data.slice(0, 10)}T00:00:00`)
-        : data;
-    return valor.toLocaleDateString('pt-BR');
-  }
-
   private carregarTarefas(): void {
     this.tarefaService.getMinhasTarefas().subscribe({
       next: (tarefas) => {
@@ -176,12 +190,5 @@ export class Dashboard implements OnInit {
       error: (error) =>
         this.toastService.erro(error.error?.message ?? 'Não foi possível carregar suas tarefas.'),
     });
-  }
-
-  private dataLocalISO(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
   }
 }

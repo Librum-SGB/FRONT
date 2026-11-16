@@ -1,295 +1,185 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { Usuario } from '../../models/usuario.model';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+
+import { Usuario } from '../../models/usuario.model';
 import { ToastService } from '../../shared/services/toast.service';
+import { AcoesUsuarioService } from '../../services/acoes-usuario.service';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
-import { InputBusca } from '../../shared/component/input-busca/input-busca';
+import { LbrLinkEntidade } from '../../shared/component/lbr-link-entidade/lbr-link-entidade';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 import { Badge } from '../../shared/component/badge/badge';
-import { FormUtils } from '../../utils/FormUtil';
-import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
-import { UsuarioAtualizacao, UsuarioService } from '../../services/usuario.service';
+import { AcaoMenu, LbrAcoes } from '../../shared/component/lbr-acoes/lbr-acoes';
+import { LbrFiltros } from '../../shared/component/lbr-filtros/lbr-filtros';
+import {
+  ConfigFiltro,
+  filtrarItens,
+  opcoesDosItens,
+  temFiltroAtivo,
+  ValoresFiltro,
+} from '../../shared/component/lbr-filtros/filtros';
+import { UsuarioService } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
 import { Permissao } from '../../enum/permissoes.enum';
-import { Busca } from '../../shared/component/input-busca/busca.interface';
 import {
   LbrTabela,
   LbrTabelaCabecalho,
   LbrTabelaLinha,
+  LbrTabelaOrdenar,
 } from '../../shared/component/lbr-tabela/lbr-tabela';
-
-declare var bootstrap: any;
+import {
+  corSituacaoUsuario,
+  rotuloSituacaoUsuario,
+  situacaoUsuario,
+} from '../../utils/usuario.util';
 
 @Component({
   selector: 'app-editar-excluir-usuario',
   imports: [
-    FormsModule,
-    CommonModule,
     RouterLink,
     CorpoPadrao,
-    InputBusca,
+    LbrLinkEntidade,
     LbrButtom,
     Badge,
-    ReactiveFormsModule,
-    AlertaErros,
+    LbrAcoes,
+    LbrFiltros,
     LbrTabela,
     LbrTabelaCabecalho,
     LbrTabelaLinha,
+    LbrTabelaOrdenar,
   ],
   templateUrl: './editar-excluir-usuario.html',
   styleUrl: './editar-excluir-usuario.scss',
 })
 export class EditarExcluirUsuario implements OnInit {
-  filtro = 'TODOS';
-  busca = '';
+  protected readonly temFiltroAtivo = temFiltroAtivo;
+  protected readonly rotuloSituacao = rotuloSituacaoUsuario;
+  protected readonly corSituacao = corSituacaoUsuario;
 
-  usuarioSelecionado: Usuario | null = null;
-  usuarioEditando: Usuario = {} as Usuario;
-  usuarios: Usuario[] = [];
-  carregando = true;
-  salvando = false;
+  private readonly toastService = inject(ToastService);
+  private readonly acoesUsuario = inject(AcoesUsuarioService);
+  private readonly usuarioService = inject(UsuarioService);
+  private readonly authService = inject(AuthService);
 
-  formUsuario: FormGroup;
-  enviado = false;
-  mensagensErro: string[] = [];
+  private readonly usuarios = signal<Usuario[]>([]);
+  readonly carregando = signal(true);
+  readonly filtros = signal<ValoresFiltro>({});
+  /** Usuário com uma ação em andamento (evita cliques repetidos). */
+  private readonly processandoId = signal<number | null>(null);
 
-  private readonly nomesCampos: Record<string, string> = {
-    nome: 'Nome',
-    cpf: 'CPF',
-    email: 'E-mail',
-    telefone: 'Telefone',
-    endereco: 'Endereço',
-    bairro: 'Bairro',
-    cidade: 'Cidade',
-    estado: 'Estado',
-    cep: 'CEP',
-    limiteLivros: 'Limite de Livros',
-  };
+  readonly configFiltro = computed<ConfigFiltro<Usuario>>(() => ({
+    placeholderBusca: 'Buscar por nome, ID, e-mail, CPF ou telefone...',
+    busca: (u) => [u.id, u.nome, u.email, u.cpf, u.telefone],
+    campos: [
+      {
+        tipo: 'opcoes',
+        chave: 'status',
+        rotulo: 'Status',
+        valorDoItem: (u) => situacaoUsuario(u),
+        opcoes: [
+          { valor: 'ATIVO', rotulo: 'Ativo' },
+          { valor: 'BLOQUEADO', rotulo: 'Bloqueado' },
+          { valor: 'INATIVO', rotulo: 'Inativo' },
+        ],
+      },
+      {
+        tipo: 'lista',
+        chave: 'cidade',
+        rotulo: 'Cidade',
+        valorDoItem: (u) => u.cidade,
+        opcoes: opcoesDosItens(this.usuarios(), (u) => u.cidade),
+      },
+    ],
+  }));
 
-  get podeEditar(): boolean {
-    return this.authService.temPermissao(Permissao.EDITAR_USUARIO);
-  }
+  readonly usuariosFiltrados = computed(() =>
+    filtrarItens(this.usuarios(), this.configFiltro(), this.filtros()),
+  );
 
   get podeCriar(): boolean {
     return this.authService.temPermissao(Permissao.CRIAR_USUARIO);
   }
 
-  get podeExcluir(): boolean {
-    return this.authService.temPermissao(Permissao.EXCLUIR_USUARIO);
-  }
-
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private toastService: ToastService,
-    private fb: FormBuilder,
-    private usuarioService: UsuarioService,
-    private authService: AuthService,
-  ) {
-    this.formUsuario = this.fb.group({
-      id: [{ value: null, disabled: true }],
-      nome: ['', [Validators.required, Validators.minLength(3)]],
-      cpf: ['', FormUtils.cpf],
-      email: ['', [Validators.required, Validators.email]],
-      telefone: [''],
-      endereco: [''],
-      numero: [''],
-      bairro: [''],
-      cidade: [''],
-      estado: ['', [Validators.minLength(2), Validators.maxLength(2)]],
-      cep: ['', Validators.pattern(/^\d{5}-?\d{3}$/)],
-      limiteLivros: [1, Validators.min(1)],
-    });
-  }
-
   ngOnInit(): void {
-    this.usuarioService.listarAlunos().subscribe({
+    // Inclui inativos para que possam ser encontrados (filtro Status) e reativados.
+    this.usuarioService.listarAlunos(true).subscribe({
       next: (usuarios) => {
-        this.usuarios = usuarios;
-        this.carregando = false;
-        this.cdr.markForCheck();
+        this.usuarios.set(usuarios);
+        this.carregando.set(false);
       },
       error: (error) => {
-        this.carregando = false;
-        this.cdr.markForCheck();
+        this.carregando.set(false);
         this.toastService.erro(error.error?.message ?? 'Não foi possível carregar os usuários.');
       },
     });
   }
 
-  isInvalido(campo: string): boolean {
-    return FormUtils.isInvalido(this.formUsuario, campo, this.enviado);
+  acoesDoUsuario(usuario: Usuario): AcaoMenu[] {
+    const podeEditar = this.authService.temPermissao(Permissao.EDITAR_USUARIO);
+    const ocupado = this.processandoId() !== null;
+    const inativo = usuario.ativo === false;
+    return [
+      { rotulo: 'Ver detalhes', icone: 'bi-eye', rota: ['/usuarios', usuario.id] },
+      {
+        rotulo: 'Ver histórico',
+        icone: 'bi-clock-history',
+        rota: '/historicoEmprestimo',
+        queryParams: { usuario: usuario.id },
+      },
+      {
+        rotulo: 'Editar',
+        icone: 'bi-pencil',
+        rota: ['/usuarios', usuario.id, 'editar'],
+        visivel: podeEditar,
+      },
+      {
+        rotulo: usuario.estaBloqueado ? 'Desbloquear' : 'Bloquear',
+        icone: usuario.estaBloqueado ? 'bi-unlock' : 'bi-lock',
+        separadorAntes: true,
+        visivel: podeEditar,
+        desabilitado: ocupado,
+        executar: () => void this.alternarBloqueio(usuario),
+      },
+      {
+        rotulo: inativo ? 'Reativar' : 'Inativar',
+        icone: inativo ? 'bi-person-check' : 'bi-person-dash',
+        visivel: podeEditar,
+        desabilitado: ocupado,
+        executar: () => void this.alternarAtivacao(usuario),
+      },
+      {
+        rotulo: 'Excluir',
+        icone: 'bi-trash',
+        perigo: true,
+        separadorAntes: true,
+        visivel: this.authService.temPermissao(Permissao.EXCLUIR_USUARIO),
+        desabilitado: ocupado,
+        executar: () => void this.excluir(usuario),
+      },
+    ];
   }
 
-  pesquisarUsuario(busca: Busca): void {
-    this.busca = busca.texto.trim();
-    this.filtro = busca.filtro;
+  async alternarBloqueio(usuario: Usuario): Promise<void> {
+    await this.aplicar(usuario, () => this.acoesUsuario.alternarBloqueio(usuario));
   }
 
-  usuariosFiltrados(): Usuario[] {
-    return this.usuarios.filter((usuario) => {
-      const valor = this.busca.toLowerCase();
-
-      if (this.filtro === 'ID') return usuario.id?.toString().includes(valor) ?? false;
-      if (this.filtro === 'NOME') return usuario.nome.toLowerCase().includes(valor);
-      return usuario.nome.toLowerCase().includes(valor) || usuario.id?.toString().includes(valor) === true;
-    });
+  async alternarAtivacao(usuario: Usuario): Promise<void> {
+    await this.aplicar(usuario, () => this.acoesUsuario.alternarAtivacao(usuario));
   }
 
-  selecionarUsuario(usuario: Usuario): void {
-    this.usuarioSelecionado = usuario;
+  async excluir(usuario: Usuario): Promise<void> {
+    this.processandoId.set(usuario.id ?? null);
+    const excluido = await this.acoesUsuario.excluir(usuario);
+    this.processandoId.set(null);
+    if (excluido) this.usuarios.update((lista) => lista.filter((u) => u.id !== usuario.id));
   }
 
-  private trocarModal(modalAtualId: string, proximoModalId: string): void {
-    const modalAtualElemento = document.getElementById(modalAtualId);
-    const proximoModalElemento = document.getElementById(proximoModalId);
-
-    if (!proximoModalElemento) return;
-
-    const abrirProximoModal = () => {
-      bootstrap.Modal.getOrCreateInstance(proximoModalElemento).show();
-    };
-
-    if (!modalAtualElemento) {
-      abrirProximoModal();
-      return;
+  /** Executa a ação (com confirmação) e atualiza a linha da tabela com a resposta do backend. */
+  private async aplicar(usuario: Usuario, acao: () => Promise<Usuario | null>): Promise<void> {
+    this.processandoId.set(usuario.id ?? null);
+    const atualizado = await acao();
+    this.processandoId.set(null);
+    if (atualizado) {
+      this.usuarios.update((lista) => lista.map((u) => (u.id === atualizado.id ? atualizado : u)));
     }
-
-    const modalAtual = bootstrap.Modal.getInstance(modalAtualElemento);
-
-    if (!modalAtual) {
-      abrirProximoModal();
-      return;
-    }
-
-    modalAtualElemento.addEventListener('hidden.bs.modal', abrirProximoModal, { once: true });
-    modalAtual.hide();
-  }
-
-  editarUsuario(): void {
-    if (!this.usuarioSelecionado) return;
-
-    this.usuarioEditando = { ...this.usuarioSelecionado };
-
-    this.formUsuario.reset({
-      id: this.usuarioSelecionado.id,
-      nome: this.usuarioSelecionado.nome,
-      cpf: this.usuarioSelecionado.cpf,
-      email: this.usuarioSelecionado.email,
-      telefone: this.usuarioSelecionado.telefone,
-      endereco: this.usuarioSelecionado.endereco,
-      numero: this.usuarioSelecionado.numero,
-      bairro: this.usuarioSelecionado.bairro,
-      cidade: this.usuarioSelecionado.cidade,
-      estado: this.usuarioSelecionado.estado,
-      cep: this.usuarioSelecionado.cep,
-      limiteLivros: this.usuarioSelecionado.limiteLivros,
-    });
-
-    this.enviado = false;
-    this.mensagensErro = [];
-
-    this.trocarModal('modalUsuario', 'editarModal');
-  }
-
-  salvarEdicao(): void {
-    if (!this.podeEditar || this.salvando) return;
-    this.enviado = true;
-    this.mensagensErro = FormUtils.gerarMensagensErro(this.formUsuario, this.nomesCampos);
-
-    if (this.formUsuario.invalid) return; // o modal continua aberto, com o alerta
-
-    // Sincroniza o nome exibido na confirmação antes de persistir.
-    this.usuarioEditando = { ...this.usuarioEditando, ...this.formUsuario.getRawValue() };
-
-    this.trocarModal('editarModal', 'confirmarEdicaoUsuarioModal');
-  }
-
-  cancelarConfirmacaoEdicao(): void {
-    this.trocarModal('confirmarEdicaoUsuarioModal', 'editarModal');
-  }
-
-  confirmarEdicao(): void {
-    const selecionado = this.usuarioSelecionado;
-    const id = selecionado?.id;
-    if (!this.podeEditar || !selecionado || id == null || this.salvando) return;
-
-    const dados = this.formUsuario.getRawValue();
-    const atualizacao: UsuarioAtualizacao = {
-      nome: String(dados.nome).trim(),
-      email: String(dados.email).trim().toLocaleLowerCase('pt-BR'),
-      filialId: selecionado.filialId,
-      cpf: dados.cpf ? String(dados.cpf).replace(/\D/g, '') : undefined,
-      telefone: dados.telefone ? String(dados.telefone).replace(/\D/g, '') : undefined,
-      dataNascimento: this.dataISO(selecionado.dataNascimento),
-      endereco: String(dados.endereco ?? '').trim() || undefined,
-      numero: String(dados.numero ?? '').trim() || undefined,
-      bairro: String(dados.bairro ?? '').trim() || undefined,
-      cidade: String(dados.cidade ?? '').trim() || undefined,
-      estado: String(dados.estado ?? '').trim() || undefined,
-      cep: dados.cep ? String(dados.cep).replace(/\D/g, '') : undefined,
-      limiteLivros: dados.limiteLivros == null ? undefined : Number(dados.limiteLivros),
-    };
-
-    this.salvando = true;
-    this.usuarioService.atualizar(id, atualizacao).subscribe({
-      next: (usuarioAtualizado) => {
-        const index = this.usuarios.findIndex((usuario) => usuario.id === id);
-        if (index !== -1) this.usuarios[index] = usuarioAtualizado;
-        this.usuarioSelecionado = usuarioAtualizado;
-        this.usuarioEditando = { ...usuarioAtualizado };
-        this.salvando = false;
-        bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoUsuarioModal'))?.hide();
-        this.toastService.sucesso('Usuário editado com sucesso!');
-      },
-      error: (error) => {
-        this.salvando = false;
-        this.toastService.erro(error.error?.message ?? 'Não foi possível editar o usuário.');
-      },
-    });
-  }
-
-  abrirModalExcluir(): void {
-    this.trocarModal('modalUsuario', 'excluirModal');
-  }
-
-  cancelarExclusao(): void {
-    this.trocarModal('excluirModal', 'modalUsuario');
-  }
-
-  confirmarExclusao(): void {
-    const id = this.usuarioSelecionado?.id;
-    if (!this.podeExcluir || id == null || this.salvando) return;
-
-    this.salvando = true;
-    this.usuarioService.excluir(id).subscribe({
-      next: () => {
-        this.usuarios = this.usuarios.filter((usuario) => usuario.id !== id);
-        this.usuarioSelecionado = null;
-        this.salvando = false;
-        bootstrap.Modal.getInstance(document.getElementById('excluirModal'))?.hide();
-        this.toastService.sucesso('Usuário excluído com sucesso!');
-      },
-      error: (error) => {
-        this.salvando = false;
-        this.toastService.erro(error.error?.message ?? 'Não foi possível excluir o usuário.');
-      },
-    });
-  }
-
-  private dataISO(data?: Date | string): string | undefined {
-    if (!data) return undefined;
-    if (typeof data === 'string') return data.slice(0, 10);
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
   }
 }

@@ -43,6 +43,10 @@
   <!-- Rodapé -->
   <app-footer *ngIf="!isAuthRoute()"></app-footer>
 
-  <!-- Notificações -->
+  <!-- Notificações (canto superior direito) -->
   <app-toast></app-toast>
+
+  <!-- Confirmação de ações (renovar, devolver, excluir...) no modal padrão -->
+  <lbr-confirmacao />
+
 </div>

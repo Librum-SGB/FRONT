@@ -1,0 +1,15 @@
+.confirmacao-detalhes__linha {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--bs-border-color-translucent);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  dd {
+    overflow-wrap: anywhere;
+  }
+}

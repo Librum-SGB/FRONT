@@ -1,0 +1,113 @@
+<app-corpo-padrao>
+  <div class="titulo">Editar Usuário</div>
+
+  <div class="corpo">
+    <lbr-trilha atual="Editar" [padrao]="{ rotulo: usuario()?.nome ?? 'Usuário', rota: ['/usuarios', id] }" />
+
+    @if (carregando()) {
+      <p class="text-center text-secondary py-5 mb-0">Carregando dados do usuário...</p>
+    } @else if (erroCarregamento()) {
+      <lbr-aviso [mensagem]="erroCarregamento()">
+        <a lbrButton variant="outros" [routerLink]="rotaUsuarios">Voltar para usuários</a>
+      </lbr-aviso>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+        <app-alerta-erros [mensagens]="mensagensErro"></app-alerta-erros>
+
+        <p class="text-secondary">Os campos marcados com * são obrigatórios.</p>
+
+        <h2 class="h5 mt-4">Dados pessoais</h2>
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome completo *</label>
+          <input id="nome" type="text" class="form-control" formControlName="nome" autocomplete="name"
+            [class.is-invalid]="isInvalido('nome')">
+          <div class="invalid-feedback">{{ erro('nome') }}</div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="dataNascimento" class="form-label">Data de nascimento</label>
+            <input id="dataNascimento" type="date" class="form-control" formControlName="dataNascimento"
+              [max]="hoje" [class.is-invalid]="isInvalido('dataNascimento')">
+            <div class="invalid-feedback">{{ erro('dataNascimento') }}</div>
+          </div>
+          <div class="col-md-6">
+            <label for="cpf" class="form-label">CPF</label>
+            <input id="cpf" type="text" class="form-control" [imask]="Mask.CPF" formControlName="cpf"
+              autocomplete="off" [class.is-invalid]="isInvalido('cpf')">
+            <div class="invalid-feedback">{{ erro('cpf') }}</div>
+          </div>
+        </div>
+
+        <h2 class="h5 mt-4">Contato</h2>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="email" class="form-label">E-mail *</label>
+            <input id="email" type="email" class="form-control" formControlName="email" autocomplete="email"
+              [class.is-invalid]="isInvalido('email')">
+            <div class="invalid-feedback">{{ erro('email') }}</div>
+          </div>
+          <div class="col-md-6">
+            <label for="telefone" class="form-label">Telefone</label>
+            <input id="telefone" type="text" class="form-control" [imask]="Mask.CELULAR"
+              formControlName="telefone" autocomplete="tel">
+          </div>
+        </div>
+
+        <h2 id="secao-endereco" class="h5 mt-4">Endereço</h2>
+        <div class="row g-3 mb-3">
+          <div class="col-md-8">
+            <label for="endereco" class="form-label">Endereço</label>
+            <input id="endereco" type="text" class="form-control" formControlName="endereco"
+              autocomplete="street-address">
+          </div>
+          <div class="col-md-4">
+            <label for="numero" class="form-label">Número</label>
+            <input id="numero" type="text" class="form-control" formControlName="numero">
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label for="bairro" class="form-label">Bairro</label>
+            <input id="bairro" type="text" class="form-control" formControlName="bairro">
+          </div>
+          <div class="col-md-4">
+            <label for="cidade" class="form-label">Cidade</label>
+            <input id="cidade" type="text" class="form-control" formControlName="cidade" autocomplete="address-level2">
+          </div>
+          <div class="col-md-2">
+            <label for="estado" class="form-label">Estado</label>
+            <input id="estado" type="text" class="form-control text-uppercase" formControlName="estado" maxlength="2"
+              autocomplete="address-level1" [class.is-invalid]="isInvalido('estado')">
+            <div class="invalid-feedback">{{ erro('estado') }}</div>
+          </div>
+          <div class="col-md-2">
+            <label for="cep" class="form-label">CEP</label>
+            <input id="cep" type="text" class="form-control" [imask]="Mask.CEP" formControlName="cep"
+              autocomplete="postal-code" [class.is-invalid]="isInvalido('cep')">
+            <div class="invalid-feedback">{{ erro('cep') }}</div>
+          </div>
+        </div>
+
+        <h2 class="h5 mt-4">Empréstimos</h2>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <label for="limiteLivros" class="form-label">Limite de livros *</label>
+            <input id="limiteLivros" type="number" class="form-control" formControlName="limiteLivros" min="1"
+              [class.is-invalid]="isInvalido('limiteLivros')">
+            <div class="invalid-feedback">{{ erro('limiteLivros') }}</div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" lbrButton variant="cancelar" [lbrVoltar]="['/usuarios', id]" [disabled]="salvando()">
+            Cancelar
+          </button>
+          <button type="submit" lbrButton variant="cadastrar" [disabled]="salvando()">
+            {{ salvando() ? 'Salvando...' : 'Salvar alterações' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</app-corpo-padrao>

@@ -1,0 +1,123 @@
+<app-corpo-padrao>
+  <div class="titulo">Detalhes do Empréstimo</div>
+
+  <div class="corpo">
+    <lbr-trilha [atual]="'Empréstimo #' + (emprestimo()?.id ?? '')"
+      [padrao]="{ rotulo: 'Histórico de Empréstimos', rota: '/historicoEmprestimo' }" />
+
+    @if (carregando()) {
+      <p class="text-center text-secondary py-5 mb-0">Carregando empréstimo...</p>
+    } @else if (erroCarregamento()) {
+      <div class="text-center py-5 border border-secondary border-opacity-25 rounded">
+        <i class="bi bi-exclamation-circle fs-1 text-secondary opacity-50" aria-hidden="true"></i>
+        <p class="text-secondary mt-2">{{ erroCarregamento() }}</p>
+        <a lbrButton variant="outros" routerLink="/historicoEmprestimo">Voltar para o histórico</a>
+      </div>
+    } @else {
+      @if (emprestimo(); as emprestimo) {
+        <!-- CABEÇALHO -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
+          <div class="d-flex align-items-center gap-3">
+            <span class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center flex-shrink-0"
+              style="width: 64px; height: 64px;" aria-hidden="true">
+              <i class="bi bi-arrow-left-right fs-2"></i>
+            </span>
+            <div>
+              <h2 class="h4 mb-1">Empréstimo #{{ emprestimo.id }}</h2>
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                @if (situacao(); as situacao) {
+                  <app-badge [status]="situacao.cor">{{ situacao.rotulo }}</app-badge>
+                }
+                @if (atraso()) {
+                  <small class="text-danger">{{ atraso() }} {{ atraso() === 1 ? 'dia' : 'dias' }} de atraso</small>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 flex-shrink-0">
+            <button type="button" lbrButton variant="cancelar" lbrVoltar="/historicoEmprestimo">
+              <i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar
+            </button>
+            @if (podeGerenciar && emAberto()) {
+              <button type="button" lbrButton variant="renovar" [disabled]="processando() || previa()?.permitida === false"
+                [attr.title]="previa()?.permitida === false ? previa()?.motivo : null" (click)="renovar()">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i> Renovar
+              </button>
+              <button type="button" lbrButton variant="confirmar" [disabled]="processando()" (click)="devolver()">
+                <i class="bi bi-box-arrow-in-down" aria-hidden="true"></i> Registrar devolução
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <section class="card h-100">
+              <div class="card-body p-4">
+                <h3 class="h6 text-uppercase text-secondary mb-3">Empréstimo</h3>
+                <dl class="row mb-0">
+                  <dt class="col-sm-4 fw-semibold">Usuário</dt>
+                  <dd class="col-sm-8">
+                    <lbr-link-entidade tipo="usuario" [id]="emprestimo.usuarioId" [texto]="emprestimo.usuarioNome" />
+                  </dd>
+                  <dt class="col-sm-4 fw-semibold">Material</dt>
+                  <dd class="col-sm-8">
+                    <lbr-link-entidade tipo="material" [id]="emprestimo.materialId" [texto]="emprestimo.materialTitulo" />
+                  </dd>
+                  <dt class="col-sm-4 fw-semibold">Exemplar</dt>
+                  <dd class="col-sm-8">#{{ emprestimo.exemplarId }}</dd>
+                  <dt class="col-sm-4 fw-semibold">Data do empréstimo</dt>
+                  <dd class="col-sm-8">{{ formatarDataBR(emprestimo.dataSaida) }}</dd>
+                  <dt class="col-sm-4 fw-semibold">Devolução prevista</dt>
+                  <dd class="col-sm-8">{{ formatarDataBR(emprestimo.dataDevolucaoPrevista) }}</dd>
+                  <dt class="col-sm-4 fw-semibold">Devolução realizada</dt>
+                  <dd class="col-sm-8">{{ formatarDataBR(emprestimo.dataDevolucaoEfetivada) }}</dd>
+                  <dt class="col-sm-4 fw-semibold">Renovações feitas</dt>
+                  <dd class="col-sm-8 mb-0">{{ emprestimo.renovacoesContagem ?? 0 }}</dd>
+                </dl>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-lg-4 d-flex flex-column gap-4">
+            @if (previa(); as previa) {
+              <section class="card">
+                <div class="card-body p-4">
+                  <h3 class="h6 text-uppercase text-secondary mb-3">Renovação</h3>
+                  @if (previa.permitida) {
+                    <p class="mb-2">
+                      Se renovar agora, a devolução passa para
+                      <strong class="text-primary">{{ formatarDataBR(previa.novaDataDevolucao) }}</strong>.
+                    </p>
+                    @if (previa.limiteRenovacoes != null) {
+                      <small class="text-secondary">
+                        {{ previa.renovacoesRealizadas }} de {{ previa.limiteRenovacoes }} renovações usadas.
+                      </small>
+                    }
+                  } @else {
+                    <p class="text-secondary mb-0">
+                      <i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ previa.motivo }}
+                    </p>
+                  }
+                </div>
+              </section>
+            }
+
+            <section class="card">
+              <div class="card-body p-4">
+                <h3 class="h6 text-uppercase text-secondary mb-3">Registro</h3>
+                <dl class="mb-0">
+                  <dt class="fw-semibold">Criado em</dt>
+                  <dd>{{ emprestimo.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</dd>
+                  <dt class="fw-semibold">Última atualização</dt>
+                  <dd class="mb-0">{{ emprestimo.dataUltimaAtualizacao | date: 'dd/MM/yyyy HH:mm' }}</dd>
+                </dl>
+              </div>
+            </section>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</app-corpo-padrao>

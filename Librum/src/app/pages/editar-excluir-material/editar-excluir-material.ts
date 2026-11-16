@@ -1,26 +1,27 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmacaoService } from '../../shared/services/confirmacao.service';
+import { AuthService } from '../../services/auth.service';
+import { Permissao } from '../../enum/permissoes.enum';
+import { AcaoMenu, LbrAcoes } from '../../shared/component/lbr-acoes/lbr-acoes';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { LbrLinkEntidade } from '../../shared/component/lbr-link-entidade/lbr-link-entidade';
 import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
-import { AlertaErros } from '../../shared/component/alerta-erros/alerta-erros';
-import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
-import { FormUtils } from '../../utils/FormUtil';
-import { LbrBadge, LbrBadgeVariant } from '../../shared/component/lbr-badge/lbr-badge';
-import { InputBusca } from '../../shared/component/input-busca/input-busca';
-import { Busca } from '../../shared/component/input-busca/busca.interface';
+import { LbrBadge } from '../../shared/component/lbr-badge/lbr-badge';
+import { LbrFiltros } from '../../shared/component/lbr-filtros/lbr-filtros';
+import {
+  ConfigFiltro,
+  filtrarItens,
+  temFiltroAtivo,
+  ValoresFiltro,
+} from '../../shared/component/lbr-filtros/filtros';
 import {
   LbrTabela,
   LbrTabelaCabecalho,
   LbrTabelaLinha,
+  LbrTabelaOrdenar,
 } from '../../shared/component/lbr-tabela/lbr-tabela';
 
 import { MaterialService } from '../../services/material';
@@ -29,250 +30,189 @@ import { EditoraService } from '../../services/editora';
 import { GeneroService } from '../../services/genero';
 import { ExemplarService } from '../../services/exemplar';
 
-import { MaterialResponse, MaterialRequest } from '../../models/material.model';
+import { MaterialResponse } from '../../models/material.model';
 import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
 import { GeneroResponse } from '../../models/genero.model';
 import { ExemplarResponse } from '../../models/exemplar.model';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  MaterialExibicao,
+  materiaisComExemplarDisponivel,
+  paraMaterialExibicao,
+} from '../../utils/material.util';
 
-declare var bootstrap: any;
-
-// Valor do enum StatusExemplar que significa "pode ser emprestado".
-const STATUS_DISPONIVEL = 'DISPONIVEL';
-
-const PREFIXOS: Record<string, string> = {
-  LIVRO: 'L',
-  PERIODICO: 'P',
-  OUTRO: 'OM',
-};
-
-const LABELS: Record<string, string> = {
-  LIVRO: 'Livro',
-  PERIODICO: 'Periódico',
-  OUTRO: 'Outros Materiais',
-};
-
-// Ajuste os nomes das variantes ao que o seu LbrBadge aceita
-const VARIANTS: Record<string, LbrBadgeVariant> = {
-  LIVRO: 'livro',
-  PERIODICO: 'periodico',
-  OUTRO: 'outros',
-};
-
-// Formato usado só pra exibir na tela (já com os nomes resolvidos, não os IDs)
-interface MaterialExibicao {
-  id: number;
-  codigo: string;
-  titulo: string;
-  subtitulo?: string;
-  tipo: string;
-  tipoLabel: string;
-  tipoVariant: LbrBadgeVariant;
-  disponibilidade?: 'Disponível' | 'Indisponível';
-  disponibilidadeVariant?: LbrBadgeVariant;
-  autorId?: number;
-  autorNome: string;
-  editoraId?: number;
-  editoraNome: string;
-  anoPublicacao?: number;
-  isbn?: string;
-  edicao?: number;
-  quantidadePaginas?: number;
-  sinopse?: string;
-  issn?: string;
-  tema?: string;
-  descricao?: string;
-  observacao?: string;
-  generoIds: number[];
-  generoNomes: string;
-}
+const porNome = <T extends { id: number; nome: string }>(itens: T[]) =>
+  itens
+    .map((i) => ({ valor: i.id, rotulo: i.nome }))
+    .sort((a, b) => a.rotulo.localeCompare(b.rotulo, 'pt-BR'));
 
 @Component({
   selector: 'app-editar-excluir-material',
   imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     CorpoPadrao,
+    LbrLinkEntidade,
     LbrButtom,
-    AlertaErros,
-    SelectPesquisavel,
     LbrBadge,
-    InputBusca,
+    LbrFiltros,
+    LbrAcoes,
     RouterLink,
     LbrTabela,
     LbrTabelaCabecalho,
     LbrTabelaLinha,
+    LbrTabelaOrdenar,
   ],
   templateUrl: './editar-excluir-material.html',
   styleUrl: './editar-excluir-material.scss',
 })
 export class EditarExcluirMaterial implements OnInit {
+  protected readonly temFiltroAtivo = temFiltroAtivo;
+
   // ---------- Dados da API (signals) ----------
   private materiaisOriginais = signal<MaterialResponse[]>([]);
-  autores = signal<AutorResponse[]>([]);
-  editoras = signal<EditoraResponse[]>([]);
-  generos = signal<GeneroResponse[]>([]);
-  private exemplares = signal<ExemplarResponse[]>([]);
-  private exemplaresCarregados = signal(false);
+  private autores = signal<AutorResponse[]>([]);
+  private editoras = signal<EditoraResponse[]>([]);
+  private generos = signal<GeneroResponse[]>([]);
+  /** `null` enquanto os exemplares não foram carregados (ou se falharem). */
+  private exemplares = signal<ExemplarResponse[] | null>(null);
   carregando = signal(true);
 
-  // ---------- Busca ----------
-  tipoFiltro = signal('todos');
-  textoBusca = signal('');
-
-  // IDs dos materiais que têm pelo menos 1 exemplar disponível
-  private materiaisComExemplarDisponivel = computed(
-    () =>
-      new Set(
-        this.exemplares()
-          .filter((e) => e.status === STATUS_DISPONIVEL)
-          .map((e) => e.materialId),
-      ),
-  );
-
-  materiais = computed(() => this.materiaisOriginais().map((m) => this.paraExibicao(m)));
-
-  materiaisFiltrados = computed(() => {
-    const busca = this.textoBusca().toLowerCase().trim();
-    if (!busca) return this.materiais();
-
-    const filtro = this.tipoFiltro();
-
-    return this.materiais().filter((material) => {
-      switch (filtro) {
-        case 'ID':
-          return material.codigo.toLowerCase().includes(busca);
-        case 'TITULO':
-          return material.titulo.toLowerCase().includes(busca);
-        case 'AUTOR':
-          return material.autorNome.toLowerCase().includes(busca);
-        case 'GENERO':
-          return material.generoNomes.toLowerCase().includes(busca);
-        case 'ISBN':
-          return (material.isbn ?? '').toLowerCase().includes(busca);
-        case 'todos':
-        default:
-          return (
-            material.codigo.toLowerCase().includes(busca) ||
-            material.titulo.toLowerCase().includes(busca) ||
-            material.autorNome.toLowerCase().includes(busca) ||
-            material.generoNomes.toLowerCase().includes(busca) ||
-            (material.isbn ?? '').toLowerCase().includes(busca)
-          );
-      }
-    });
+  materiais = computed(() => {
+    const exemplares = this.exemplares();
+    const referencias = {
+      autores: this.autores(),
+      editoras: this.editoras(),
+      generos: this.generos(),
+      materiaisDisponiveis: exemplares ? materiaisComExemplarDisponivel(exemplares) : undefined,
+    };
+    return this.materiaisOriginais().map((m) => paraMaterialExibicao(m, referencias));
   });
 
-  // ---------- Modais / edição ----------
-  materialSelecionado: MaterialExibicao | null = null;
-  materialEditando: any = {};
-  generoIdsEditando: number[] = [];
-  private materialIdDaRota?: number;
-  private materialDaRotaAberto?: number;
+  // ---------- Filtros ----------
+  readonly filtros = signal<ValoresFiltro>({});
 
-  // ---------- Formulário ----------
-  formMaterial: FormGroup;
-  enviado = false;
-  mensagensErro: string[] = [];
+  readonly configFiltro = computed<ConfigFiltro<MaterialExibicao>>(() => ({
+    placeholderBusca: 'Buscar por título, código, autor, editora ou ISBN...',
+    busca: (m) => [m.codigo, m.titulo, m.subtitulo, m.autorNome, m.editoraNome, m.generoNomes, m.isbn, m.issn],
+    campos: [
+      {
+        tipo: 'opcoes',
+        chave: 'tipo',
+        rotulo: 'Tipo',
+        valorDoItem: (m) => m.tipo,
+        opcoes: [
+          { valor: 'LIVRO', rotulo: 'Livro' },
+          { valor: 'PERIODICO', rotulo: 'Periódico' },
+          { valor: 'OUTRO', rotulo: 'Outros' },
+        ],
+      },
+      {
+        tipo: 'opcoes',
+        chave: 'disponibilidade',
+        rotulo: 'Disponibilidade',
+        valorDoItem: (m) => m.disponibilidade,
+        opcoes: [
+          { valor: 'Disponível', rotulo: 'Disponível' },
+          { valor: 'Indisponível', rotulo: 'Indisponível' },
+        ],
+      },
+      {
+        tipo: 'lista',
+        chave: 'genero',
+        rotulo: 'Gênero',
+        valorDoItem: (m) => m.generoIds,
+        opcoes: porNome(this.generos()),
+      },
+      {
+        tipo: 'lista',
+        chave: 'autor',
+        rotulo: 'Autor',
+        valorDoItem: (m) => m.autorId,
+        opcoes: porNome(this.autores()),
+      },
+      {
+        tipo: 'lista',
+        chave: 'editora',
+        rotulo: 'Editora',
+        valorDoItem: (m) => m.editoraId,
+        opcoes: porNome(this.editoras()),
+      },
+    ],
+  }));
 
-  private readonly nomesBase: Record<string, string> = {
-    titulo: 'Título',
-    autorId: 'Autor',
-    editoraId: 'Editora',
-    anoPublicacao: 'Ano',
-    isbn: 'ISBN',
-    issn: 'ISSN',
-    edicao: 'Edição',
-    quantidadePaginas: 'Páginas',
-    tema: 'Tema',
-  };
+  materiaisFiltrados = computed(() =>
+    filtrarItens(this.materiais(), this.configFiltro(), this.filtros()),
+  );
 
-  private get nomesCampos(): Record<string, string> {
-    return this.materialEditando?.tipo === 'OUTRO'
-      ? { ...this.nomesBase, titulo: 'Nome', tema: 'Tipo' }
-      : this.nomesBase;
+  private readonly authService = inject(AuthService);
+  private readonly confirmacao = inject(ConfirmacaoService);
+
+  acoesDoMaterial(material: MaterialExibicao): AcaoMenu[] {
+    return [
+      { rotulo: 'Ver detalhes', icone: 'bi-eye', rota: ['/materiais', material.id] },
+      {
+        rotulo: 'Ver histórico',
+        icone: 'bi-clock-history',
+        rota: '/historicoEmprestimo',
+        queryParams: { material: material.id },
+      },
+      {
+        rotulo: 'Editar',
+        icone: 'bi-pencil',
+        rota: ['/materiais', material.id, 'editar'],
+        visivel: this.authService.temPermissao(Permissao.EDITAR_MATERIAL),
+      },
+      {
+        rotulo: 'Excluir',
+        icone: 'bi-trash',
+        perigo: true,
+        separadorAntes: true,
+        visivel: this.authService.temPermissao(Permissao.EXCLUIR_MATERIAL),
+        executar: () => void this.excluir(material),
+      },
+    ];
+  }
+
+  async excluir(material: MaterialExibicao): Promise<void> {
+    const exemplares = this.exemplares()?.filter((e) => e.materialId === material.id).length;
+    const confirmado = await this.confirmacao.confirmar({
+      titulo: 'Excluir material',
+      icone: 'bi-trash',
+      tom: 'danger',
+      mensagem: 'Você está excluindo este material do acervo.',
+      detalhes: [
+        { rotulo: 'Código', valor: material.codigo },
+        { rotulo: 'Título', valor: material.titulo, destaque: true },
+        { rotulo: 'Tipo', valor: material.tipoLabel },
+        ...(exemplares != null ? [{ rotulo: 'Exemplares', valor: String(exemplares) }] : []),
+      ],
+      aviso: 'O material deixa de aparecer no acervo e nas buscas.',
+      textoConfirmar: 'Excluir material',
+    });
+    if (!confirmado) return;
+
+    this.materialService.delete(material.id).subscribe({
+      next: () => {
+        this.materiaisOriginais.update((lista) => lista.filter((m) => m.id !== material.id));
+        this.toastService.sucesso(`Material "${material.titulo}" excluído com sucesso.`);
+      },
+      error: (err) => {
+        console.error('Erro ao excluir material:', err);
+        this.toastService.erro(err.error?.message ?? 'Erro ao excluir o material.');
+      },
+    });
   }
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
     private toastService: ToastService,
-    private fb: FormBuilder,
     private materialService: MaterialService,
     private autorService: AutorService,
     private editoraService: EditoraService,
     private generoService: GeneroService,
     private exemplarService: ExemplarService,
-  ) {
-    // validadores de cada campo são definidos por tipo em aplicarValidadores()
-    this.formMaterial = this.fb.group({
-      codigo: [{ value: '', disabled: true }],
-      titulo: [''],
-      subtitulo: [''],
-      autorId: [''],
-      editoraId: [''],
-      anoPublicacao: [null],
-      isbn: [''],
-      issn: [''],
-      edicao: [null],
-      quantidadePaginas: [null, Validators.min(1)],
-      sinopse: [''],
-      tema: [''],
-      descricao: [''],
-      observacao: [''],
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      const id = Number(params.get('materialId'));
-      this.materialIdDaRota = Number.isInteger(id) && id > 0 ? id : undefined;
-      if (params.get('editar') === 'true') {
-        this.abrirEdicaoSolicitada();
-      }
-    });
     this.carregarDados();
-  }
-
-  isInvalido(campo: string): boolean {
-    return FormUtils.isInvalido(this.formMaterial, campo, this.enviado);
-  }
-
-  private aplicarValidadores(tipo: string): void {
-    const anoMax = new Date().getFullYear();
-    const req = Validators.required;
-    const ano = [req, Validators.min(1000), Validators.max(anoMax)];
-
-    const regras: Record<string, Record<string, ValidatorFn[]>> = {
-      LIVRO: {
-        titulo: [req],
-        autorId: [req],
-        editoraId: [req],
-        anoPublicacao: ano,
-        isbn: [req, Validators.minLength(10), Validators.maxLength(17)],
-      },
-      PERIODICO: {
-        titulo: [req],
-        editoraId: [req],
-        edicao: [req, Validators.min(1)],
-        anoPublicacao: ano,
-        issn: [req],
-      },
-      OUTRO: {
-        titulo: [req],
-        tema: [req],
-      },
-    };
-
-    ['titulo', 'autorId', 'editoraId', 'anoPublicacao', 'isbn', 'issn', 'edicao', 'tema'].forEach(
-      (campo) => {
-        const control = this.formMaterial.get(campo)!;
-        control.setValidators(regras[tipo]?.[campo] ?? []);
-        control.updateValueAndValidity({ emitEvent: false });
-      },
-    );
   }
 
   private carregarDados(): void {
@@ -294,281 +234,21 @@ export class EditarExcluirMaterial implements OnInit {
     });
 
     this.exemplarService.findAll().subscribe({
-      next: (data) => {
-        this.exemplares.set(data);
-        this.exemplaresCarregados.set(true);
-      },
+      next: (data) => this.exemplares.set(data),
       // se falhar, a etiqueta de disponibilidade simplesmente não aparece
       error: (err) => console.error('Erro ao carregar exemplares:', err),
     });
 
     this.materialService.findAll().subscribe({
       next: (data) => {
-        // ordena por ID pra a lista não "embaralhar" depois de uma edição
+        // ordena por ID pra a lista não "embaralhar" entre carregamentos
         this.materiaisOriginais.set([...data].sort((a, b) => a.id - b.id));
         this.carregando.set(false);
-        this.abrirEdicaoSolicitada();
       },
       error: (err) => {
         console.error('Erro ao carregar materiais:', err);
         this.toastService.erro('Erro ao carregar os materiais cadastrados.');
         this.carregando.set(false);
-      },
-    });
-  }
-
-  private abrirEdicaoSolicitada(): void {
-    const id = this.materialIdDaRota;
-    if (!id || id === this.materialDaRotaAberto || this.carregando()) {
-      return;
-    }
-
-    const material = this.materiais().find((item) => item.id === id);
-    if (!material) {
-      return;
-    }
-
-    this.materialDaRotaAberto = id;
-    this.materialEditando = { ...material };
-    this.generoIdsEditando = [...material.generoIds];
-    setTimeout(() => {
-      const modal = document.getElementById('modalEditar');
-      if (modal) {
-        bootstrap.Modal.getOrCreateInstance(modal).show();
-      }
-    });
-  }
-
-  private paraExibicao(m: MaterialResponse): MaterialExibicao {
-    const autor = this.autores().find((a) => a.id === m.autorId);
-    const editora = this.editoras().find((e) => e.id === m.editoraId);
-    const generoIds = m.generoIds ?? [];
-    const nomesGeneros = generoIds
-      .map((id) => this.generos().find((g) => g.id === id)?.nome)
-      .filter((nome): nome is string => !!nome)
-      .join(', ');
-
-    let disponibilidade: MaterialExibicao['disponibilidade'];
-    let disponibilidadeVariant: LbrBadgeVariant | undefined;
-
-    if (this.exemplaresCarregados()) {
-      const disponivel = this.materiaisComExemplarDisponivel().has(m.id);
-      disponibilidade = disponivel ? 'Disponível' : 'Indisponível';
-      disponibilidadeVariant = disponivel ? 'disponivel' : 'indisponivel';
-    }
-
-    return {
-      id: m.id,
-      codigo: (PREFIXOS[m.tipo] ?? 'M') + '-' + String(m.id).padStart(5, '0'),
-      titulo: m.titulo,
-      subtitulo: m.subtitulo,
-      tipo: m.tipo,
-      tipoLabel: LABELS[m.tipo] ?? m.tipo,
-      tipoVariant: VARIANTS[m.tipo] ?? 'outros',
-      disponibilidade,
-      disponibilidadeVariant,
-      autorId: m.autorId,
-      autorNome: autor?.nome ?? '—',
-      editoraId: m.editoraId,
-      editoraNome: editora?.nome ?? '—',
-      anoPublicacao: m.anoPublicacao,
-      isbn: m.isbn,
-      edicao: m.edicao,
-      quantidadePaginas: m.quantidadePaginas,
-      sinopse: m.sinopse,
-      issn: m.issn,
-      tema: m.tema,
-      descricao: m.descricao,
-      observacao: m.observacao,
-      generoIds,
-      generoNomes: nomesGeneros || '—',
-    };
-  }
-
-  iconeTipo(tipo: string): string {
-    switch (tipo) {
-      case 'LIVRO':
-        return 'bi-book';
-      case 'PERIODICO':
-        return 'bi-newspaper';
-      case 'OUTRO':
-        return 'bi-box-seam';
-      default:
-        return 'bi-collection';
-    }
-  }
-
-  // ---------- Busca ----------
-
-  pesquisarMaterial(busca: Busca): void {
-    this.tipoFiltro.set(busca.filtro);
-    this.textoBusca.set(busca.texto);
-  }
-
-  // ---------- Modais ----------
-
-  selecionarMaterial(material: MaterialExibicao) {
-    this.materialSelecionado = material;
-  }
-
-  private trocarModal(modalAtualId: string, proximoModalId: string): void {
-    const modalAtualElemento = document.getElementById(modalAtualId);
-    const proximoModalElemento = document.getElementById(proximoModalId);
-
-    if (!proximoModalElemento) return;
-
-    const abrirProximoModal = () => {
-      bootstrap.Modal.getOrCreateInstance(proximoModalElemento).show();
-    };
-
-    if (!modalAtualElemento) {
-      abrirProximoModal();
-      return;
-    }
-
-    const modalAtual = bootstrap.Modal.getInstance(modalAtualElemento);
-
-    if (!modalAtual) {
-      abrirProximoModal();
-      return;
-    }
-
-    modalAtualElemento.addEventListener('hidden.bs.modal', abrirProximoModal, { once: true });
-    modalAtual.hide();
-  }
-
-  abrirEdicao(material: MaterialExibicao | null) {
-    if (!material) return;
-
-    this.materialEditando = { ...material };
-    this.aplicarValidadores(material.tipo);
-
-    this.formMaterial.reset({
-      codigo: material.codigo,
-      titulo: material.titulo,
-      subtitulo: material.subtitulo ?? '',
-      autorId: material.autorId ?? '',
-      editoraId: material.editoraId ?? '',
-      anoPublicacao: material.anoPublicacao ?? null,
-      isbn: material.isbn ?? '',
-      issn: material.issn ?? '',
-      edicao: material.edicao ?? null,
-      quantidadePaginas: material.quantidadePaginas ?? null,
-      sinopse: material.sinopse ?? '',
-      tema: material.tema ?? '',
-      descricao: material.descricao ?? '',
-      observacao: material.observacao ?? '',
-    });
-
-    this.enviado = false;
-    this.mensagensErro = [];
-    this.generoIdsEditando = [...material.generoIds];
-
-    this.trocarModal('modalMaterial', 'modalEditar');
-  }
-
-  salvarEdicao() {
-    this.enviado = true;
-    this.mensagensErro = FormUtils.gerarMensagensErro(this.formMaterial, this.nomesCampos);
-
-    if (this.formMaterial.invalid) {
-      // o alerta fica no topo do modal-body; rola até lá para o usuário ver
-      setTimeout(() =>
-        document
-          .querySelector('#modalEditar .modal-body')
-          ?.scrollTo({ top: 0, behavior: 'smooth' }),
-      );
-      return;
-    }
-
-    // sincroniza para a confirmação e para o payload usarem os valores novos
-    const { codigo, ...valores } = this.formMaterial.getRawValue();
-    this.materialEditando = { ...this.materialEditando, ...valores };
-
-    this.trocarModal('modalEditar', 'confirmarEdicaoMaterialModal');
-  }
-
-  cancelarConfirmacaoEdicao() {
-    this.trocarModal('confirmarEdicaoMaterialModal', 'modalEditar');
-  }
-
-  confirmarEdicao() {
-    const e = this.materialEditando;
-
-    const payload: MaterialRequest = {
-      tipo: e.tipo,
-      titulo: e.titulo,
-      subtitulo: e.subtitulo || undefined,
-      autorId: e.autorId ? Number(e.autorId) : undefined,
-      editoraId: e.editoraId ? Number(e.editoraId) : undefined,
-      anoPublicacao: e.anoPublicacao ? Number(e.anoPublicacao) : undefined,
-      isbn: e.isbn || undefined,
-      edicao: e.edicao ? Number(e.edicao) : undefined,
-      quantidadePaginas: e.quantidadePaginas ? Number(e.quantidadePaginas) : undefined,
-      sinopse: e.sinopse || undefined,
-      issn: e.issn || undefined,
-      tema: e.tema || undefined,
-      descricao: e.descricao || undefined,
-      observacao: e.observacao || undefined,
-      // no livro, manda sempre a lista (mesmo vazia) pra remover todos os gêneros funcionar
-      generoIds: e.tipo === 'LIVRO' ? this.generoIdsEditando : undefined,
-    };
-
-    this.materialService.update(e.id, payload).subscribe({
-      next: (atualizado) => {
-        this.materiaisOriginais.update((lista) =>
-          lista.map((m) => (m.id === atualizado.id ? atualizado : m)),
-        );
-        this.toastService.sucesso('Material editado com sucesso!');
-        bootstrap.Modal.getInstance(document.getElementById('confirmarEdicaoMaterialModal'))?.hide();
-        if (this.materialIdDaRota === atualizado.id) {
-          this.materialIdDaRota = undefined;
-          this.materialDaRotaAberto = undefined;
-          void this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { materialId: null, editar: null },
-            replaceUrl: true,
-          });
-        }
-        bootstrap.Modal.getInstance(
-          document.getElementById('confirmarEdicaoMaterialModal'),
-        )?.hide();
-      },
-      error: (err) => {
-        console.error('Erro ao editar material:', err);
-        this.toastService.erro('Erro ao salvar as alterações. Verifique os dados.');
-      },
-    });
-  }
-
-  abrirModalExcluir(material: MaterialExibicao | null) {
-    if (!material) return;
-
-    this.materialSelecionado = material;
-    this.trocarModal('modalMaterial', 'excluirMaterialModal');
-  }
-
-  cancelarExclusao() {
-    this.trocarModal('excluirMaterialModal', 'modalMaterial');
-  }
-
-  confirmarExclusao() {
-    if (!this.materialSelecionado) return;
-
-    const materialExcluido = this.materialSelecionado;
-
-    this.materialService.delete(materialExcluido.id).subscribe({
-      next: () => {
-        this.materiaisOriginais.update((lista) =>
-          lista.filter((m) => m.id !== materialExcluido.id),
-        );
-        this.toastService.sucesso(`Material "${materialExcluido.titulo}" excluído com sucesso.`);
-        this.materialSelecionado = null;
-        bootstrap.Modal.getInstance(document.getElementById('excluirMaterialModal'))?.hide();
-      },
-      error: (err) => {
-        console.error('Erro ao excluir material:', err);
-        this.toastService.erro('Erro ao excluir o material.');
       },
     });
   }

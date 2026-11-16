@@ -202,9 +202,7 @@ export class EncontrarMaterial implements OnInit {
   }
 
   editarMaterial(materialId: number): void {
-    void this.router.navigate(['/editarExcluirMaterial'], {
-      queryParams: { materialId, editar: true },
-    });
+    void this.router.navigate(['/materiais', materialId, 'editar']);
   }
 
   private mensagemErroOperacaoExemplar(err: unknown): string {

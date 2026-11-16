@@ -1,31 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Emprestimo } from '../../models/emprestimo.model';
 import { StatusEmprestimo } from '../../enum/status.enum';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
+import { LbrFiltros } from '../../shared/component/lbr-filtros/lbr-filtros';
+import { ConfigFiltro, filtrarItens, ValoresFiltro } from '../../shared/component/lbr-filtros/filtros';
 import {
   LbrTabela,
   LbrTabelaCabecalho,
   LbrTabelaLinha,
+  LbrTabelaOrdenar,
 } from '../../shared/component/lbr-tabela/lbr-tabela';
 
 @Component({
   selector: 'app-bloqueios',
   imports: [
     CommonModule,
-    FormsModule,
     CorpoPadrao,
+    LbrFiltros,
     LbrTabela,
     LbrTabelaCabecalho,
     LbrTabelaLinha,
+    LbrTabelaOrdenar,
   ],
   templateUrl: './bloqueios.html',
   styleUrl: './bloqueios.scss',
 })
 export class Bloqueios {
-  filtroSelecionado: string = 'todos';
-  pesquisa: string = '';
 
   emprestimos: Emprestimo[] = [
     {
@@ -131,40 +132,28 @@ export class Bloqueios {
     },
   ];
 
-  get emprestimosFiltrados() {
-    if (!this.pesquisa.trim()) {
-      return this.emprestimos;
-    }
+  readonly filtros = signal<ValoresFiltro>({});
 
-    const termo = this.pesquisa.toLowerCase();
+  readonly configFiltro: ConfigFiltro<Emprestimo> = {
+    placeholderBusca: 'Buscar por nome ou ID...',
+    busca: (e) => [e.id, e.observacao],
+    campos: [
+      {
+        tipo: 'opcoes',
+        chave: 'status',
+        rotulo: 'Status',
+        valorDoItem: (e) => e.status,
+        opcoes: [
+          { valor: StatusEmprestimo.BLOQUEADO, rotulo: 'Bloqueado' },
+          { valor: StatusEmprestimo.ATRASADO, rotulo: 'Pendente' },
+        ],
+      },
+    ],
+  };
 
-    return this.emprestimos.filter((emprestimo) => {
-      const nome = emprestimo.observacao?.toLowerCase() || '';
-      const status = emprestimo.status?.toLowerCase() || '';
-
-      if (this.filtroSelecionado === 'todos') {
-        return (
-          emprestimo.id?.toString().includes(termo) ||
-          nome.includes(termo) ||
-          status.includes(termo)
-        );
-      }
-
-      if (this.filtroSelecionado === 'id') {
-        return emprestimo.id?.toString().includes(termo);
-      }
-
-      if (this.filtroSelecionado === 'nome') {
-        return nome.includes(termo);
-      }
-
-      if (this.filtroSelecionado === 'status') {
-        return status.includes(termo);
-      }
-
-      return true;
-    });
-  }
+  readonly emprestimosFiltrados = computed(() =>
+    filtrarItens(this.emprestimos, this.configFiltro, this.filtros()),
+  );
 
   get totalBloqueados() {
     return this.emprestimos.filter((e) => e.status === StatusEmprestimo.BLOQUEADO).length;

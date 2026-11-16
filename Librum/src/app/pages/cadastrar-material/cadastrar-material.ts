@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
-import { IMaskDirective } from 'angular-imask';
 import { MaskConstants } from '../../enum/const';
 import { AutorResponse } from '../../models/autor.model';
 import { EditoraResponse } from '../../models/editora.model';
@@ -28,13 +27,13 @@ import { LbrButtom } from '../../shared/component/lbr-buttom/lbr-buttom';
 import { SelectPesquisavel } from '../../shared/component/select-pesquisavel/select-pesquisavel';
 import { ToastService } from '../../shared/services/toast.service';
 import { FormUtils } from '../../utils/FormUtil';
+import { dataISO } from '../../utils/data.util';
 
 @Component({
   selector: 'app-cadastrar-material',
   imports: [
     FormsModule,
     CommonModule,
-    IMaskDirective,
     ReactiveFormsModule,
     CorpoPadrao,
     CadastroAutorModal,
@@ -89,7 +88,7 @@ export class CadastrarMaterial implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const hoje = new Date().toISOString().split('T')[0];
+    const hoje = dataISO(new Date());
 
     this.formLivro = this.fb.group({
       titulo: ['', Validators.required],

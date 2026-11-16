@@ -1,0 +1,47 @@
+<app-corpo-padrao>
+  <div class="titulo">Funcionários</div>
+
+  <div class="corpo">
+    <lbr-filtros [config]="configFiltro" [(valores)]="filtros">
+      @if (podeCadastrar) {
+        <a lbrFiltrosAcoes lbrButton variant="cadastrar" routerLink="/funcionarios/novo" class="text-nowrap">
+          <i class="bi bi-person-plus" aria-hidden="true"></i>
+          Cadastrar Funcionário
+        </a>
+      }
+    </lbr-filtros>
+
+    <lbr-tabela
+      [dados]="funcionariosFiltrados()"
+      [carregando]="carregando()"
+      mensagemCarregando="Carregando funcionários..."
+      [mensagemVazio]="temFiltroAtivo(filtros())
+        ? 'Nenhum funcionário encontrado para os filtros selecionados.'
+        : 'Nenhum funcionário cadastrado.'"
+      iconeVazio="bi-person-badge"
+      rotulo="Paginação dos funcionários">
+      <ng-template lbrTabelaCabecalho>
+        <th scope="col" lbrOrdenar="id">ID</th>
+        <th scope="col" lbrOrdenar="nome">Nome</th>
+        <th scope="col" lbrOrdenar="email">E-mail</th>
+        <th scope="col" [lbrOrdenar]="rotuloFuncao">Função</th>
+        <th scope="col" lbrOrdenar="matriculaFuncionario">Matrícula</th>
+        <th scope="col" [lbrOrdenar]="rotuloSituacao">Status</th>
+        <th scope="col" class="text-end">Ações</th>
+      </ng-template>
+      <ng-template [lbrTabelaLinha]="funcionariosFiltrados()" let-funcionario>
+        <tr>
+          <th scope="row">#{{ funcionario.id }}</th>
+          <td><lbr-link-entidade class="fw-semibold" tipo="usuario" [id]="funcionario.id" [texto]="funcionario.nome" /></td>
+          <td>{{ funcionario.email }}</td>
+          <td>{{ rotuloFuncao(funcionario) }}</td>
+          <td>{{ funcionario.matriculaFuncionario || '—' }}</td>
+          <td><app-badge [status]="corSituacao(funcionario)">{{ rotuloSituacao(funcionario) }}</app-badge></td>
+          <td class="text-end">
+            <lbr-acoes [acoes]="acoesDoFuncionario(funcionario)" [descricao]="funcionario.nome" />
+          </td>
+        </tr>
+      </ng-template>
+    </lbr-tabela>
+  </div>
+</app-corpo-padrao>

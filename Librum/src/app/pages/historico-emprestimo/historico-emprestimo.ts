@@ -1,31 +1,43 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef, Component, computed, OnInit, signal } from '@angular/core';
 import { StatusEmprestimo } from '../../enum/status.enum';
 import { Emprestimo } from '../../models/emprestimo.model';
 import { EmprestimoService } from '../../services/emprestimo.service';
 import { CardStatus } from '../../shared/component/card/card-status/card-status';
 import { CorpoPadrao } from '../../shared/component/corpo-padrao/corpo-padrao';
-import { InputBusca } from '../../shared/component/input-busca/input-busca';
+import { LbrLinkEntidade } from '../../shared/component/lbr-link-entidade/lbr-link-entidade';
+import { AcaoMenu, LbrAcoes } from '../../shared/component/lbr-acoes/lbr-acoes';
+import { LbrFiltros } from '../../shared/component/lbr-filtros/lbr-filtros';
+import {
+  ConfigFiltro,
+  filtrarItens,
+  opcoesDosItens,
+  temFiltroAtivo,
+  ValoresFiltro,
+} from '../../shared/component/lbr-filtros/filtros';
 import {
   LbrTabela,
   LbrTabelaCabecalho,
   LbrTabelaLinha,
+  LbrTabelaOrdenar,
 } from '../../shared/component/lbr-tabela/lbr-tabela';
 import { ToastService } from '../../shared/services/toast.service';
+import { dataISO, formatarDataBR } from '../../utils/data.util';
 
 @Component({
   selector: 'app-historio-emprestimo',
   standalone: true,
   imports: [
-    FormsModule,
     CardStatus,
     CommonModule,
     CorpoPadrao,
-    InputBusca,
+    LbrLinkEntidade,
+    LbrFiltros,
+    LbrAcoes,
     LbrTabela,
     LbrTabelaCabecalho,
     LbrTabelaLinha,
+    LbrTabelaOrdenar,
   ],
   templateUrl: './historico-emprestimo.html',
   styleUrl: './historico-emprestimo.scss',
@@ -41,42 +53,71 @@ export class HistorioEmprestimo implements OnInit {
     this.carregarEmprestimos();
   }
 
-  dataInicial = '';
-  dataFinal = '';
-  busca = '';
-  statusSelecionado = 'TODOS';
+  protected readonly temFiltroAtivo = temFiltroAtivo;
+  /** Ordena a coluna Status pelo texto exibido. */
+  protected readonly porStatus = (e: Emprestimo) => this.rotuloStatus(this.getStatus(e));
   statusEmprestimo = StatusEmprestimo;
-  lista: Emprestimo[] = [];
+  private readonly lista = signal<Emprestimo[]>([]);
   carregando = true;
   erroCarregamento = '';
 
-  get listaFiltrada(): Emprestimo[] {
-    const termo = this.busca.trim().toLocaleLowerCase('pt-BR');
-    return this.lista.filter((emprestimo) => {
-      const data = this.dataISO(emprestimo.dataSaida);
-      if (this.dataInicial && (!data || data < this.dataInicial)) return false;
-      if (this.dataFinal && (!data || data > this.dataFinal)) return false;
-      if (
-        this.statusSelecionado !== 'TODOS' &&
-        this.getStatus(emprestimo) !== this.statusSelecionado
-      ) {
-        return false;
-      }
+  readonly filtros = signal<ValoresFiltro>({});
 
-      return (
-        !termo ||
-        [emprestimo.id, emprestimo.usuarioNome, emprestimo.materialTitulo]
-          .some((valor) => String(valor ?? '').toLocaleLowerCase('pt-BR').includes(termo))
-      );
-    });
-  }
+  readonly configFiltro = computed<ConfigFiltro<Emprestimo>>(() => ({
+    placeholderBusca: 'Buscar por ID, usuário ou material...',
+    busca: (e) => [e.id, e.usuarioNome, e.materialTitulo],
+    campos: [
+      {
+        tipo: 'opcoes',
+        chave: 'status',
+        rotulo: 'Status',
+        valorDoItem: (e) => this.getStatus(e),
+        opcoes: [
+          { valor: StatusEmprestimo.ATIVO, rotulo: 'Em andamento' },
+          { valor: StatusEmprestimo.DEVOLVIDO, rotulo: 'Devolvido' },
+          { valor: StatusEmprestimo.ATRASADO, rotulo: 'Atrasado' },
+          { valor: StatusEmprestimo.BLOQUEADO, rotulo: 'Bloqueado' },
+        ],
+      },
+      {
+        tipo: 'lista',
+        chave: 'usuario',
+        rotulo: 'Usuário',
+        valorDoItem: (e) => e.usuarioId,
+        opcoes: opcoesDosItens(this.lista(), (e) => e.usuarioId, (e) => e.usuarioNome),
+      },
+      {
+        tipo: 'lista',
+        chave: 'material',
+        rotulo: 'Material',
+        valorDoItem: (e) => e.materialId,
+        opcoes: opcoesDosItens(this.lista(), (e) => e.materialId, (e) => e.materialTitulo),
+      },
+      {
+        tipo: 'periodo',
+        chave: 'emprestimo',
+        rotulo: 'Data do empréstimo',
+        valorDoItem: (e) => e.dataSaida,
+      },
+      {
+        tipo: 'periodo',
+        chave: 'devolucao',
+        rotulo: 'Devolução prevista',
+        valorDoItem: (e) => e.dataDevolucaoPrevista,
+      },
+    ],
+  }));
 
-  aplicarBusca(busca: { texto: string; filtro: string }): void {
-    this.busca = busca.texto;
+  readonly listaFiltrada = computed(() =>
+    filtrarItens(this.lista(), this.configFiltro(), this.filtros()),
+  );
+
+  acoesDoEmprestimo(emprestimo: Emprestimo): AcaoMenu[] {
+    return [{ rotulo: 'Ver detalhes', icone: 'bi-eye', rota: ['/emprestimos', emprestimo.id] }];
   }
 
   quantidadePorStatus(status: StatusEmprestimo): number {
-    return this.listaFiltrada.filter((emprestimo) => this.getStatus(emprestimo) === status).length;
+    return this.listaFiltrada().filter((emprestimo) => this.getStatus(emprestimo) === status).length;
   }
 
   getStatus(emprestimo: Emprestimo): StatusEmprestimo {
@@ -85,7 +126,7 @@ export class HistorioEmprestimo implements OnInit {
     if (emprestimo.status === StatusEmprestimo.ATRASADO) return StatusEmprestimo.ATRASADO;
     if (
       emprestimo.dataDevolucaoPrevista &&
-      this.dataISO(emprestimo.dataDevolucaoPrevista) < this.dataISO(new Date())
+      dataISO(emprestimo.dataDevolucaoPrevista) < dataISO(new Date())
     ) {
       return StatusEmprestimo.ATRASADO;
     }
@@ -119,8 +160,7 @@ export class HistorioEmprestimo implements OnInit {
   }
 
   formatarDataEmprestimo(data?: Date | string): string {
-    const dataISO = this.dataISO(data);
-    return dataISO ? new Date(`${dataISO}T00:00:00`).toLocaleDateString('pt-BR') : '—';
+    return formatarDataBR(data);
   }
 
   carregarEmprestimos(): void {
@@ -128,11 +168,11 @@ export class HistorioEmprestimo implements OnInit {
     this.erroCarregamento = '';
     this.emprestimoService.listarVisiveis().subscribe({
       next: (emprestimos) => {
-        this.lista = [...emprestimos].sort((a, b) => {
-          const dataA = this.dataISO(a.dataSaida);
-          const dataB = this.dataISO(b.dataSaida);
+        this.lista.set([...emprestimos].sort((a, b) => {
+          const dataA = dataISO(a.dataSaida);
+          const dataB = dataISO(b.dataSaida);
           return dataB.localeCompare(dataA) || (b.id ?? 0) - (a.id ?? 0);
-        });
+        }));
         this.carregando = false;
         this.cdr.markForCheck();
       },
@@ -143,14 +183,5 @@ export class HistorioEmprestimo implements OnInit {
         this.cdr.markForCheck();
       },
     });
-  }
-
-  private dataISO(data?: Date | string): string {
-    if (!data) return '';
-    if (typeof data === 'string') return data.slice(0, 10);
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
   }
 }

@@ -19,4 +19,16 @@ export class GeneroService {
   create(genero: GeneroRequest): Observable<GeneroResponse> {
     return this.http.post<GeneroResponse>(this.apiUrl, genero);
   }
+
+  findById(id: number): Observable<GeneroResponse> {
+    return this.http.get<GeneroResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  update(id: number, genero: GeneroRequest): Observable<GeneroResponse> {
+    return this.http.put<GeneroResponse>(`${this.apiUrl}/${id}`, genero);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

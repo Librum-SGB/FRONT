@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LbrTabela, LbrTabelaCabecalho, LbrTabelaLinha } from './lbr-tabela';
+import { LbrTabela, LbrTabelaCabecalho, LbrTabelaLinha, LbrTabelaOrdenar } from './lbr-tabela';
 
 interface Registro {
   id: number;
@@ -9,11 +9,12 @@ interface Registro {
 }
 
 @Component({
-  imports: [LbrTabela, LbrTabelaCabecalho, LbrTabelaLinha],
+  imports: [LbrTabela, LbrTabelaCabecalho, LbrTabelaLinha, LbrTabelaOrdenar],
   template: `
     <lbr-tabela [dados]="dados()" [carregando]="carregando()" mensagemVazio="Nada por aqui.">
       <ng-template lbrTabelaCabecalho>
-        <th scope="col">Nome</th>
+        <th scope="col" lbrOrdenar="nome">Nome</th>
+        <th scope="col" [lbrOrdenar]="porId">ID</th>
       </ng-template>
       <ng-template [lbrTabelaLinha]="dados()" let-item let-indice="indice">
         <tr>
@@ -24,6 +25,7 @@ interface Registro {
   `,
 })
 class HostTeste {
+  porId = (r: Registro) => r.id;
   dados = signal<Registro[]>(criarRegistros(60));
   carregando = signal(false);
 }
@@ -61,7 +63,7 @@ describe('LbrTabela', () => {
   it('exibe 10 registros por padrão', () => {
     expect(linhas().length).toBe(10);
     expect(textoResumo()).toBe('Exibindo 1–10 de 60');
-    expect(elemento.querySelector('thead th')?.textContent?.trim()).toBe('Nome');
+    expect(elemento.querySelector('thead th')?.textContent).toContain('Nome');
   });
 
   it('permite escolher 25 ou 50 registros por página', async () => {
@@ -113,5 +115,58 @@ describe('LbrTabela', () => {
     await renderizar();
     expect(elemento.querySelector('table')).toBeNull();
     expect(elemento.textContent).toContain('Carregando...');
+  });
+
+  describe('ordenação pelo cabeçalho', () => {
+    const botaoColuna = (texto: string) =>
+      Array.from(elemento.querySelectorAll<HTMLButtonElement>('th button')).find((b) =>
+        b.textContent?.includes(texto),
+      )!;
+    const primeiraLinha = () => linhas()[0].textContent?.trim();
+
+    beforeEach(async () => {
+      fixture.componentInstance.dados.set([
+        { id: 3, nome: 'Érica' },
+        { id: 1, nome: 'ana' },
+        { id: 10, nome: '' },
+        { id: 2, nome: 'Bruno' },
+      ]);
+      await renderizar();
+    });
+
+    it('mostra a setinha neutra e ordena crescente no primeiro clique, decrescente no segundo', async () => {
+      expect(botaoColuna('Nome').querySelectorAll('.ativa')).toHaveLength(0);
+
+      botaoColuna('Nome').click();
+      await renderizar();
+      expect(primeiraLinha()).toBe('0 - ana');
+      expect(botaoColuna('Nome').querySelector('.ativa')?.classList).toContain('bi-arrow-up');
+      expect(elemento.querySelector('th[lbrOrdenar]')?.getAttribute('aria-sort')).toBe('ascending');
+
+      botaoColuna('Nome').click();
+      await renderizar();
+      expect(primeiraLinha()).toBe('0 - Érica');
+      expect(botaoColuna('Nome').querySelector('.ativa')?.classList).toContain('bi-arrow-down');
+    });
+
+    it('ignora acentos e maiúsculas e deixa vazios no fim', async () => {
+      botaoColuna('Nome').click();
+      await renderizar();
+      expect(Array.from(linhas()).map((l) => l.textContent?.trim())).toEqual([
+        '0 - ana',
+        '1 - Bruno',
+        '2 - Érica',
+        '3 -',
+      ]);
+    });
+
+    it('ordena números como números (2 antes de 10) usando função', async () => {
+      botaoColuna('ID').click();
+      await renderizar();
+      botaoColuna('ID').click();
+      await renderizar();
+      expect(primeiraLinha()).toBe('0 -');
+      expect(botaoColuna('Nome').querySelectorAll('.ativa')).toHaveLength(0);
+    });
   });
 });

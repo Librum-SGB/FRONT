@@ -6,11 +6,13 @@ import { BarraLateralComponent } from './shared/component/barra-lateral/barra-la
 import { Footer } from './shared/component/footer/footer';
 import { Navbar } from './shared/component/navbar/navbar';
 import { Toast } from './shared/component/toast/toast';
+import { LbrConfirmacao } from './shared/component/lbr-confirmacao/lbr-confirmacao';
 import { ToastService } from './shared/services/toast.service';
+import { NavegacaoService } from './shared/services/navegacao.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, Navbar, BarraLateralComponent, Footer, Toast],
+  imports: [RouterOutlet, CommonModule, Navbar, BarraLateralComponent, Footer, Toast, LbrConfirmacao],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -18,6 +20,8 @@ export class App implements OnInit {
   protected readonly title = signal('Librum');
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
+  // Criado já no início para saber se há uma tela anterior para onde "Voltar".
+  private readonly navegacao = inject(NavegacaoService);
 
   currentRoute = '';
   sidebarRecolhida = false;

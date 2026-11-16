@@ -1,0 +1,43 @@
+@if (visiveis().length) {
+  <div class="dropdown">
+    <!-- strategy "fixed": o menu não é cortado pela rolagem horizontal da tabela -->
+    <button type="button" class="btn lbr-acoes__botao rounded-circle d-inline-flex align-items-center justify-content-center"
+      data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false"
+      [attr.aria-label]="rotuloBotao()" [title]="rotuloBotao()">
+      <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+      @for (acao of visiveis(); track acao.rotulo; let primeira = $first) {
+        @if (acao.separadorAntes && !primeira) {
+          <li><hr class="dropdown-divider"></li>
+        }
+        <li>
+          @if (acao.rota && !acao.desabilitado) {
+            <a class="dropdown-item d-flex align-items-center gap-2" [class.text-danger]="acao.perigo"
+              [routerLink]="acao.rota" [queryParams]="acao.queryParams">
+              @if (acao.icone) {
+                <i class="bi {{ acao.icone }}" aria-hidden="true"></i>
+              }
+              {{ acao.rotulo }}
+            </a>
+          } @else {
+            <button type="button" class="dropdown-item d-flex align-items-center gap-2"
+              [class.text-danger]="acao.perigo && !acao.desabilitado"
+              [disabled]="acao.desabilitado" [attr.title]="acao.desabilitado ? acao.dica : null"
+              (click)="acao.executar?.()">
+              @if (acao.icone) {
+                <i class="bi {{ acao.icone }}" aria-hidden="true"></i>
+              }
+              <span>
+                {{ acao.rotulo }}
+                @if (acao.desabilitado && acao.dica) {
+                  <small class="d-block text-secondary">{{ acao.dica }}</small>
+                }
+              </span>
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+}

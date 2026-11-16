@@ -1,0 +1,98 @@
+<app-corpo-padrao>
+  <div class="titulo">Detalhes do Material</div>
+
+  <div class="corpo">
+    <lbr-trilha [atual]="material()?.titulo ?? 'Detalhes'" [padrao]="{ rotulo: 'Materiais', rota: rotas.materiais }" />
+
+    @if (carregando()) {
+      <p class="text-center text-secondary py-5 mb-0">Carregando material...</p>
+    } @else if (erroCarregamento()) {
+      <lbr-aviso [mensagem]="erroCarregamento()">
+        <a lbrButton variant="outros" [routerLink]="rotas.materiais">Voltar para materiais</a>
+      </lbr-aviso>
+    } @else if (material(); as material) {
+      <lbr-cabecalho-detalhe [icone]="iconeTipo(material.tipo)" [titulo]="material.titulo">
+        <ng-container subtitulo>
+          @if (material.subtitulo) {
+            <span class="w-100">{{ material.subtitulo }}</span>
+          }
+          <span>{{ material.codigo }}</span>
+          <lbr-badge [variant]="material.tipoVariant">{{ material.tipoLabel }}</lbr-badge>
+          @if (material.disponibilidadeVariant) {
+            <lbr-badge [variant]="material.disponibilidadeVariant">{{ material.disponibilidade }}</lbr-badge>
+          }
+        </ng-container>
+        <ng-container acoes>
+          <button type="button" lbrButton variant="cancelar" [lbrVoltar]="rotas.materiais">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar
+          </button>
+          <a lbrButton variant="outros" [routerLink]="rotas.historico" [queryParams]="{ material: material.id }">
+            <i class="bi bi-clock-history" aria-hidden="true"></i> Histórico
+          </a>
+          @if (podeEditar) {
+            <a lbrButton variant="editar" [routerLink]="['/materiais', material.id, 'editar']">
+              <i class="bi bi-pencil" aria-hidden="true"></i> Editar
+            </a>
+          }
+          @if (podeExcluir) {
+            <button type="button" lbrButton variant="excluir" [disabled]="excluindo()" (click)="excluir()">
+              <i class="bi bi-trash" aria-hidden="true"></i> Excluir
+            </button>
+          }
+        </ng-container>
+      </lbr-cabecalho-detalhe>
+
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <section class="card h-100">
+            <div class="card-body p-4">
+              <h3 class="h6 text-uppercase text-secondary mb-3">Informações</h3>
+
+              @if (campos().length) {
+                <dl class="row mb-0">
+                  @for (campo of campos(); track campo.rotulo) {
+                    <dt class="col-sm-4 fw-semibold">{{ campo.rotulo }}</dt>
+                    <dd class="col-sm-8">{{ campo.valor }}</dd>
+                  }
+                </dl>
+              } @else {
+                <p class="text-secondary mb-0">Nenhuma informação adicional cadastrada.</p>
+              }
+
+              @for (texto of textosLongos(); track texto.rotulo) {
+                <hr>
+                <h4 class="h6 fw-semibold">{{ texto.rotulo }}</h4>
+                <p class="mb-0 texto-longo">{{ texto.valor }}</p>
+              }
+            </div>
+          </section>
+        </div>
+
+        <div class="col-lg-4 d-flex flex-column gap-4">
+          <section class="card">
+            <div class="card-body p-4">
+              <h3 class="h6 text-uppercase text-secondary mb-3">Exemplares</h3>
+              @if (totalExemplares() === null) {
+                <p class="text-secondary mb-0">Não foi possível carregar os exemplares.</p>
+              } @else {
+                <div class="d-flex gap-4">
+                  <div>
+                    <div class="fs-3 fw-semibold">{{ totalExemplares() }}</div>
+                    <small class="text-secondary">no acervo</small>
+                  </div>
+                  <div>
+                    <div class="fs-3 fw-semibold text-success">{{ exemplaresDisponiveis() }}</div>
+                    <small class="text-secondary">disponíveis</small>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          <lbr-cartao-registro [criadoEm]="materialOriginal()?.dataCriacao"
+            [atualizadoEm]="materialOriginal()?.dataUltimaAtualizacao" />
+        </div>
+      </div>
+    }
+  </div>
+</app-corpo-padrao>
