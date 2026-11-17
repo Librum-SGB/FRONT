@@ -29,19 +29,21 @@
       (toggleSidebar)="alternarSidebar()"
     ></app-barra-lateral>
 
-    <!-- Conteúdo -->
-    <main class="conteudo-principal flex-grow-1 p-3 px-5 pb-5">
-      <router-outlet></router-outlet>
-    </main>
+    <!-- Conteúdo + rodapé (rolam juntos, separados do menu) -->
+    <div class="area-direita d-flex flex-column flex-grow-1">
+      <main class="conteudo-principal flex-grow-1 p-3 px-5 pb-5">
+        <router-outlet></router-outlet>
+      </main>
+
+      <!-- Rodapé -->
+      <app-footer></app-footer>
+    </div>
   </div>
 
   <!-- Telas de autenticação -->
   <main *ngIf="isAuthRoute()" class="flex-grow-1">
     <router-outlet></router-outlet>
   </main>
-
-  <!-- Rodapé -->
-  <app-footer *ngIf="!isAuthRoute()"></app-footer>
 
   <!-- Notificações (canto superior direito) -->
   <app-toast></app-toast>

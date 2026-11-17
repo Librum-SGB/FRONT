@@ -217,7 +217,7 @@
 
   // Menu recolhido no desktop
   &.recolhida {
-    width: 64px;
+    width: 68px;
 
     .section-title,
     .menu-label {
@@ -229,9 +229,13 @@
       justify-content: center;
       padding: 10px 0;
 
+      min-height: 48px;
+
       i {
         margin-left: 0;
-        font-size: 19px;
+        width: 24px;
+        min-width: 24px;
+        font-size: 22px;
       }
     }
 
@@ -341,15 +345,32 @@
     left: auto;
     z-index: auto;
     width: auto;
-    height: calc(100dvh - 56px);
+    height: auto;
     min-height: 0;
     overflow: hidden;
+    border-right: 1px solid var(--sidebar-border);
+    background-color: var(--sidebar-bg);
   }
 
+  // O host ocupa a altura entre navbar e footer.
+  // Os menus rolam por dentro, separados do conteúdo da página.
   .barra-lateral,
   .barra-lateral.recolhida {
+    position: static;
+    flex: 1 1 auto;
     height: 100%;
     min-height: 0;
     overflow: hidden;
+    border-right: 0;
+
+    .menu-scroll {
+      flex: 1 1 0 !important;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .menu-section {
+      margin-top: auto;
+    }
   }
 }
