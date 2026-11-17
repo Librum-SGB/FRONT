@@ -7,6 +7,7 @@ import { Footer } from './shared/component/footer/footer';
 import { Navbar } from './shared/component/navbar/navbar';
 import { Toast } from './shared/component/toast/toast';
 import { LbrConfirmacao } from './shared/component/lbr-confirmacao/lbr-confirmacao';
+import { AuthService } from './services/auth.service';
 import { ToastService } from './shared/services/toast.service';
 import { NavegacaoService } from './shared/services/navegacao.service';
 @Component({
@@ -20,6 +21,7 @@ export class App implements OnInit {
   protected readonly title = signal('Librum');
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
+  private readonly auth = inject(AuthService);
   // Criado já no início para saber se há uma tela anterior para onde "Voltar".
   private readonly navegacao = inject(NavegacaoService);
 
@@ -65,7 +67,7 @@ export class App implements OnInit {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    this.auth.logout();
     sessionStorage.clear();
     this.menuMobileAberto = false;
 
