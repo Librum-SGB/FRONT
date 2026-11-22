@@ -1,0 +1,117 @@
+<app-corpo-padrao>
+  <div class="titulo">Unidades</div>
+
+  <div class="corpo">
+    <lbr-filtros [config]="configFiltro" [(valores)]="filtros">
+      <a
+        lbrFiltrosAcoes
+        lbrButton
+        variant="cadastrar"
+        routerLink="/unidades/novo"
+        class="text-nowrap"
+      >
+        <i class="bi bi-plus-lg" aria-hidden="true"></i> Cadastrar Unidade
+      </a>
+    </lbr-filtros>
+
+    @if (erro()) {
+      <div class="alert alert-danger" role="alert">
+        <p>{{ erro() }}</p>
+        <button type="button" class="btn btn-outline-danger" (click)="carregar()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else {
+      <lbr-tabela
+        [dados]="unidadesFiltradas()"
+        [carregando]="carregando()"
+        mensagemCarregando="Carregando unidades..."
+        iconeVazio="bi-buildings"
+        [mensagemVazio]="
+          temFiltroAtivo(filtros())
+            ? 'Nenhuma unidade encontrada para os filtros selecionados.'
+            : 'Nenhuma unidade cadastrada.'
+        "
+        rotulo="Paginação de unidades"
+      >
+        <ng-template lbrTabelaCabecalho>
+          <th scope="col" lbrOrdenar="id">ID</th>
+          <th scope="col" lbrOrdenar="nomeFantasia">Unidade</th>
+          <th scope="col" lbrOrdenar="cnpj">CNPJ</th>
+          <th scope="col" lbrOrdenar="cidade">Cidade</th>
+          <th scope="col" lbrOrdenar="estado">UF</th>
+          <th scope="col" lbrOrdenar="ativo">Status</th>
+          <th scope="col" class="text-end">Ações</th>
+        </ng-template>
+        <ng-template [lbrTabelaLinha]="unidadesFiltradas()" let-unidade>
+          <tr>
+            <td class="fw-semibold">#{{ unidade.id }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-link fw-semibold p-0 text-start text-decoration-none"
+                (click)="selecionada.set(unidade)"
+              >
+                {{ unidade.nomeFantasia }}
+              </button>
+            </td>
+            <td class="text-nowrap">{{ formatarCnpj(unidade.cnpj) }}</td>
+            <td>{{ unidade.cidade }}</td>
+            <td>{{ unidade.estado }}</td>
+            <td>
+              <span
+                class="badge"
+                [class.bg-success-subtle]="unidade.ativo"
+                [class.text-success]="unidade.ativo"
+                [class.bg-secondary-subtle]="!unidade.ativo"
+                [class.text-secondary]="!unidade.ativo"
+                >{{ unidade.ativo ? 'Ativa' : 'Inativa' }}</span
+              >
+            </td>
+            <td class="text-end">
+              <lbr-acoes [acoes]="acoesDaUnidade(unidade)" [descricao]="unidade.nomeFantasia" />
+            </td>
+          </tr>
+        </ng-template>
+      </lbr-tabela>
+    }
+  </div>
+</app-corpo-padrao>
+
+@if (selecionada(); as unidade) {
+  <app-modal
+    title="Detalhes da Unidade"
+    [isOpen]="true"
+    size="lg"
+    (isOpenChange)="selecionada.set(null)"
+  >
+    <h5>{{ unidade.nomeFantasia }}</h5>
+    <dl class="row mb-0">
+      <dt class="col-sm-4">Razão social</dt>
+      <dd class="col-sm-8">{{ unidade.razaoSocial }}</dd>
+      <dt class="col-sm-4">CNPJ</dt>
+      <dd class="col-sm-8">{{ formatarCnpj(unidade.cnpj) }}</dd>
+      <dt class="col-sm-4">Inscrição estadual</dt>
+      <dd class="col-sm-8">{{ unidade.inscricaoEstadual || '—' }}</dd>
+      <dt class="col-sm-4">Endereço</dt>
+      <dd class="col-sm-8">
+        {{ unidade.endereco }}{{ unidade.numero ? ', ' + unidade.numero : ''
+        }}{{ unidade.complemento ? ' — ' + unidade.complemento : '' }}
+      </dd>
+      <dt class="col-sm-4">Bairro</dt>
+      <dd class="col-sm-8">{{ unidade.bairro }}</dd>
+      <dt class="col-sm-4">Cidade / UF</dt>
+      <dd class="col-sm-8">{{ unidade.cidade }} / {{ unidade.estado }}</dd>
+      <dt class="col-sm-4">CEP</dt>
+      <dd class="col-sm-8">{{ unidade.cep }}</dd>
+      <dt class="col-sm-4">E-mail</dt>
+      <dd class="col-sm-8">{{ unidade.email || '—' }}</dd>
+      <dt class="col-sm-4">Telefone</dt>
+      <dd class="col-sm-8">{{ unidade.telefone || '—' }}</dd>
+      <dt class="col-sm-4">Funcionamento</dt>
+      <dd class="col-sm-8">{{ unidade.horarioFuncionamento || '—' }}</dd>
+      <dt class="col-sm-4">Status</dt>
+      <dd class="col-sm-8">{{ unidade.ativo ? 'Ativa' : 'Inativa' }}</dd>
+    </dl>
+  </app-modal>
+}

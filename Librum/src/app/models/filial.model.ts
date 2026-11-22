@@ -16,9 +16,18 @@ export interface Filial {
 
   telefone?: string;
   email?: string;
+  horarioFuncionamento?: string;
 
   ativo: boolean;
 
   dataCriacao?: Date;
   dataUltimaAtualizacao?: Date;
+}
+
+export type FilialRequest = Omit<Filial, 'id' | 'dataCriacao' | 'dataUltimaAtualizacao'>;
+
+export interface FilialResponse extends FilialRequest {
+  id: number;
+  dataCriacao: string;
+  dataUltimaAtualizacao: string;
 }

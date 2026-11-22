@@ -13,7 +13,7 @@
     }
 
     <!-- CADASTROS: o grupo só aparece se houver algum item liberado -->
-    @if (authService.temAlgumaPermissao(Permissao.EDITAR_MATERIAL, Permissao.VER_USUARIOS, Permissao.EDITAR_USUARIO)) {
+    @if (authService.temAlgumaPermissao(Permissao.EDITAR_MATERIAL, Permissao.VER_USUARIOS, Permissao.EDITAR_USUARIO, Permissao.CONFIGURAR_SISTEMA)) {
     <div class="menu-group mb-2">
       <button type="button" class="nav-link menu-item group-header d-flex align-items-center w-100 rounded"
         data-bs-toggle="collapse" data-bs-target="#collapseCadastros" aria-expanded="false"
@@ -59,14 +59,13 @@
           </a>
           }
 
-          <!-- CADASTRAR UNIDADE -->
+          <!-- UNIDADE -->
           @if (authService.temPermissao(Permissao.CONFIGURAR_SISTEMA)) {
-          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Cadastrar Unidade"
-            aria-disabled="true">
-
+          <a routerLink="/unidades" routerLinkActive="active"
+            class="nav-link menu-item d-flex align-items-center rounded" title="Unidade" (click)="aoNavegar()">
             <i class="bi bi-buildings icon-unidades"></i>
-            <span class="menu-label ms-2">Cadastrar Unidade</span>
-          </div>
+            <span class="menu-label ms-2">Unidade</span>
+          </a>
           }
 
           @if (authService.temPermissao(Permissao.EDITAR_MATERIAL)) {

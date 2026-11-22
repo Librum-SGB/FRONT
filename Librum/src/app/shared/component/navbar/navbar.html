@@ -46,14 +46,17 @@
       </ul>
 
       <div class="navbar-actions d-flex align-items-center gap-2">
+        @if (podeSelecionarUnidade()) {
         <div class="unit-selector">
-          <select class="form-select" aria-label="Selecionar unidade">
-            <option selected>Selecionar Unidade</option>
-            <option value="1">Unidade x</option>
-            <option value="2">Unidade y</option>
-            <option value="3">Unidade z</option>
+          <select class="form-select" aria-label="Selecionar unidade"
+            [(ngModel)]="unidadeSelecionada" [disabled]="!unidadesAtivas()?.length">
+            <option value="">{{ rotuloSeletor() }}</option>
+            @for (unidade of unidadesAtivas() ?? []; track unidade.id) {
+              <option [value]="unidade.id">{{ unidade.nomeFantasia }}</option>
+            }
           </select>
         </div>
+        }
 
         <button class="btn navbar-action-button" type="button" (click)="toggleTema()" aria-label="Alternar tema"
           title="Alternar tema">
