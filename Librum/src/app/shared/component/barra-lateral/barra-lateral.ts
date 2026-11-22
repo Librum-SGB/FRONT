@@ -1,5 +1,9 @@
+
+import {
+  Component, EventEmitter, HostBinding, HostListener, inject, Input, Output
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, inject, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { Permissao } from '../../../enum/permissoes.enum';
@@ -12,6 +16,7 @@ import { Permissao } from '../../../enum/permissoes.enum';
   styleUrl: './barra-lateral.scss',
 })
 export class BarraLateralComponent {
+
   protected readonly authService = inject(AuthService);
   protected readonly Permissao = Permissao;
 
@@ -21,6 +26,12 @@ export class BarraLateralComponent {
   @Output() navegar = new EventEmitter<void>();
   @Output() sair = new EventEmitter<void>();
   @Output() toggleSidebar = new EventEmitter<void>();
+
+  // Aplica a classe diretamente no elemento app-barra-lateral
+  @HostBinding('class.mobile-aberta')
+  get hostMobileAberta(): boolean {
+    return this.mobileAberto;
+  }
 
   isAdmin(): boolean {
     return this.authService.isAdmin();

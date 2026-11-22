@@ -59,6 +59,16 @@
           </a>
           }
 
+          <!-- CADASTRAR UNIDADE -->
+          @if (authService.temPermissao(Permissao.CONFIGURAR_SISTEMA)) {
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Cadastrar Unidade"
+            aria-disabled="true">
+
+            <i class="bi bi-buildings icon-unidades"></i>
+            <span class="menu-label ms-2">Cadastrar Unidade</span>
+          </div>
+          }
+
           @if (authService.temPermissao(Permissao.EDITAR_MATERIAL)) {
           <!-- AUTOR -->
           <a routerLink="/autores" routerLinkActive="active"
@@ -109,7 +119,8 @@
 
           <!-- EMPRÉSTIMOS (equipe) -->
           <a routerLink="/reservar-material" routerLinkActive="active"
-            class="nav-link menu-item d-flex align-items-center rounded" title="Realizar Empréstimos" (click)="aoNavegar()">
+            class="nav-link menu-item d-flex align-items-center rounded" title="Realizar Empréstimos"
+            (click)="aoNavegar()">
             <i class="bi bi-journal-check icon-green"></i>
             <span class="menu-label ms-2">Realizar Empréstimos</span>
           </a>
@@ -158,11 +169,13 @@
           </div>
 
           <!-- UNIDADES -->
-          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Unidades">
+          <div class="nav-link menu-item menu-item-pendente d-flex align-items-center rounded" title="Unidades"
+            aria-disabled="true">
+
             <i class="bi bi-buildings icon-unidades"></i>
             <span class="menu-label ms-2">Unidades</span>
           </div>
-          }
+        }
 
           <!-- RELATÓRIOS -->
           @if (authService.temPermissao(Permissao.VER_RELATORIOS)) {

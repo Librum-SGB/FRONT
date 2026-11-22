@@ -32,7 +32,6 @@
   border-right: 1px solid var(--sidebar-border);
   transition: width 0.3s ease;
 
-  // Área superior rolável
   .menu-scroll {
     flex: 1 1 0;
     min-height: 0;
@@ -44,7 +43,6 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  // Rodapé fixo
   .menu-section {
     position: relative;
     flex: 0 0 auto;
@@ -62,7 +60,6 @@
     transition: opacity 0.2s ease;
   }
 
-  // Itens do menu
   .menu-item {
     min-height: 44px;
     padding: 10px 20px;
@@ -113,7 +110,6 @@
     }
   }
 
-  // Itens sem funcionalidade implementada
   .menu-item-pendente {
     cursor: default;
 
@@ -123,63 +119,25 @@
     }
   }
 
-  // Divisórias
   .divider {
     border-color: var(--divider-color);
     opacity: 1;
   }
 
-  // Ícones existentes
-  .icon-green {
-    color: var(--bs-success);
-  }
+  .icon-green { color: var(--bs-success); }
+  .icon-yellow { color: var(--bs-warning); }
+  .icon-blue { color: var(--bs-primary); }
+  .icon-red { color: var(--bs-danger); }
+  .icon-default { color: var(--text-muted); }
 
-  .icon-yellow {
-    color: var(--bs-warning);
-  }
+  .icon-exemplar { color: #3B82F6; }
+  .icon-funcionario { color: #06B6D4; }
+  .icon-autor { color: #8B5CF6; }
+  .icon-editora { color: #F59E0B; }
+  .icon-genero { color: #EC4899; }
+  .icon-permissoes { color: #A855F7; }
+  .icon-unidades { color: #22C55E; }
 
-  .icon-blue {
-    color: var(--bs-primary);
-  }
-
-  .icon-red {
-    color: var(--bs-danger);
-  }
-
-  .icon-default {
-    color: var(--text-muted);
-  }
-
-  // Ícones das novas funcionalidades
-  .icon-exemplar {
-    color: #3B82F6;
-  }
-
-  .icon-funcionario {
-    color: #06B6D4;
-  }
-
-  .icon-autor {
-    color: #8B5CF6;
-  }
-
-  .icon-editora {
-    color: #F59E0B;
-  }
-
-  .icon-genero {
-    color: #EC4899;
-  }
-
-  .icon-permissoes {
-    color: #A855F7;
-  }
-
-  .icon-unidades {
-    color: #22C55E;
-  }
-
-  // Botão sair
   .menu-item.text-red {
     color: var(--bs-danger);
 
@@ -189,7 +147,6 @@
     }
   }
 
-  // Grupos expansíveis
   .menu-group {
     .group-header {
       background-color: var(--bs-tertiary-bg);
@@ -215,7 +172,6 @@
     }
   }
 
-  // Menu recolhido no desktop
   &.recolhida {
     width: 68px;
 
@@ -228,7 +184,6 @@
     .menu-item {
       justify-content: center;
       padding: 10px 0;
-
       min-height: 48px;
 
       i {
@@ -256,24 +211,29 @@
   }
 }
 
-/* Mobile e tablet */
+/* MOBILE E TABLET */
+
 @media (max-width: 991.98px) {
   :host {
-    display: none;
+    display: none !important;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     z-index: 1050;
     width: 260px;
-    height: 100vh;
-    height: 100dvh;
+
+    height: auto;
     min-height: 0;
+    box-sizing: border-box;
+
     overflow: hidden;
+    background-color: var(--sidebar-bg);
   }
 
+
   :host(.mobile-aberta) {
-    display: flex;
+    display: flex !important;
   }
 
   .barra-lateral,
@@ -284,7 +244,6 @@
     flex: 1 1 auto;
     overflow: hidden;
 
-    // Área rolável
     .menu-scroll {
       flex: 1 1 0;
       min-height: 0;
@@ -294,14 +253,12 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    // Rodapé fixo
     .menu-section {
       flex: 0 0 auto;
       margin-top: auto;
       background-color: var(--sidebar-bg);
     }
 
-    // Restaurar textos no mobile
     .section-title,
     .menu-label {
       display: inline;
@@ -335,10 +292,11 @@
   }
 }
 
-/* Desktop */
+/* DESKTOP */
 @media (min-width: 992px) {
+
   :host {
-    display: flex;
+    display: flex !important;
     position: relative;
     top: auto;
     bottom: auto;
@@ -352,8 +310,6 @@
     background-color: var(--sidebar-bg);
   }
 
-  // O host ocupa a altura entre navbar e footer.
-  // Os menus rolam por dentro, separados do conteúdo da página.
   .barra-lateral,
   .barra-lateral.recolhida {
     position: static;
