@@ -1,0 +1,230 @@
+<app-corpo-padrao>
+  <div class="titulo">Cadastrar Unidade</div>
+
+  <form
+    class="corpo"
+    [formGroup]="form"
+    (ngSubmit)="salvar()"
+    novalidate
+    [attr.aria-busy]="salvando()"
+  >
+    <lbr-trilha atual="Cadastrar" [padrao]="{ rotulo: 'Unidades', rota: '/unidades' }" />
+    <app-alerta-erros [mensagens]="mensagensErro()"></app-alerta-erros>
+    <p class="text-secondary">Os campos marcados com * são obrigatórios.</p>
+
+    <fieldset class="border-0 p-0 m-0 w-100" [disabled]="salvando()">
+      <h5 class="mb-3">Dados da unidade</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <label for="nomeFantasia" class="form-label">Nome fantasia *</label>
+          <input
+            id="nomeFantasia"
+            class="form-control"
+            type="text"
+            formControlName="nomeFantasia"
+            maxlength="150"
+            autocomplete="organization"
+            required
+            [class.is-invalid]="isInvalido('nomeFantasia')"
+          />
+        </div>
+        <div class="col-md-8">
+          <label for="razaoSocial" class="form-label">Razão social *</label>
+          <input
+            id="razaoSocial"
+            class="form-control"
+            type="text"
+            formControlName="razaoSocial"
+            maxlength="150"
+            required
+            [class.is-invalid]="isInvalido('razaoSocial')"
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="cnpj" class="form-label">CNPJ *</label>
+          <input
+            id="cnpj"
+            class="form-control"
+            type="text"
+            formControlName="cnpj"
+            [imask]="Mask.CNPJ"
+            inputmode="numeric"
+            placeholder="00.000.000/0000-00"
+            required
+            [class.is-invalid]="isInvalido('cnpj')"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="inscricaoEstadual" class="form-label">Inscrição estadual</label>
+          <input
+            id="inscricaoEstadual"
+            class="form-control"
+            type="text"
+            formControlName="inscricaoEstadual"
+            maxlength="20"
+            [class.is-invalid]="isInvalido('inscricaoEstadual')"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="ativo" class="form-label">Status</label>
+          <select id="ativo" class="form-select" formControlName="ativo">
+            <option [ngValue]="true">Ativa</option>
+            <option [ngValue]="false">Inativa</option>
+          </select>
+        </div>
+      </div>
+
+      <h5 class="mb-3">Endereço</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label for="cep" class="form-label">CEP *</label>
+          <input
+            id="cep"
+            class="form-control"
+            type="text"
+            formControlName="cep"
+            [imask]="Mask.CEP"
+            inputmode="numeric"
+            autocomplete="postal-code"
+            placeholder="00000-000"
+            required
+            [class.is-invalid]="isInvalido('cep')"
+          />
+        </div>
+        <div class="col-md-8">
+          <label for="endereco" class="form-label">Endereço *</label>
+          <input
+            id="endereco"
+            class="form-control"
+            type="text"
+            formControlName="endereco"
+            maxlength="200"
+            autocomplete="address-line1"
+            required
+            [class.is-invalid]="isInvalido('endereco')"
+          />
+        </div>
+        <div class="col-md-3">
+          <label for="numero" class="form-label">Número</label>
+          <input
+            id="numero"
+            class="form-control"
+            type="text"
+            formControlName="numero"
+            maxlength="10"
+            [class.is-invalid]="isInvalido('numero')"
+          />
+        </div>
+        <div class="col-md-9">
+          <label for="complemento" class="form-label">Complemento</label>
+          <input
+            id="complemento"
+            class="form-control"
+            type="text"
+            formControlName="complemento"
+            maxlength="100"
+            autocomplete="address-line2"
+            [class.is-invalid]="isInvalido('complemento')"
+          />
+        </div>
+        <div class="col-md-5">
+          <label for="bairro" class="form-label">Bairro *</label>
+          <input
+            id="bairro"
+            class="form-control"
+            type="text"
+            formControlName="bairro"
+            maxlength="100"
+            required
+            [class.is-invalid]="isInvalido('bairro')"
+          />
+        </div>
+        <div class="col-md-5">
+          <label for="cidade" class="form-label">Cidade *</label>
+          <input
+            id="cidade"
+            class="form-control"
+            type="text"
+            formControlName="cidade"
+            maxlength="100"
+            autocomplete="address-level2"
+            required
+            [class.is-invalid]="isInvalido('cidade')"
+          />
+        </div>
+        <div class="col-md-2">
+          <label for="estado" class="form-label">Estado *</label>
+          <select
+            id="estado"
+            class="form-select"
+            formControlName="estado"
+            autocomplete="address-level1"
+            required
+            [class.is-invalid]="isInvalido('estado')"
+          >
+            <option value="">Selecione...</option>
+            @for (estado of estados; track estado) {
+              <option [value]="estado">{{ estado }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <h5 class="mb-3">Contato e funcionamento</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="email" class="form-label">E-mail</label>
+          <input
+            id="email"
+            class="form-control"
+            type="email"
+            formControlName="email"
+            maxlength="100"
+            autocomplete="email"
+            [class.is-invalid]="isInvalido('email')"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="telefone" class="form-label">Telefone</label>
+          <input
+            id="telefone"
+            class="form-control"
+            type="tel"
+            formControlName="telefone"
+            [imask]="mascaraTelefone"
+            autocomplete="tel"
+            placeholder="(00) 0000-0000"
+            [class.is-invalid]="isInvalido('telefone')"
+          />
+        </div>
+        <div class="col-12">
+          <label for="horarioFuncionamento" class="form-label">Horário de funcionamento</label>
+          <input
+            id="horarioFuncionamento"
+            class="form-control"
+            type="text"
+            formControlName="horarioFuncionamento"
+            maxlength="255"
+            placeholder="Ex.: Segunda a sexta, das 8h às 18h"
+            [class.is-invalid]="isInvalido('horarioFuncionamento')"
+          />
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        lbrButton
+        variant="cancelar"
+        [disabled]="salvando()"
+        (click)="cancelar()"
+      >
+        Cancelar
+      </button>
+      <button type="submit" lbrButton variant="cadastrar" [loading]="salvando()">
+        {{ salvando() ? 'Salvando...' : 'Cadastrar' }}
+      </button>
+    </div>
+  </form>
+</app-corpo-padrao>

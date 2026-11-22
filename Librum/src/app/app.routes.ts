@@ -25,6 +25,8 @@ import { DetalheCadastro } from './pages/cadastros-acervo/detalhe-cadastro/detal
 import { FormularioCadastro } from './pages/cadastros-acervo/formulario-cadastro/formulario-cadastro';
 import { Funcionarios } from './pages/funcionarios/funcionarios';
 import { CadastroFuncionario } from './pages/cadastro-funcionario/cadastro-funcionario';
+import { ListaUnidades } from './pages/unidades/lista-unidades';
+import { CadastrarUnidade } from './pages/unidades/cadastrar-unidade';
 
 // ajuste os caminhos conforme sua estrutura
 
@@ -190,6 +192,21 @@ export const routes: Routes = [
     canActivate: [permissaoGuard],
     data: { titulo: 'Cadastrar Bibliotecária', permissoes: [P.CADASTRAR_BIBLIOTECARIA] }, // só admin
   },
+
+  // Unidades: cadastro restrito aos administradores, como no backend.
+  {
+    path: 'unidades',
+    component: ListaUnidades,
+    canActivate: [permissaoGuard],
+    data: { titulo: 'Unidades', permissoes: [P.CONFIGURAR_SISTEMA] },
+  },
+  {
+    path: 'unidades/novo',
+    component: CadastrarUnidade,
+    canActivate: [permissaoGuard],
+    data: { titulo: 'Cadastrar Unidade', permissoes: [P.CONFIGURAR_SISTEMA] },
+  },
+  { path: 'cadastrar-unidade', redirectTo: 'unidades/novo', pathMatch: 'full' },
 
   // ── Rota inexistente  ──────────────────
   { path: '**', redirectTo: '' },
